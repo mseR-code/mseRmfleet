@@ -1,7 +1,7 @@
 # simCtlBat2.txt: mseR parameter file written Thu Sep 21 16:52:54 2017.
 parameter value
 gui$mpLabel "DFO_12"
-gui$nReps 10
+gui$nReps 3
 gui$scenarioLabel "WCVI_tsBoot"
 gui$simAnnotate TRUE
 gui$simLegend TRUE

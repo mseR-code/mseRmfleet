@@ -163,6 +163,8 @@ private:
   param_number log_recinit;
   param_number rho;
   param_number varphi;
+  param_number sig;
+  param_number tau;
   param_number so;
   param_number beta;
   param_vector log_rt;

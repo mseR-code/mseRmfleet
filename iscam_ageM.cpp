@@ -567,6 +567,14 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   #ifndef NO_AD_INITIALIZE
   varphi.initialize();
   #endif
+  sig.allocate("sig");
+  #ifndef NO_AD_INITIALIZE
+  sig.initialize();
+  #endif
+  tau.allocate("tau");
+  #ifndef NO_AD_INITIALIZE
+  tau.initialize();
+  #endif
   so.allocate("so");
   #ifndef NO_AD_INITIALIZE
   so.initialize();
@@ -758,7 +766,9 @@ void model_parameters::initParameters(void)
 	log_avgrec  = theta(4);
 	log_recinit = theta(5);
 	rho         = theta(6);
-	varphi      = theta(7);
+	varphi      = sqrt(1.0/theta(7));
+	sig       	= sqrt(rho) * varphi;
+	tau      	= sqrt(1.0-rho)*varphi;
 	// hack for stage structured Mt
 	if( npar > 7 )
 	{
@@ -1427,7 +1437,7 @@ void model_parameters::calcStockRecruitment(void)
 	*/ 
 	int i,j,k;
 	dvariable   phib,so,beta;
-	dvariable   tau = (1.-rho)/varphi;
+	dvariable   tau = sqrt(1.-rho)*varphi;
 	dvar_vector     ma(sage,nage);
 	dvar_vector tmp_rt(syr+sage,nyr);
 	dvar_vector     lx(sage,nage); lx(sage) = 1.0;
@@ -1534,7 +1544,7 @@ void model_parameters::calc_objective_function(void)
 	//2) likelihood of the survey abundance index (retro)
 	for(k=1;k<=nit;k++)
 	{
-		dvar_vector sig = (rho/varphi)/it_wt(k);
+		dvar_vector sig = sqrt(rho)*varphi/it_wt(k);
 		nlvec(2,k)=dnorm(epsilon(k),sig);
 	}
 	//3) likelihood for age-composition data
@@ -1572,7 +1582,7 @@ void model_parameters::calc_objective_function(void)
 		}
 	}
 	//4) likelihood for stock-recruitment relationship
-	dvariable tau = (1.-rho)/varphi;
+	dvariable tau = sqrt(1.-rho)*varphi;
 	if(active(theta(1)))
 		nlvec(4,1)=dnorm(delta,tau);
 	//5-6) likelihood for selectivity paramters
@@ -2236,8 +2246,8 @@ void model_parameters::simulation_model(const long& seed)
 	random_number_generator rng(seed);
 	dvector wt(syr-nage-1,nyr);			//recruitment anomalies
 	dmatrix epsilon(1,nit,1,nit_nobs);  //observation errors in survey
-	double sig = value(rho/varphi);
-	double tau = value((1.-rho)/varphi);
+	double sig = value(sqrt(rho)*varphi);
+	double tau = value(sqrt(1.-rho)*varphi);
 	if(seed==000)
 	{
 		cout<<"No Error\n";
@@ -2555,8 +2565,8 @@ void model_parameters::report(const dvector& gradients)
 	double steepness=value(theta(2));
 	REPORT(steepness);
 	REPORT(m);
-	double tau = value((1.-rho)/varphi);
-	double sig = value(rho/varphi);
+	double tau = value(sqrt(1.-rho)*varphi);
+	double sig = value(sqrt(rho)*varphi);
 	REPORT(tau);
 	REPORT(sig);
 	REPORT(age_tau2);
@@ -2965,7 +2975,7 @@ void model_parameters::projection_model(const double& tac)
 	// --derive stock recruitment parameters
 	// --survivorship of spawning biomass
 	dvector lx(sage,nage);
-	double   tau = value((1.-rho)/varphi); 
+	double   tau = value(sqrt(1.-rho)*varphi); 
 	double   m_M = value(m_bar); 
 	double m_rho = cntrl(13);
 	lx(sage)     = 1;

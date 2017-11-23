@@ -811,6 +811,8 @@ PARAMETER_SECTION
 	//number log_avg_f;			//log of average fishing mortality DEPRICATED
 	number rho;					//proportion of the observation error
 	number varphi				//total precision in the CPUE & Rec anomalies.
+	number sig;
+	number tau;
 	number so;
 	number beta;
 	
@@ -934,7 +936,10 @@ FUNCTION initParameters
 	log_avgrec  = theta(4);
 	log_recinit = theta(5);
 	rho         = theta(6);
-	varphi      = theta(7);
+	varphi      = sqrt(1.0/theta(7));
+	sig       	= sqrt(rho) * varphi;
+	tau      	= sqrt(1.0-rho)*varphi;
+
 
 	// hack for stage structured Mt
 	if( npar > 7 )
@@ -1727,7 +1732,7 @@ FUNCTION calcStockRecruitment
 	int i,j,k;
 	
 	dvariable   phib,so,beta;
-	dvariable   tau = (1.-rho)/varphi;
+	dvariable   tau = sqrt(1.-rho)*varphi;
 	dvar_vector     ma(sage,nage);
 	dvar_vector tmp_rt(syr+sage,nyr);
 	dvar_vector     lx(sage,nage); lx(sage) = 1.0;
@@ -1848,7 +1853,7 @@ FUNCTION calc_objective_function
 	//2) likelihood of the survey abundance index (retro)
 	for(k=1;k<=nit;k++)
 	{
-		dvar_vector sig = (rho/varphi)/it_wt(k);
+		dvar_vector sig = sqrt(rho)*varphi/it_wt(k);
 		nlvec(2,k)=dnorm(epsilon(k),sig);
 	}
 	
@@ -1895,7 +1900,7 @@ FUNCTION calc_objective_function
 	
 	
 	//4) likelihood for stock-recruitment relationship
-	dvariable tau = (1.-rho)/varphi;
+	dvariable tau = sqrt(1.-rho)*varphi;
 	if(active(theta(1)))
 		nlvec(4,1)=dnorm(delta,tau);
 	
@@ -2665,8 +2670,8 @@ FUNCTION void simulation_model(const long& seed)
 	dvector wt(syr-nage-1,nyr);			//recruitment anomalies
 	dmatrix epsilon(1,nit,1,nit_nobs);  //observation errors in survey
 	
-	double sig = value(rho/varphi);
-	double tau = value((1.-rho)/varphi);
+	double sig = value(sqrt(rho)*varphi);
+	double tau = value(sqrt(1.-rho)*varphi);
 	
 	if(seed==000)
 	{
@@ -3044,8 +3049,8 @@ REPORT_SECTION
 	double steepness=value(theta(2));
 	REPORT(steepness);
 	REPORT(m);
-	double tau = value((1.-rho)/varphi);
-	double sig = value(rho/varphi);
+	double tau = value(sqrt(1.-rho)*varphi);
+	double sig = value(sqrt(rho)*varphi);
 	REPORT(tau);
 	REPORT(sig);
 	REPORT(age_tau2);
@@ -3524,7 +3529,7 @@ FUNCTION void projection_model(const double& tac);
 	// --derive stock recruitment parameters
 	// --survivorship of spawning biomass
 	dvector lx(sage,nage);
-	double   tau = value((1.-rho)/varphi); 
+	double   tau = value(sqrt(1.-rho)*varphi); 
 	double   m_M = value(m_bar); 
 	double m_rho = cntrl(13);
 	lx(sage)     = 1;
