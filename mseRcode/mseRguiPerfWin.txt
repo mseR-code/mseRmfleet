@@ -1,0 +1,262 @@
+window name=mseRguiPerf title="mseR-Perf: Management Strategy Evaluation in R"
+
+# (1) Main pull-down menu items.
+
+menu nitem=1 label="File"
+  menuitem label="Exit"                   function=.closeActWin
+menu nitems=3 label="View"
+  menu nitems=3 label=Docs
+    menuitem label="mseR-Sablefish Components" function=.viewHelp action=mseR-Finfish.emf
+    menuitem label="Variable Description"      function=.viewHelp action=testDoc.txt
+    menuitem label="Plot Descriptions"         function=.viewHelp action=testDoc.txt
+  menu nitems=2 label="R Code"
+    menuitem label="GUI Functions"        	   function=.viewFile action=mseRguiPerfFuns.r
+    menuitem label="Window Control Template"   function=.viewFile action=mseRguiPerfWin.txt
+menu nitems=4 label=Help
+    menuitem label="FAQ"                       function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Help"         function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Manual"       function=.viewHelp action=testDoc.txt
+    menuitem label="About mseR-Sablefish"      function=.viewHelp action=mseR-FFabout.txt
+
+grid 4 1 padx=5
+
+    # Row 1: Simulation list header.
+    grid 2 1 relief="raised" padx=1
+      object name=pfSimList rowshow=5 function=.subPerf action=pfSimList entrybg="lightyellow" width="18 20 20 3 3 3 1" font="12" pady=5
+
+      grid 1 8
+        label   text="Group"
+        entry   name=pfGroup      function=.subPerf value="0" action="pfGroup" mode=numeric width=4
+        label   text="Selected"
+        entry   name=pfShow       value=1 mode=numeric edit=FALSE noeditbg="lightyellow"    width=4
+        label   text="/"
+        entry   name=pfNsim       value=10 mode=numeric edit=FALSE noeditbg="lightyellow"   width=4
+        button  text="Select All" function=.subPerf action=pfSelectAll padx=2 pady=1 width=8
+        button  text="Clear"      function=.subPerf action=pfClearAll  padx=2 pady=1 width=8
+
+    # Row 2: Time periods, objectives, multipliers.
+    grid 1 3 pady=3
+
+      grid 2 1 relief="raised" padx=1
+      
+      label text="Status Base Mult." font="underline 10"
+      grid 3 4
+        null
+        label text="Limit"
+        label text="Upper"
+        label text="Target"
+        
+        label text="Bmsy" pady=2         
+        entry name=pfLimitMultBmsy  value=0.4 width=5 mode="numeric" action="pfLimitMultBmsy"  function=.subPerf entrybg="pink"       padx=2 sticky=W
+        entry name=pfUpperMultBmsy  value=0.8 width=5 mode="numeric" action="pfUpperMultBmsy"  function=.subPerf entrybg="yellow"     padx=2 sticky=W
+        entry name=pfTargetMultBmsy value=1.0 width=5 mode="numeric" action="pfTargetMultBmsy" function=.subPerf entrybg="lightgreen" padx=2 sticky=W
+
+        label text="B0" pady=2          
+        entry name=pfLimitMultB0  value=0.2  width=5 mode="numeric" action="pfLimitMultB0"  function=.subPerf entrybg="pink"       padx=2 sticky=W
+        entry name=pfUpperMultB0  value=0.35 width=5 mode="numeric" action="pfUpperMultB0"  function=.subPerf entrybg="yellow"     padx=2 sticky=W
+        entry name=pfTargetMultB0 value=0.4  width=5 mode="numeric" action="pfTargetMultB0" function=.subPerf entrybg="lightgreen" padx=2 sticky=W
+
+      grid 2 1 relief="raised" padx=1
+        grid 1 3
+          label text="Period" font="underline 10" sticky=W
+          entry name=pfTmp label="tMP" value=50  width=3 mode="numeric" action="pfTmp" function=.subPerf entryfont="10" edit=FALSE noeditbg="gray"
+          entry name=pfNt  label="nT"  value=100 width=3 mode="numeric" action="pfNt"  function=.subPerf entryfont="10" edit=FALSE noeditbg="gray"
+          
+        matrix nrow=2 ncol=3 rowlabels="'Min Yr' 'Max Yr'" collabels="'Short' 'Medium' 'Long'"  \
+             names="pfShort1 pfMed1 pfLong1 pfShort2 pfMed2 pfLong2" values="50 60 70 59 69 79" \
+             function=.subPerf padx=3 pady=5 width=6
+
+      grid 4 7 byrow=FALSE relief="raised" padx=3
+        label text="Outcome"   font="underline 10" sticky=W
+        label text="Depletion" sticky=W
+        label text="Year"      sticky=W
+        label text="Certainty" sticky=W
+        
+        label text="Obj 1"
+        entry name=pfDep1  value=0.2 width=5 mode="numeric" function=.subPerf noeditbg="darkgreen" noeditfg="white" padx=2 sticky=W
+        entry name=pfYear1 value=60  width=5 mode="numeric" function=.subPerf noeditbg="cyan" padx=2 sticky=W
+        entry name=pfProb1 value=0.9 width=5 mode="numeric" function=.subPerf noeditbg="black" noeditf="white" padx=2 sticky=W
+        
+        null
+        radio name=pfObj1 value=dep  text="" function=.subPerf mode=character select=T
+        radio name=pfObj1 value=year text="" function=.subPerf mode=character
+        radio name=pfObj1 value=prob text="" function=.subPerf mode=character
+        
+        label text="Obj 2"
+        entry name=pfDep2  value=0.2 width=5 mode="numeric" function=.subPerf noeditbg="darkgreen" noeditfg="white" padx=2 sticky=W
+        entry name=pfYear2 value=60  width=5 mode="numeric" function=.subPerf noeditbg="cyan"  padx=2 sticky=W
+        entry name=pfProb2 value=0.9 width=5 mode="numeric" function=.subPerf noeditbg="black" noeditfg="white" padx=2 sticky=W
+        
+        null
+        radio name=pfObj2 value=dep  text="" function=.subPerf mode=character
+        radio name=pfObj2 value=year text="" function=.subPerf mode=character select=T
+        radio name=pfObj2 value=prob text="" function=.subPerf mode=character
+        
+        label text="Obj 3"
+        entry name=pfDep3  value=0.2 width=5 mode="numeric" function=.subPerf noeditbg="darkgreen" noeditfg="white" padx=2 sticky=W
+        entry name=pfYear3 value=60  width=5 mode="numeric" function=.subPerf noeditbg="cyan"  padx=2 sticky=W
+        entry name=pfProb3 value=0.9 width=5 mode="numeric" function=.subPerf noeditbg="black" noeditfg="white" padx=2 sticky=W
+        
+        null
+        radio name=pfObj3 value=dep  text="" function=.subPerf mode=character
+        radio name=pfObj3 value=year text="" function=.subPerf mode=character
+        radio name=pfObj3 value=prob text="" function=.subPerf mode=character select=T        
+      
+    # Row 2: Plot types.
+    grid 2 1 relief="raised"
+
+      grid 9 6 byrow=TRUE
+
+        # Group 1: Harvest Strategy.
+        label text="Strategy" font="10 bold" sticky=W
+        radio name=pfPlotType value=pfDesign    text="Design"          function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=stratFB     text="Ft~Bt"           function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=stratPhase  text="F/Fmsy~B/Bmsy"   function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=stratBmsy   text="Bmsy Zones"      function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=stratB0     text="B0 Zones"        function=.subPerf mode=character sticky=W
+
+        null
+        radio name=pfPlotType value=pfBoxDep    text="Dep boxplot"     function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBoxSSB    text="Bt boxplot"      function=.subPerf mode=character sticky=W        
+        radio name=pfPlotType value=pfBoxUt     text="Ut boxplot"      function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfTrend     text="Stock Trend"     function=.subPerf mode=character sticky=W
+        null
+        
+        # Group 2: Equilibrium
+        label text="Equilibrium" font="bold 10" sticky=W
+        radio name=pfPlotType value=pfEqYprU    text="YPR ~ U"         function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfEqSsbRU   text="SSB/R ~ U"       function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfEqYieldU  text="Y~U"             function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfEqSsbU    text="SSB~U"           function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfEqRecSSB  text="Recruits~B"      function=.subPerf mode=character sticky=W
+        
+        null
+        radio name=pfPlotType value=pfEqYieldSSB  text="Y~B"           function=.subPerf mode=character sticky=W
+        null
+        null
+        null
+        null
+        
+        # Group 3: Envelopes.
+        label text="Envelopes" font="10 bold" sticky=W
+        radio name=pfPlotType value=pfTulipBmsy    text="B/Bmsy"       function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfTulipBmsyMSY text="B/Bmsy+C/MSY" function=.subPerf mode=character sticky=W  
+        radio name=pfPlotType value=pfTulipDep     text="Depletion"    function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfTulipCat     text="Catch"        function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfTulipDis     text="Discards"     function=.subPerf mode=character sticky=W
+
+        null
+        radio name=pfPlotType value=pfTulipDepCat  text="Dep. & Catch"  function=.subPerf mode=character sticky=W  
+        radio name=pfPlotType value=pfTulipF       text="Legal HR"      function=.subPerf mode=character sticky=W
+        null
+        null
+        null
+            
+        # Group 4: Barplots.
+        label text="Barplots" font="10 bold" sticky=W
+        radio name=pfPlotType value=pfBarDepPer   text="Depletion"   function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarCatPer   text="Catch"       function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarDisPer   text="Discards"    function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarAAVPer   text="Catch AAV"   function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarAllStats text="All Stats"   function=.subPerf mode=character sticky=W        
+
+        null
+        radio name=pfPlotType value=pfBarShort    text="Short-term"  function=.subPerf mode=character sticky=W        
+        radio name=pfPlotType value=pfBarMedium   text="Med-term"    function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarLong     text="Long-term"   function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarAllPer   text="All Periods" function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfBarAllPerSL text="S,L Periods" function=.subPerf mode=character sticky=W
+
+        # Group 5: Convergence.
+        label text="Diagnostics" font="10 bold" sticky=W
+        radio name=pfPlotType value=simDiags   text="Sim Diagnostics" function=.subPerf mode=character sticky=W
+        radio name=pfPlotType value=pfParPairs text="Par Pairs"       function=.subPerf mode=character sticky=W
+        null
+        null
+        null
+
+  # Row 3: Plot controls.
+  grid 2 1 relief="groove"
+
+    grid 2 1 relief="sunken" padx=2 pady=2
+
+      # Row 2.1: Plot option controls and plot radio buttons.
+      grid 1 3
+         label text="Layout: " font="bold 10" sticky=W
+
+         grid 1 8 relief="sunken" pady=2
+           check name=pfAuto      function=.subPerf action="pfAuto"      checked=T text="Auto"          sticky=W
+           check name=pfOverWrite function=.subPerf action="pfOverWrite" checked=T text="Overwrite"     sticky=W
+           check name=pfPlotByRow function=.subPerf action="pfPlotByRow" checked=F text="Plot by Row"   sticky=W
+           entry name=pfNrows     function=.subPerf action="pfNrows"     mode=numeric value="1" width=3 sticky=W
+           label text="Rows"                                                                           sticky=W
+           entry name=pfNcols     function=.subPerf action="pfNcols"     mode=numeric value="1" width=3 sticky=W
+           label text="Columns"
+           check name=pfStamp     function=.subPerf action="pfStamp"     checked=T text="Stamp"
+
+         grid 1 2
+           button text="EMF"   action="pfSaveEMF" function=.subPerf width=5 padx=2 bg="gray85"
+           button text="PDF"   action="pfSavePDF" function=.subPerf width=5 padx=2 bg="gray85"
+           #button text="Reset" action="pfReset"   function=.subPerf width=5 padx=2 bg="gray85"
+
+       grid 2 8
+         label text="Options:" font="bold 10"
+         check name=pfAnnotate function=.subPerf action="pfAnnotate" checked=T text="Anno"       sticky=W
+         check name=pfGears    function=.subPerf action="pfGears"    checked=F text="Gears"      sticky=W         
+         check name=pfGrid     function=.subPerf action="pfGrid"     checked=F text="Grid"       sticky=W
+         check name=pfLegend   function=.subPerf action="pfLegend"   checked=T text="Legend"     sticky=W
+         check name=pfProj     function=.subPerf action="pfProj"     checked=F text="Projection" sticky=W
+         check name=pfSetXaxis function=.subPerf action="pfSetXaxis" checked=F text="Set X-axis" sticky=W
+         check name=pfSetYaxis function=.subPerf action="pfSetYaxis" checked=F text="Set Y-axis" sticky=W
+         check name=pfYrs      function=.subPerf action="pfYears"    checked=F text="Yrs"        sticky=W         
+ 
+         check name=pfImage      function=.subPerf action="pfImage"       checked=F text="Image"          sticky=W
+         check name=pfObj        function=.subPerf action="pfObj"         checked=T text="Objective"      sticky=W
+         check name=pfRefPts     function=.subPerf action="pfRefPts"      checked=F text="Ref Pts"        sticky=W
+         check name=pfFailConv   function=.subPerf action="pfFailConv"    checked=F text="Failed Conv"    sticky=W
+         check name=pfFailRefPts function=.subPerf action="pfFailRefPts"  checked=F text="Failed Ref Pts" sticky=W
+         check name=pfWithin     function=.subPerf action="pfWithin"      checked=T text="Within"         sticky=W
+                  
+         grid 1 2
+           entry name=pfTraces       function=.subPerf value="3" width=4 mode=numeric action="pfTraces" sticky=E
+           label text="Traces"       sticky=W
+           
+         #grid 1 2
+         #  entry name=pfGroup        function=.subPerf value="0" width=4 mode=numeric action="pfGroup" sticky=E
+         #  label text="Group"        sticky=W
+         
+ 
+          grid 1 3
+
+            matrix nrow=2 ncol=10 rowlabels="'Min' 'Max' " collabels="'Year' 'AAV' 'Dep' 'Catch' 'Disc' 'U/F' 'HR' 'SSB' 'B/Base' 'C/MSY'" \
+              names="pfMinYr pfMinAAV pfMinDep pfMinCat pfMinDis pfMinF pfMinHR pfMinSSB pfMinBase pfMinMSY pfMaxYr pfMaxAAV pfMaxDep pfMaxCat pfMaxDis pfMaxF pfMaxHR pfMaxSSB pfMaxBase pfMaxMSY" \
+              values="1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 100 50.0 0.6 10.0 10.0 1.0 1.0 100.0 3.0 3.0" function=.subGui width=5
+
+            grid 3 2
+              null              
+              label text="Quantiles"
+	          
+              label text="Lower"
+              entry name=pfQlower value=0.10 width=6 mode="numeric" function=.subPerf sticky=W
+              
+              label text="Upper"
+              entry name=pfQupper value=0.90 width=6 mode="numeric" function=.subPerf sticky=W
+
+            grid 3 2 relief="sunken"
+              check name=chkFmsy action=chkFmsy function=.subGui checked=T text="Umsy" sticky=W
+              check name=chkF0   action=chkF0   function=.subGui checked=T text="U0"   sticky=W
+              check name=chkF01  action=chkF01  function=.subGui checked=T text="U01"  sticky=W
+              check name=chkF40  action=chkF40  function=.subGui checked=T text="U40"  sticky=W
+              check name=chkFmax action=chkFmax function=.subGui checked=T text="Umax" sticky=W
+              check name=chkFcra action=chkFcra function=.subGui checked=T text="Ucra" sticky=W                   
+
+  # Row 4: GUI controls.
+  grid 1 8 relief="sunken"
+    button name=pfReset text="Reset"   function=.subPerf action="pfReset" font="bold 12" padx=4        width=5 bg="yellow"  
+    button name=pfBatch text="Batch"   function=.subPerf action="pfBatch" font="bold 12" padx=2        width=5 bg="gray85"
+    button name=pfSim   text="Sim"     function=.subPerf action="pfSim"   font="bold 12" padx=2        width=5 bg="gray85"
+    button name=pfView  text="View"    function=.subPerf action="pfView"  font="bold 12" padx=2        width=5 bg="gray85"
+    button name=pfOpt   text="Options" function=.subPerf action="pfOpt"   font="bold 12" padx=2        width=6 bg="gray85"
+    button name=pfTrack text="Track"   function=.subPerf action="pfTrack" font="bold 12" padx=2        width=5 bg="gray85"
+    button name=pfStats text="Stats"   function=.subPerf action="pfStats" font="bold 12" padx=2 pady=2 width=5 bg="lightblue"    
+    button name=pfExit  text="Exit"    function=.subPerf action="pfExit"  font="bold 12" padx=10       width=5 bg="gray95"   

@@ -1,0 +1,9 @@
+# ./iscam_ageM
+# -ind
+# iscam_top.dat
+# -iprint
+# 100
+# -mcmc
+# 1
+# -mcsave
+# 1

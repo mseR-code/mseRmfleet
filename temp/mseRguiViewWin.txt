@@ -1,0 +1,151 @@
+window name=mseRguiView title="mseR View Control"
+
+# Pull-down top menuitems.
+
+menu nitems=1 label="File"
+  menuitem label="Exit"                   function=closeWin
+menu nitems=2 label="View"
+  menu nitems=1 label="R Code"
+    menuitem label="Functions"            function=.viewFile action=mseRview.r
+  menuitem label="Window"                 function=.viewFile action=mseRguiViewWin.txt
+menu nitems=1 label=Help
+    menuitem label="About mseR"           function=.viewHelp action=mseRAbout.txt
+
+# mseR View Controls
+
+grid 3 1 padx=10 pady=10 sticky=W
+
+  # Grid 1: The parameter object widget.
+  grid 1 2
+    grid 1 1 relief="raised"
+    object name=opModPars rowshow=10 action=opModPars edit=FALSE noeditbg="#FDB3C1" width="20 30" entryfont="12" font="12" padx=10
+
+    grid 2 1
+      label text="Reference Points" font=bold
+    grid 8 1 sticky=E
+      entry name=ssbFmsy   label="Bmsy"   mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=yieldFmsy label="MSY"    mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=Fmsy      label="Fmsy"   mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=F0        label="F0"     mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=F01       label="F01"    mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=F40       label="F40"    mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=Fmax      label="Fmax"   mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      entry name=Fcra      label="Fcrash" mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+
+  # Grid 2: Plot area options and plot selection.
+  grid 3 1 relief="raised" pady=5
+
+    # Grid 2.1: Plot option control.
+    grid 3 1 relief="sunken" padx=10 pady=5
+      grid 1 3
+        label text="Layout: " font="bold 10" sticky=W
+
+      grid 1 7 relief="sunken" pady=2
+         check name=vwAuto       function=.subGuiView action="vwAuto"      checked=T text="Auto Layout"   sticky=W
+        check name=vwOverWrite  function=.subGuiView action="vwOverWrite" checked=T text="Overwrite"     sticky=W
+        check name=vwPlotByRow  function=.subGuiView action="vwPlotByRow" checked=F text="Plot by Row"   sticky=W
+        entry name=vwNrows      function=.subGuiView action="vwNrows"     mode=numeric value="1" width=3 sticky=W
+        label text="Rows"                                                                                sticky=W
+        entry name=vwNcols      function=.subGuiView action="vwNcols"     mode=numeric value="1" width=3 sticky=W
+        label text="Columns"                                                                             sticky=W
+
+      button text="Plots Off" action="vwGfxOff"  function=.subGuiView width=10 padx=6 bg="gray85"
+
+      # Plot options.
+      grid 1 9
+        label text="Options: " font="bold 10" 
+        check name=vwAnnotate function=.subGuiView action="vwAnnotate" checked=T text="Annotate"
+        check name=vwGears    function=.subGuiView action="vwGears"    checked=F text="Gears"       fg="darkgreen"
+        check name=vwLegend   function=.subGuiView action="vwLegend"   checked=T text="Legend"
+        check name=vwProj     function=.subGuiView action="vwProj"     checked=F text="Projection"
+        check name=vwSetXaxis function=.subGuiView action="vwSetXaxis" checked=F text="Set X-axis"
+        check name=vwSetYaxis function=.subGuiView action="vwSetYaxis" checked=F text="Set Y-axis"
+        check name=vwSaveEMF  function=.subGuiView action="vwSaveEMF"  checked=F text="Save EMF"
+        check name=vwSavePDF  function=.subGuiView action="vwSavePDF"  checked=F text="Save PDF"
+  
+      # Plot axis ranges.
+      matrix nrow=2 ncol=14 rowlabels="'Min.' 'Max.'" \
+        collabels="'Age' 'Bio' 'Catch' 'DisRate' 'F' 'Index' 'Len' 'M' 'Num' 'Rec' 'Sel' 'SSB' 'Year' 'Yield'" \
+        names="minAge minBio minCat minDis minF minIdx minLen minM minNum minRec minSel minSSB minYear minYield  \
+               maxAge maxBio maxCat maxDis maxF maxIdx maxLen maxM maxNum maxRec maxSel maxSSB maxYear maxYield" \
+        action="vwPlotOptions" values="1 0 0 0 0 0 0 0 0 0 0 0 1 0 100 100 20 1 2 50 100 2 100 50 1 100 100 5" \
+        function=.subGuiView padx=5 pady=5 width=6
+
+    # Grid 2.2: Plot selection.
+    #grid 6 4 byrow=FALSE
+    grid 4 6 byrow=FALSE
+
+      radio name=viewPlotType value=vwBiomass    text="Biomass"               function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwNumbers    text="Numbers"               function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwRecruits   text="Recruits"              function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwRecSpawn   text="Rec-Spawn"             function=.subGuiView mode=character sticky=W
+
+      radio name=viewPlotType value=vwSlg        text="Selectivity (l,g)"     function=.subGuiView mode=character sticky=W fg="darkgreen"
+      radio name=viewPlotType value=vwSalg       text="Selectivity (a,l.g)"   function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwPlg        text="Discard Rate (l,g)"    function=.subGuiView mode=character sticky=W fg="darkgreen"
+      radio name=viewPlotType value=vwPalg       text="Discard Rate (a,l,g)"  function=.subGuiView mode=character sticky=W
+
+      radio name=viewPlotType value=vwCatgProp   text="Catch-Age Prop"        function=.subGuiView mode=character sticky=W fg="darkgreen"
+      radio name=viewPlotType value=vwCatgFreq   text="Catch-Age Freq"        function=.subGuiView mode=character sticky=W fg="darkgreen"
+      null
+      null
+
+      radio name=viewPlotType value=vwItg        text="Stock Indices"         function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwObsSurvey  text="SSB Survey Fit"        function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwHCR        text="HCR"                   function=.subGuiView mode=character sticky=W fg="blue"
+      radio name=viewPlotType value=vwFmort      text="Fishing mortality"     function=.subGuiView mode=character sticky=W
+
+      radio name=viewPlotType value=vwCatch      text="Catch biomass"         function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwCtg        text="Catch By Gear"         function=.subGuiView mode=character sticky=W fg="darkgreen"
+      radio name=viewPlotType value=vwDtg        text="Discards By Gear"      function=.subGuiView mode=character sticky=W fg="darkgreen"
+      radio name=viewPlotType value=vwCatDis     text="Catch & Discards"      function=.subGuiView mode=character sticky=W fg="darkgreen"
+
+      radio name=viewPlotType value=vwRefPoints  text="Reference Points"      function=.subGuiView mode=character sticky=W
+      radio name=viewPlotType value=vwBioCatF    text="SSB Catch F"           function=.subGuiView mode=character sticky=W fg="blue"
+      radio name=viewPlotType value=vwBioCatR    text="SSB Catch Rec"         function=.subGuiView mode=character sticky=W fg="blue"
+      radio name=viewPlotType value=vwBioSurvey  text="Survey vs. biomass"    function=.subGuiView mode=character sticky=W
+
+    # Grid 2.3: Replicate widget.
+    grid 1 8 padx=10 pady=10 sticky=N
+      label text="Replicate" font="bold 12"
+      entry name=iRep value="1" function=.subGuiView  action="iRep"    width=5 mode=numeric sticky=W
+      label text="of " font="bold 12"
+      entry name=nRep value="10" edit=FALSE           action="nRep"    width=5 mode=numeric sticky=W
+      null
+      button text="Previous"    function=.subGuiView  action="vwPrevRep"                   width=10 sticky=E
+      button text="Next"        function=.subGuiView  action="vwNextRep"                   width=10 sticky=E
+      button name="vwAnimate" text="Animate " function=.subGuiView  action="vwAnimate" fg="blue" padx=10 width=10 sticky=E 
+
+  # Grid 3: Button Controls.
+  grid 1 3
+
+    # Temporary buttons.
+    grid 2 2 relief="raised"
+        entry name=indFit mode=character width=4 value="Fit"  edit=TRUE noeditbg="red" padx=1 pady=1
+        entry name=indOMP mode=character width=4 value="OM "  edit=TRUE noeditbg="red" padx=1 pady=1
+        entry name=indSim mode=character width=4 value="Sim"  edit=TRUE noeditbg="red" padx=1 pady=1
+        entry name=indPrf mode=character width=4 value="Perf" edit=TRUE noeditbg="red" padx=1 pady=1
+
+    # Simulation control widget.
+    grid 2 1 relief="raised" padx=10
+      grid 1 4
+        entry name=simName label="Simulation:" action="simName" font="bold 12" value="" function=.subGuiView \
+              mode=character sticky=W padx=1 width=25
+        entry name=iSim    label="ID:"    font="bold 12" value=0 mode=numeric   sticky=W padx=1 width=3 edit=FALSE noeditbg="#FDB3C1"
+        label "/"                         font="12"
+        entry name=nSim    label=""       font="bold 12" value=0 mode=numeric   sticky=W padx=1 width=3 edit=FALSE noeditbg="#FDB3C1"
+
+      grid 1 6 pady=2
+        button name=vwAddSim  text="Add"    function=.subGuiView action=vwAddSim  padx=2 width=7
+        button name=vwRemSim  text="Remove" function=.subGuiView action=vwRemSim  padx=2 width=7
+        button name=vwPrevSim text="<"      function=.subGuiView action=vwPrevSim padx=2 width=5 bg="gray85"
+        button name=vwNextSim text=">"      function=.subGuiView action=vwNextSim padx=2 width=5 bg="gray85"
+        button name=vwExpSim  text="Export" function=.subGuiView action=vwExpSim  padx=2 width=7 
+        button name=vwImpSim  text="Import" function=.subGuiView action=vwImpSim  padx=2 width=7
+
+    # Tables and Exit button.
+    grid 2 2
+      button text="guiOpMod" action="guiOpMod" function=guiOpMod width=10 padx=2 pady=2
+      button text="Tables" action="vwTables" function=.subGuiView width=10 padx=2 pady=2
+      button text="guiPerf"  name=vwGuiPerf action="guiPerf"  function=guiPerf  width=10 padx=2 pady=2
+      button text="Exit"   action="vwExit"   function=.subGuiView width=10 padx=2 pady=2

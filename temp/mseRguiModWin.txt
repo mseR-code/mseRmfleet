@@ -1,0 +1,407 @@
+window name=mseRguiMod title="mseR Model Fit Control"
+
+#--------------------------------------------------------------------#
+#--                             Header                             --#
+#--------------------------------------------------------------------#
+
+menu nitems=3 label="File"
+  menuitem label="Open"              function=.subGuiModFit action="mdParOpen"
+  menuitem label="Save"              function=.subGuiModFit action="mdParSave"
+  menuitem label="Exit"              function=closeWin
+menu nitems=2 label="View"
+  menu nitems=1 label="R Code"
+    menuitem label="GUI Functions"   function=.viewFile action=mseRmod.r
+  menuitem label="Window"            function=.viewFile action=mseRGuiModWin.txt
+menu nitems=1 label="Help"
+  menuitem label="About GuiMod"      function=.viewFile action=mseRAbout.txt
+
+# Notebook and footer buttons.
+grid 2 1
+
+  notebook name=modTab tabs="Model Fit Options" function=.subGuiModFit font="12" homogeneous=TRUE
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 1 - Model                      --#
+#--------------------------------------------------------------------#
+
+  # This was grid 2 1
+  grid 3 1
+
+    #----------------------------------------------------------------#
+    # Row 1: Parameter editor, ADMB control, and fit/data options.   #
+    #----------------------------------------------------------------#
+
+    # This was grid 2 1
+    #grid 2 1 relief="raised" borderwidth=3 padx=2 pady=2
+    grid 3 1 relief="raised" borderwidth=3 padx=2 pady=2
+
+      # Parameter editor.
+      object name=modPars rowshow=10 function=.subGuiModFit action="modPars" \
+        entrybg="white" noeditbg="pink" width="20 40" entryfont="12" font="10" padx=3
+  
+      # Parameter display options.
+      grid 1 8
+         check name=mdParsToADMB checked=T text="User Inputs" action="mdParsToADMB" function=.subGuiModFit
+         button text="Load" name="mdLoadPars" func=.subGuiModFit action=mdLoadPars padx=2 width=5
+         button text="Save" name="mdSavePars" func=.subGuiModFit action=mdSavePars padx=2 width=5
+         null padx=10
+         label text="Sort Order"
+         droplist name=mdSortOrder action="mdSortOrder" \
+           values="DEFAULT pars priorM priorV phase lowerB upperB" mode=character selected=1 function=.subGuiModFit width=10
+         check name=mdSortType checked=F text="Sort by Type" action="mdSortType" function=.subGuiModFit padx=3
+         check name=mdSortName checked=F text="Sort by Name" action="mdSortName" function=.subGuiModFit padx=3
+ 
+    #----------------------------------------------------------------#
+    # ROW 2: Data, Parameter and Control Options                     #
+    #----------------------------------------------------------------#
+
+    #grid 1 2 relief="raised" borderwidth=3 padx=2 pady=5
+    grid 1 2 padx=2 pady=2
+
+      grid 2 1 padx=2
+        label text="Input Options:" font="bold 10" sticky="W"
+
+      #--------------------------------------------------------------#
+      # BEGIN USERCODE: This is where the User specifies data and    #
+      # model options. Please play here, but not outside the box.    #
+      #--------------------------------------------------------------#
+      
+      # HCAM Usercode for Data and Parameter Options.
+
+        grid 1 2
+          grid 4 2
+            radio name=mdDataOpt value=QCI   text="QCI"   action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=PRD   text="PRD"   action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=CC    text="CC"    action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=SOG   text="SoG"   action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=WCVI  text="WCVI"  action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=A2W   text="A2W"   action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=A27   text="A27"   action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+            radio name=mdDataOpt value=Other text="Other" action="mdDataOpt" function=.subGuiModFit mode=character sticky=W
+
+          grid 4 2
+            label "M"
+            droplist name=mdM      action="M"        values="fixed annual ddAnnual"       mode=character selected=1 pady=1 width=10
+            label "Mdevs"
+            droplist name=mdMdevs  action="Mdevs"    values="off annualDevs randomWalk"   mode=character selected=1 pady=1 width=10
+            label "S-R"
+            droplist name=mdStockrec action="stockrec" values="B-H none"                    mode=character selected=1 pady=1 width=10
+            label "q"
+            droplist name=mdq      action="q"        values="est1q/q==1 q==1 est1q est2q" mode=character selected=1 pady=1 width=10
+
+    #----------------------------------------------------------------#
+    # END USERCODE                                                   #
+    #----------------------------------------------------------------#
+
+      # File I/O Options
+      grid 1 2 relief="sunken"
+
+        object name=mdFileIO rowshow=5 function=.subGuiModFit action="mdFileIO" \
+          entrybg="white" width="6 25 1" entryfont="10" noeditbg="pink" font="10" padx=1
+
+        grid 4 1 sticky="S"
+          button text="File"   name="mdSetFile"  func=.subGuiModFit action=mdSetFile  padx=1 pady=2 width=5
+          button text="View"   name="mdEditFile" func=.subGuiModFit action=mdEditFile padx=1 pady=2 width=5
+          button text="Delete" name="mdDelFile"  func=.subGuiModFit action=mdDelFile  padx=1 pady=2 width=5
+          button text="Write"  name="mdWrtFile"  func=.subGuiModFit action=mdWrtFile  padx=1 pady=2 width=5 
+
+    #----------------------------------------------------------------#
+    # ROW 3: ADMB Control and Model Options.                         #
+    #                                                                #
+    # WARNING: User should NOT muck about with this portion of GUI.  #
+    #          Specific widget names used by mseRadmb.r based on the #
+    #          functions in PBSadmb are used.  You will break code!  #
+    #----------------------------------------------------------------#
+
+    # ADMB control and status widget.
+    grid 1 2 relief="raised" borderwidth=3 padx=5
+      grid 4 1
+
+        # mseRadmb.r functions require that "prefix" be available.  Code will break if it is not.
+        grid 1 5 pady=2
+          label text="ADMB .tpl " font="bold 10"
+          entry name=prefix value="" mode=character noeditbg="pink"  action=prefix                    width=20
+          button text="File"         name="mdOpenTpl"    func=.subGuiModFit  action=mdOpenTpl    padx=2  width=3
+          button text="Edit"         name="mdEditTpl"    func=.subGuiModFit  action=mdEditTpl    padx=2  width=3
+          button text="Reset Inputs" name="mdResetNames" func=.subGuiModFit  action=mdResetNames
+
+        # mseRadmb.r functions .admbMake, .admbTPL2CPP, .admbCompile must have "prefix" in GUI list.
+        #   Note admbChk1 is PBSadmb variable that specifies "optimized" (TRUE) or safe (FALSE) mode.
+        # WARNING: User should not change this block or it will certainly break and cause pain.
+        grid 1 7
+          button text="Make"    name="mdMake"     func=.subGuiModFit action="make"    padx=5 pady=2 width=4
+          button text="TPL2CPP" name="mdTPL2CPP"  func=.subGuiModFit action="TPL2CPP" padx=1 pady=2 width=7
+          button text="Compile" name="mdCompile"  func=.subGuiModFit action="compile" padx=1 pady=2 width=7
+          button text="Link"    name="mdLink"     func=.subGuiModFit action="link"    padx=1 pady=2 width=4
+          check  text="Opt."    name="safe"       checked=T                        padx=1 pady=1
+          button text="Run"     name="mdRun"      func=.subGuiModFit action="run"     padx=3 pady=2 width=5
+          check  text="Verbose" name="verbose"    checked=T                        padx=1 pady=1
+
+        # .admbSetArgs is a PBSadmb function that requires normal, mcmc, profile, nsims, nthin.
+        # WARNING: If User changes these GUI names, then the mseRadmb.r code will break, mayhem will ensue.
+        grid 1 5
+          radio name=admbArg value=normal  text="Normal"  function=.admbSetArgs mode=character sticky=W
+          radio name=admbArg value=mcmc    text="MCMC"    function=.admbSetArgs mode=character sticky=W
+          radio name=admbArg value=profile text="Profile" function=.admbSetArgs mode=character sticky=W
+          entry name=nsims label=Sims value=10000 font="bold 10" noeditbg="pink" sticky=W width=10
+          entry name=nthin label=Thin value=100   font="bold 10" noeditbg="pink" sticky=W width=8
+
+        grid 1 2
+          button text="Args" func=.admbArgs width=5 padx=3
+          entry name=argvec value="" width=55 mode=character entrybg="lightgray" noeditbg="pink"
+
+      # ADMB Log.
+      grid 2 1 relief="sunken" padx=3
+        grid 2 2
+          entry name=mdObjFun   label="Obj. Func"  value="0"   width=10 mode=numeric edit=FALSE noeditbg="pink" sticky="E"
+          entry name=mdFunEvals label="Func Evals" value="0"   width=5  mode=numeric edit=FALSE noeditbg="pink" sticky="E"
+          entry name=mdMaxGrad  label="Max. Grad." value="0.0" width=10 mode=numeric edit=FALSE noeditbg="pink" sticky="E"
+          entry name=mdExitCode label="Exit Code"  value="0"   width=5  mode=numeric edit=FALSE noeditbg="pink" sticky="E"
+
+        grid 2 1
+           vector length=6 names=toView mode=logical labels="log cor par rep std mcmc" sticky=W \
+                  values="T F T T T F" vecnames="log cor par rep std mcmc" action=check func=.admbViewRep
+           grid 1 3 
+             button name=mdView   text="View"    func=.admbViewRep action="admbView"   padx=2
+             button name=mdImport text="LoadToR" func=.subGuiModFit   action="admbImport" padx=2
+             button text="Clean"  func=cleanADMB                                       padx=5 bg="lightyellow"
+
+    #----------------------------------------------------------------#
+    # END ADMB Control and Model Options.                            #
+    #----------------------------------------------------------------#
+
+    #----------------------------------------------------------------#
+    # ROW 4: Status Indicators and Fit Tracker Widget.               #
+    #----------------------------------------------------------------#
+
+    grid 1 2
+      # Model and fit status.
+      grid 2 1 relief="raised" padx=2
+        entry name=mdModStatus label="Model" mode="character" edit=FALSE noeditbg="green" width=6 padx=3 sticky=E
+        entry name=mdFitStatus label="Fit  " mode="character" edit=FALSE noeditbg="red"   width=6 padx=3 sticky=E
+
+      # Fit Tracker.
+      grid 2 1 relief="raised" pady=4
+        grid 1 5
+          entry name=fitName label="Name:" action="fitName" font="bold 10" value="" function=.subGuiModFit \
+            mode=character sticky=W padx=1 width=20
+          entry name=fitDesc label="Description:" action="fitDesc" font="bold 10" value="" function=.subGuiModFit \
+            mode=character sticky=W padx=1 width=25
+          entry name=iFit label="ID:" font="bold 12" value=1 mode=numeric sticky=W padx=1 width=3 \
+            entrybg="white"
+          label "/" font="12"
+          entry name=nFit label=""    font="bold 10" value=1 mode=numeric sticky=W padx=1 width=3 \
+            edit=FALSE noeditbg="#FDB3C1"
+
+        grid 1 7 pady=2
+          button text="New"     function=.subGuiModFit name="addFit"  action=addFit   padx=2 width=6
+          button text="Remove"  function=.subGuiModFit name="remFit"  action=remFit   padx=2 width=7
+          button text="<"       function=.subGuiModFit name="prevFit" action=prevFit  padx=2 width=5 bg="gray85"
+          button text=">"       function=.subGuiModFit name="nextFit" action=nextFit  padx=2 width=5 bg="gray85"
+          button text="Export"  function=.subGuiModFit name="expFit"  action=expFit   padx=2 width=6 
+          button text="Import"  function=.subGuiModFit name="impFit"  action=impFit   padx=2 width=6
+          button text="Orphans" function=.subGuiModFit name="orphans" action=orphans  padx=5 width=8 bg="lightyellow"
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 2 - Fit                        --#
+#--------------------------------------------------------------------#
+
+  grid 2 1
+
+    #----------------------------------------------------------------#
+    # Row 1: List of fits.                                           #
+    #----------------------------------------------------------------#
+    grid 2 1 relief="raised"
+      object name=fits rowshow=5 function=.subGuiModFit action=updateFits entrybg="pink" width="20 20 1 15" \
+             edit=TRUE entryfont="12" font="12" padx=2
+
+      grid 1 2
+        grid 1 6 padx=10 pady=2
+          label "View: " font="bold 10"
+          button text="par"  action=ftPar  function=.subGuiModFit width=6
+          button text="cor"  action=ftCor  function=.subGuiModFit width=6
+          button text="mcmc" action=ftMCMC function=.subGuiModFit width=6
+          button text="rep"  action=ftRep  function=.subGuiModFit width=6
+          button text="std"  action=ftStd  function=.subGuiModFit width=6
+
+        grid 1 2 padx=10 pady=2
+          button text="Select All" action=ftSelectAll function=.subGuiModFit padx=2
+          button text="Clear All"  action=ftClearAll  function=.subGuiModFit padx=2
+
+    #----------------------------------------------------------------#
+    # Row 2: Plotting.                                               #
+    #----------------------------------------------------------------#
+    grid 2 1 relief="raised" padx=2 pady=5
+
+      # Plot options and ranges.
+      grid 3 1 relief="sunken" padx=5 pady=5
+
+        # Plot layout.
+        grid 1 3
+          label text="Layout: " font="bold 10" sticky=W
+
+          grid 1 7 relief="sunken" pady=2
+            check name=ftAuto      function=.subGuiModFit checked=T text="Auto"                         sticky=W
+            check name=ftOverWrite function=.subGuiModFit checked=T text="Overwrite"                    sticky=W
+            check name=ftByRow     function=.subGuiModFit checked=F text="Plot by Row"                  sticky=W
+            entry name=ftNrows     function=.subGuiMop value="1" width=3 mode=numeric action="nrows" sticky=W
+            label text="Rows"                                                                        sticky=W
+            entry name=ftNcols     function=.subGuiModFit value="1" width=3 mode=numeric action="ncols" sticky=W
+            label text="Columns"                                                                     sticky=W
+
+          grid 1 3
+            button text="EMF"        action=ftSaveEMF function=.subGuiModFit bg="gray85" padx=2 width=4
+            button text="PDF"        action=ftSavePDF function=.subGuiModFit bg="gray85" padx=2 width=4
+            button text="Reset"      action=ftPlotOff function=.subGuiModFit bg="gray85" padx=2 width=7
+
+        # Plot options.
+        grid 1 2
+          label text="Options: " font="bold 10" 
+          grid 1 6 pady=2
+            check name=ftAnnotate  function=.subGuiModFit checked=T text="Annotate"
+            check name=ftGears     function=.subGuiModFit checked=F text="Gears"
+            check name=ftLegend    function=.subGuiModFit checked=T text="Legend"
+            check name=ftSetXaxis  function=.subGuiModFit checked=F text="Set X-axis"
+            check name=ftSetYaxis  function=.subGuiModFit checked=F text="Set Y-axis"
+            check name=ftShowStamp function=.subGuiModFit checked=F text="Show Stamp"
+  
+         #-----------------------------------------------------------#
+         # BEGIN USERCODE: HCAMv2initpop.tpl specific plot limits.   #
+         #-----------------------------------------------------------#
+         matrix nrow=2 ncol=12 rowlabels="'Min.' 'Max.'" \
+           collabels="'Year' 'Biomass' 'Numbers' 'Catch' 'F' 'M' 'SSB' 'PAA' 'Age' 'Wgt' 'Sel/Avail' 'Resids'" \
+           names="ftMinYr ftMinB ftMinN ftMinCat ftMinF ftMinM ftMinSSB ftMinPAA ftMinAge ftMinWgt ftMinSel ftMinRes \
+                  ftMaxYr ftMaxB ftMaxN ftMaxCat ftMaxF ftMaxM ftMaxSSB ftMaxPAA ftMaxAge ftMaxWgt ftMaxSel ftMaxRes" \
+            action="plotOptions" values="1950 0 0 0 0 0 0 0 2 0 0 3 2010 200 2500 80 2.5 1.2 200 1 10 300 1 -3" \
+           function=.subGuiModFit padx=5 pady=2 width=6
+
+         #-----------------------------------------------------------#
+         # END USERCODE: HCAMv2initpop.tpl specific plot limits.     #
+         #-----------------------------------------------------------#
+
+      
+      #--------------------------------------------------------------#
+      # Plot radio widget selections.                                #
+      #--------------------------------------------------------------#
+
+      #--------------------------------------------------------------#
+      # BEGIN USERCODE: HCAM Specific radio buttons for plots.       #
+      #--------------------------------------------------------------#
+
+      grid 1 4
+
+        grid 7 1 relief="raised" padx=3 pady=2
+          label text="Data" font="bold 12" sticky=W
+
+          radio name=ftPlotType value=ftCatch  text="Catch"         action="ftPlots" function=.subGuiModFit mode=character sticky=W selected=TRUE
+          radio name=ftPlotType value=ftCatGr  text="Catch by gear" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftSpawn  text="Spawn"         action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftWgt    text="Weight"        action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftPAA    text="Obs. PAA"      action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftWAA    text="Obs. WAA"      action="ftPlots" function=.subGuiModFit mode=character sticky=W
+
+        grid 7 2 byrow=FALSE relief="raised" padx=5 pady=5
+          label text="Assessment" font="bold 12" sticky=W
+
+          radio name=ftPlotType value=ftM     text="M"            action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftSel   text="Selectivity"  action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftAvail text="Availability" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftF     text="F"            action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftRec   text="Recruits"     action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          null
+
+          null
+          radio name=ftPlotType value=ftBiomass  text="Biomass"      action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftSSBres   text="SSB & Resids" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftObsPredCat text="Pred Catch" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftAgeRes   text="Prop-age & Resids" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftRetro    text="Retro"        action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          null
+
+        grid 7 1 relief="raised" padx=5 pady=5
+          label text="Posterior"  font="bold 12" sticky=W
+
+          radio name=ftPlotType value=typeDens  text="Density" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=typePairs text="Pairs"   function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=typeTrace text="Traces"  function=.subGuiModFit mode=character sticky=W
+          null
+          null
+          null
+
+        grid 7 1 relief="raised" padx=5 pady=5
+          label text="HCR"        font="bold 12" sticky=W
+
+          radio name=ftPlotType value=ftForecast text="Forecast" action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          radio name=ftPlotType value=ftCutOff   text="Cutoffs"  action="ftPlots" function=.subGuiModFit mode=character sticky=W
+          null
+          null
+          null
+          null
+
+      #--------------------------------------------------------------#
+      # END USERCODE: HCAM Specific radio buttons for plots.         #
+      #--------------------------------------------------------------#
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 3 - Options                    --#
+#--------------------------------------------------------------------#
+
+# C++ Compiler is defaulted to be MinGW in the GUI.  Change below if alternative desired.
+
+grid 10 1 relief="raised" padx=2 pady=2
+  
+  label text="ADMB Options" font="bold 12" sticky="W"
+  grid 1 3 sticky="W"
+    label text="Library Path" font="12" width=12
+    entry name=opAdmbPath action="opAdmbPath"  value="C:/ADMB/MinGW" \
+      function=.subGuiModFit mode=character width=80
+    button text="Set"     action="opSetAdmb" function=.subGuiModFit padx=5 width=5
+  null
+
+  label text="C++ Compiler Options" font="bold 12" sticky="W"
+  grid 4 1
+    grid 1 4 sticky="W"
+      label text="Compiler" font="12" width=12
+      radio name=opCompiler value="GCC"     text="GCC"      action="opCompiler" function=.subGuiModFit mode=character selected=TRUE
+      radio name=opCompiler value="Borland" text="Borland"  action="opCompiler" function=.subGuiModFit mode=character
+      radio name=opCompiler value="VisualC" text="Visual C" action="opCompiler" function=.subGuiModFit mode=character
+    grid 1 3 sticky="W"
+      label text="Compiler Path" font="12" width=12
+      entry name=opCppPath action="opCppPath" value="C:/ADMB/MinGW/utilities/MinGW/bin" \
+        function=.subGuiModFit mode=character sticky="E" width=80
+      button text="Set"    action="opSetCpp" function=.subGuiModFit padx=5 width=5
+  
+    grid 1 2 sticky="W"
+      label text="Compile Options" font="12" width=12
+      entry name=opCompOpt action="opCompOpt" value="NOT IMPLEMENTED" function=.subGuiModFit mode=character sticky="W" width=80
+    
+    grid 1 2 sticky="W"
+      label text="Link Options" font="12" width=12
+      entry name=opLinkOpt action="opLinkOpt" value="NOT IMPLEMENTED" function=.subGuiModFit mode=character sticky="W" width=80
+  null
+
+  label text="Project Options" font="bold 12" sticky="W"
+  grid 1 3 pady=2 sticky="W"
+    label text="Results Path" font="12" padx=5 sticky="E" width=12
+    entry name=opProjDir action="opProjDir" value="" function=.subGuiModFit mode=character width=80
+    button text="Set"    action="opSetProj" function=.subGuiModFit padx=5 width=5
+
+  grid 1 3 pady=2 sticky="W"
+    label text="Text Editor" font="12" padx=5 sticky="E" width=12
+    entry name=opEditor action="opEditor"  function=.subGuiModFit value="notepad.exe" mode=character width=80
+    button text="Set"   action="opSetEdit" function=.subGuiModFit padx=5 width=5
+
+  grid 5 1 relief="sunken" pady=10
+    label text="IMPORTANT!" font="12" bg="yellow" width=60
+    label text="Directory paths must always be specified using forward slashes:" bg="yellow" font="12" width=60
+    label text="e.g.,      C:/MyProjects/MyWorkingDirectory" bg="yellow" font="12" width=60
+    label text="\nWindows paths containing spaces must be enclosed in double quotes:" bg="yellow" font="12" width=60
+    label text="e.g.,      \"C:/My Projects/My Working Directory\"" bg="yellow" font="12" width=60
+
+#--------------------------------------------------------------------#
+#--                            Footer                              --#
+#--------------------------------------------------------------------#
+
+grid 1 2 pady=2
+  button text="Tables" action="mdTables" font="10" function=.subGuiModFit width=10 padx=2
+  button text="Exit"   action="mdExit"   font="10" function=.subGuiModFit width=10 padx=2

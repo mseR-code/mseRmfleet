@@ -1,0 +1,12 @@
+Package: MatrixSum
+Version: 0.24
+Date: 2006-09-1
+Title: C functions for summation of cells in a 3d matrix, into a 2d
+        matrix
+Author: Alex Couture-Beil <alex@mofo.ca>
+Maintainer: Alex Couture-Beil <alex@mofo.ca>
+Depends: R (>= 2.2.0)
+Description: Matrix summation C function
+License: GPL version 2 or newer
+Packaged: 2010-06-01 16:03:30 UTC; spcox
+Built: R 2.10.1; i386-pc-mingw32; 2010-06-01 16:03:31 UTC; windows

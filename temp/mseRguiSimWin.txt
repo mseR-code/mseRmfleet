@@ -1,0 +1,77 @@
+window name=mseRguiSim title="mseR Sim Control"
+
+menu nitems=3 label="File"
+  menuitem label="Open"              function=.subGuiSim action="simParOpen"
+  menuitem label="Save"              function=.subGuiSim action="simParSave"
+  menuitem label="Exit"              function=closeWin
+menu nitems=2 label="View"
+  menu nitems=1 label="R Code"
+    menuitem label="GUI Functions"   function=.viewFile action=mseRsim.r
+  menuitem label="Window"            function=.viewFile action=mseRGuiSimWin.txt
+menu nitems=1 label="Help"
+  menuitem label="About guiSim"      function=.viewFile action=mseRAbout.txt
+
+grid 5 1
+
+  # Section 1: Parameter editor, ADMB control, and fit/data options.
+  grid 2 1 relief="raised" padx=5 pady=2
+
+    # Parameter editor.
+    object name=simPars rowshow=10 function=.subGuiSim action=updatePars \
+      entrybg="white" width="20 35" entryfont="12" font="12" padx=5
+  
+    # Parameter display options.
+    grid 1 4
+       label text="Select First Type:"
+       droplist name=parType action="parType" \
+         values="DEFAULT pars mp" mode=character selected=1 function=.subGuiSim width=10
+       check name=sortType checked=F text="Sort by Type" action="sortType" function=.subGuiSim padx=3
+       check name=sortName checked=F text="Sort by Name" action="sortName" function=.subGuiSim padx=3
+ 
+  # Section 2: Run control.
+  grid 5 2 relief="sunken" borderwidth=3
+    label text="Run Description" font=bold sticky=W
+    null
+
+    label text="Number of replicates" sticky=W
+    entry name=nReps value="10" width=10 mode="numeric" action="nReps" function=.subSim sticky=W
+
+    label text="Random number seed" sticky=W
+    entry name=rseed value="1234" width=5 mode="numeric" action="rseed" function=.subSim sticky=W
+
+    label text="Scenario Label" sticky=W
+    entry name=scenarioLabel value="S1" width=10 mode=character action="scenarioLabel" function=.subSim sticky=W
+
+    label text="Procedure Label" sticky=W
+    entry name=mpLabel value="MP1" width=10 mode=character action="mpLabel" function=.subSim sticky=W
+
+  # Section 3: Message box.
+  grid 2 1 relief="raised"
+    label text="Messages:" font="bold 10"
+    text errMsg height=3 width=65 scrollbar=TRUE bg="lightgray" padx=5 pady=5
+
+  # Section 4: Tracker and misc. buttons.
+  grid 2 1 relief="raised" padx=10
+    grid 1 4
+      entry name=fitName label="Sim:" action="fitName" font="bold 12" value="" function=.subGuiSim \
+        mode=character sticky=W padx=1 width=25
+      entry name=iSim label="ID:" font="bold 12" value=0 mode=numeric sticky=W padx=1 width=3 \
+        edit=FALSE noeditbg="#FDB3C1"
+      label "/" font="12"
+      entry name=nSim label=""    font="bold 12" value=0 mode=numeric sticky=W padx=1 width=3 \
+        edit=FALSE noeditbg="#FDB3C1"
+
+    grid 1 6 pady=2
+      button text="Add"    function=.subGuiSim action=addFit  padx=2 width=7
+      button text="Remove" function=.subGuiSim action=remFit  padx=2 width=7
+      button text="<"      function=.subGuiSim action=prevFit padx=2 width=5 bg="gray85"
+      button text=">"      function=.subGuiSim action=nextFit padx=2 width=5 bg="gray85"
+      button text="Export" function=.subGuiSim action=expFit  padx=2 width=7 
+      button text="Import" function=.subGuiSim action=impFit  padx=2 width=7
+
+  # Section 5: guiSim Button Controls.
+  grid 1 4 pady=2
+    button text="Tables"  action="tables" font="10"        function=.subGuiSim width=10 padx=10
+    button text="guiView" action="guiFit" font="italic 10" function=.subGuiSim width=10
+    button text="guiRef"  action="guiRef" font="italic 10" function=.subGuiSim width=10
+    button text="Exit"    action="exit"   font="10"        function=.subGuiSim width=10 padx=10

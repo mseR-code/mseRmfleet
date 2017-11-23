@@ -1,0 +1,6 @@
+# Main dat file ISCAM 
+# Updated Thu Sep 21 23:23:47 2017
+# order as: .dat, .ctl, .pfc
+iscam_ageM.dat 
+iscam_ageM.ctl 
+iscam_ageM.pfc 

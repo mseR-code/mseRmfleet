@@ -1,0 +1,8 @@
+guiRef - A mseR Module, V1.0
+
+Copyright (c) 2009 A.R. Kronlund, S.P. Cox, and K. Holt
+
+This software comes with ABSOLUTELY NO WARRANTY, expressed or implied.
+You have been provided with a copy of mseR for educational purposes.
+You are requested not to redistribute this software without seeking
+permission from the authors.                                         

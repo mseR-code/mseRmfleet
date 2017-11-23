@@ -1,0 +1,80 @@
+## mseR batch file written: 6-Jan-16
+#
+parameter value
+#
+# Scenario 1  base
+#
+scenario$scenario1$gui$nReps 100
+scenario$scenario1$gui$scenarioLabel "base"
+#
+# Scenario 2  Stress
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "h.1"
+#scenario$scenario2$opMod$repFileName "stress.rep"
+#
+# Scenario 3  recBump
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "recBump"
+#scenario$scenario2$opMod$repFileName "recBump.rep"
+#
+# Management procedures for each scenario.
+#
+# Management procedure 1 : absFloor1.75
+#
+mp$mp1$gui$mpLabel "absFloor1.75"
+mp$mp1$mp$hcr$catchFloor 1.75
+mp$mp1$mp$hcr$maxDeltaTACc NULL
+#
+# Management procedure 2 : absFl1.5
+#
+mp$mp2$gui$mpLabel "absFl1.5"
+mp$mp2$mp$hcr$catchFloor 1.5
+mp$mp2$mp$hcr$maxDeltaTACc NULL
+#
+# Management procedure 3 : absFl1.25
+#
+mp$mp3$gui$mpLabel "absFloor1.25"
+mp$mp3$mp$hcr$catchFloor 1.25
+mp$mp3$mp$hcr$maxDeltaTACc NULL
+#
+# Management procedure 3 : unConst
+#
+mp$mp4$gui$mpLabel "unConst"
+mp$mp4$mp$hcr$catchFloor 0
+mp$mp4$mp$hcr$maxDeltaTACc NULL
+#
+# Management procedure 3 : relFl.15
+#
+mp$mp5$gui$mpLabel "relFl.15"
+mp$mp5$mp$hcr$catchFloor 0
+mp$mp5$mp$hcr$maxDeltaTACf 0.15
+#
+# Management procedure 4 : currMP_av
+#
+mp$mp4$gui$mpLabel "currMP_av"
+mp$mp4$mp$hcr$catchCeiling NULL
+mp$mp4$mp$hcr$maxDeltaTACc NULL
+mp$mp4$opMod$futureOption 1
+mp$mp4$opMod$volSizeRelease c(65,65,65,65,65)
+#
+# Management procedure 5 : absCeil3.2_av
+#
+mp$mp5$gui$mpLabel "absCeil3.2_av"
+mp$mp5$mp$hcr$catchCeiling 3.2
+mp$mp5$mp$hcr$maxDeltaTACc 0.15
+mp$mp5$mp$hcr$deltaTACcType "absolute"
+mp$mp5$opMod$futureOption 1
+mp$mp5$opMod$volSizeRelease c(65,65,65,65,65)
+#
+# Management procedure 6 : relCeil.15_av
+#
+mp$mp6$gui$mpLabel "relCeil.15"
+mp$mp6$mp$hcr$catchCeiling NULL
+mp$mp6$mp$hcr$maxDeltaTACc 0.15
+mp$mp6$mp$hcr$deltaTACcType "relative"
+mp$mp6$opMod$futureOption 1
+mp$mp6$opMod$volSizeRelease c(65,65,65,65,65)
+#
+# File Ends <not run>.

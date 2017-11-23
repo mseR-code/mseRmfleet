@@ -1,0 +1,105 @@
+## mseR batch file written: 23-11-2016
+#
+parameter value
+#
+# Scenario 1  base
+#
+scenario$scenario1$gui$nReps 100
+scenario$scenario1$gui$scenarioLabel "base"
+#
+# Scenario 2  Stress
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "stress_h10"
+#scenario$scenario2$opMod$repFileName "stress.rep"
+#scenario$scenario2$opMod$repFile lisread('stress.rep')
+#scenario$scenario2$opMod$estQdevs lisread('stress.rep')
+#scenario$scenario2$opMod$estRecDevs lisread('stress.rep')
+#scenario$scenario2$opMod$rSteepness 0.438281
+#scenario$scenario2$opMod$B0 54.3252
+#scenario$scenario2$opMod$M c(0.0408,0.0817493)
+#scenario$scenario2$opMod$tauAgeg c(0.549416,0.614143,0.471413)
+#scenario$scenario2$opMod$tauIndexg c(0.162335,0.539536,0.16452)
+#scenario$scenario2$opMod$tauReleaseg c(0.430705,0.802574,1.39046,0,0)
+#scenario$scenario2$opMod$qg c(0.4058340,1,1,0.2307500,0.6286810 )
+#
+# Scenario 3  recBump
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "recBump"
+#scenario$scenario2$opMod$repFileName "recBump.rep"
+#
+# Management procedures for each scenario.
+#
+# Management Procedure 1: Fl1.0
+#
+mp$mp1$gui$mpLabel "Fl1.5"
+mp$mp1$mp$hcr$catchCeiling NULL
+mp$mp1$mp$hcr$catchFloor 1.0
+mp$mp1$mp$hcr$maxDeltaTACc NULL
+#
+# Management Procedure 2: Fl1.0_av
+#
+mp$mp2$gui$mpLabel "Fl1.0_av"
+mp$mp2$mp$hcr$catchCeiling NULL
+mp$mp2$mp$hcr$catchFloor 1.0
+mp$mp2$mp$hcr$maxDeltaTACc NULL
+mp$mp2$mp$hcr$futureOption 1
+#
+# Management Procedure 3: Fl1.25_av
+#
+mp$mp3$gui$mpLabel "Fl1.25_av"
+mp$mp3$mp$hcr$catchCeiling NULL
+mp$mp3$mp$hcr$catchFloor 1.25
+mp$mp3$mp$hcr$maxDeltaTACc NULL
+mp$mp3$mp$hcr$futureOption 1
+#
+# Management Procedure 4: Fl1.5_av
+#
+mp$mp4$gui$mpLabel "Fl1.5_av"
+mp$mp4$mp$hcr$catchCeiling NULL
+mp$mp4$mp$hcr$catchFloor 1.5
+mp$mp4$mp$hcr$maxDeltaTACc NULL
+mp$mp4$mp$hcr$futureOption 1
+#
+# Management Procedure 5: Fl1.75_av
+#
+mp$mp5$gui$mpLabel "Fl1.75_av"
+mp$mp5$mp$hcr$catchCeiling NULL
+mp$mp5$mp$hcr$catchFloor 1.75
+mp$mp5$mp$hcr$maxDeltaTACc NULL
+mp$mp5$mp$hcr$futureOption 1
+#
+# Management Procedure 6: Fl1.0_frt
+#
+mp$mp6$gui$mpLabel "Fl1.0_frt"
+mp$mp6$mp$hcr$catchCeiling NULL
+mp$mp6$mp$hcr$catchFloor 1.25
+mp$mp6$mp$hcr$maxDeltaTACc NULL
+mp$mp6$mp$hcr$futureOption 3
+#
+# Management Procedure 7: Fl1.25_frt
+#
+mp$mp7$gui$mpLabel "Fl1.25_frt"
+mp$mp7$mp$hcr$catchCeiling NULL
+mp$mp7$mp$hcr$catchFloor 1.25
+mp$mp7$mp$hcr$maxDeltaTACc NULL
+mp$mp7$mp$hcr$futureOption 3
+#
+# Management Procedure 8: Fl1.5_frt
+#
+mp$mp8$gui$mpLabel "Fl1.5_frt"
+mp$mp8$mp$hcr$catchCeiling NULL
+mp$mp8$mp$hcr$catchFloor 1.5
+mp$mp8$mp$hcr$maxDeltaTACc NULL
+mp$mp8$mp$hcr$futureOption 3
+#
+# Management Procedure 9: Fl1.75_frt
+#
+mp$mp9$gui$mpLabel "Fl1.75_frt"
+mp$mp9$mp$hcr$catchCeiling NULL
+mp$mp9$mp$hcr$catchFloor 1.75
+mp$mp9$mp$hcr$maxDeltaTACc NULL
+mp$mp9$mp$hcr$futureOption 3
+#
+# File Ends <not run>.

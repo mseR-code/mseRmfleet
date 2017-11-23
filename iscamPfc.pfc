@@ -1,0 +1,28 @@
+## simulation for Herring SOG ## written: Thu Jun 29 12:13:33 2017 
+## Projection file control (pfc) ## 
+## n_tac  length of catch vector 
+15 
+## tac vector (1000 mt) 
+0 10.0 10.6 12.6 17.0 18.25 21.8 22.5 25.0 25.9 30.0 38.0 40.0 46.5 50.0 
+## Control options ## 
+## Length of control vector 
+8 
+## - 1) Start year for mean natural mortality rate 
+2011 
+## - 2)  Last year for mean natural mortality rate 
+2016 
+## - 3) Start year for average fecundity/weight-at-age in projections 
+2011 
+## - 4)  Last year for average fecundity/weight-at-age in projections 
+2016 
+##not currently used 
+## - 5) Start year for average recruitment period in projections. 
+1965 
+## - 6)   End year for average recruitment period in projections. 
+2012 
+## - 7) start of reference period 
+2000 
+## - 8) end of reference period 
+2006 
+## eof 
+-999 

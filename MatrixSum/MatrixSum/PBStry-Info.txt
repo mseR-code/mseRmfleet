@@ -1,0 +1,11 @@
+The R library 'PBStry' can be used as a small prototype for 
+R package development. It comes as part of the library 
+'PBSmodelling'.
+
+This prototype contains six functions and a data set from 
+'PBSmodelling'. It also illustrates how to use the R function 
+'.C', which invokes code compiled from functions written 
+separately in C.
+
+For more information, see the file 'PBSmodelling-UG.pdf', a 
+user's guide included with 'PBSmodelling'.

@@ -1,0 +1,130 @@
+window name=mseRguiRef title="mseR Reference Points Control"
+
+menu nitems=3 label="File"
+  menuitem label="Load parameters" action="load" function=.subGuiRef
+  menuitem label="Save parameters" action="save" function=.subGuiRef
+  menuitem label="Exit"                          function=closeWin
+menu nitems=2 label="View"
+  menu nitems=1 label="R Code"
+    menuitem label="Functions"                   function=.viewFile action=mseRrefPoints.r
+  menuitem label="Window"                        function=.viewFile action=mseRguiRefWin.txt
+menu nitems=1 label="Help"
+  menuitem label="About guiRef"                  function=.viewHelp action=mseRguiRefAbout.txt
+
+# Main grid layout.
+grid 3 1
+
+  # Grid 1: The parameter super object widget.
+  grid 1 2
+    grid 1 1 relief="raised"
+    object name=pars rowshow=10 function=.subGuiRef action=updatePars entrybg="white" width="20 30" entryfont="12" font="12" padx=10
+
+    grid 2 1
+      label text="Reference Points" font=bold
+    grid 8 2 sticky=E
+      entry name=ssbFmsy label="Bmsy" mode=numeric value=29.10 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      null
+
+      entry name=yieldFmsy label="MSY" mode=numeric value=5.69 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      null
+
+      entry name=Fmsy label="Fmsy" mode=numeric value=0.22 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkFmsy action=chkFmsy function=.subGuiRef checked=T text=""
+
+      entry name=F0 label="F0" mode=numeric value=0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkF0 action=chkF0 function=.subGuiRef checked=T text=""
+
+      entry name=F01 label="F01" mode=numeric value=0.193 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkF01 action=chkF01 function=.subGuiRef checked=T text=""
+
+      entry name=F40 label="F40" mode=numeric value=0.179 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkF40 action=chkF40 function=.subGuiRef checked=T text=""
+
+      entry name=Fmax label="Fmax" mode=numeric value=0.569 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkFmax action=chkFmax function=.subGuiRef checked=T text=""
+
+      entry name=Fcra label="Fcrash" mode=numeric value=1.191 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+      check name=chkFcra action=chkFcra function=.subGuiRef checked=T text=""
+
+  # Grid 2: Plot area: options and choices.
+  grid 2 1 relief="raised" pady=5
+
+    # Grid 2.1: Plot option control.
+    grid 2 1 relief="sunken" padx=10 pady=5
+
+      grid 1 8
+      label text="Plot Options:" font="bold 10"
+      check name=annotate  function=.subGuiRef checked=T text="Annotate"
+      check name=showGears function=.subGuiRef checked=F text="Gears"
+      check name=doLegend  function=.subGuiRef checked=T text="Legend"
+      check name=setXaxis  function=.subGuiRef checked=F text="Set X-axis"
+      check name=setYaxis  function=.subGuiRef checked=F text="Set Y-axis"
+      check name=saveemf   function=.subGuiRef checked=F text="Save EMF"
+      check name=savepdf   function=.subGuiRef checked=F text="Save PDF"
+  
+      matrix nrow=2 ncol=13 rowlabels="'Min.' 'Max.'" \
+        collabels="'Age' 'Bio' 'Catch' 'Discard' 'F' 'Len' 'M' 'Rec' 'SSB' 'SSB/R' 'Wgt' 'Yield' 'YPR'" \
+        names="minAge minBio minCat minDis minF minLen minM minRec minSSB minSSBR minWgt minYield \
+               minYPR maxAge maxBio maxCat maxDis maxF maxLen maxM maxRec maxSSB maxSSBR maxWgt maxYield maxYPR" \
+        action="plotOptions" values="1 0 0 0 0 0 0 0 0 0 0 0 0 100 100 100 100 2 100 2 50 100 5 10 5 0.1" \
+        function=.subGuiRef width=6
+
+    # Grid 2.2: Plot selection.
+    grid 4 7 byrow=FALSE
+
+      label "Custom Plots" font=12
+      radio name=refPtPlotType value=lifeHist  text="Life History"       function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=refPoints text="Reference Points"   function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=yieldGear text="Yield by Gear"      function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=Fvsh      text="Fmsy ~ h"           function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=yieldVsF  text="Yield ~ Trawl F"    function=.subGuiRef mode=character sticky=W
+      null
+
+      label "Life History" font=12
+      radio name=refPtPlotType  value=numAtAge  text="Numbers at Age"     function=.subGuiRef mode=character sticky=W
+      #radio name=refPtPlotType value=bioAtAge  text="Biomass at Age"     function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType  value=matAtAge  text="Maturity at Age"    function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType  value=lenAtAge  text="Length at Age"      function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType  value=wgtAtAge  text="Weight at Age"      function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType  value=wgtLen    text="Weight-Length"      function=.subGuiRef mode=character sticky=W
+      null
+
+      label "Gear Plots" font=12
+      radio name=refPtPlotType value=Slg         text="Selectivity (len,g)" function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=Salg        text="Selectivity (a,l,g)" function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=Plg         text="Discard (l,g)"       function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=Palg        text="Discard (a,l,g)"     function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=disMortRate text="Discard Mortality"   function=.subGuiRef mode=character sticky=W
+      null
+
+      label "Reference Points" font=12
+      radio name=refPtPlotType value=yprF      text="YPR ~ F"            function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=ssbRF     text="SSB/R ~ F"          function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=yieldF    text="Y~F"                function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=ssbF      text="SSB~F"              function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=recSSB    text="Recruits~SSB"       function=.subGuiRef mode=character sticky=W
+      radio name=refPtPlotType value=yieldSSB  text="Y~SSB"              function=.subGuiRef mode=character sticky=W
+     
+  # Grid 3: Add some control buttons.
+  grid 1 2
+
+    grid 2 1 relief="raised" padx=10
+      grid 1 4
+        entry name=trialName label="Trial:" action="trialName" font="bold 12" value="" function=.subGuiRef mode=character sticky=W padx=1 width=25
+        entry name=iTrial    label="ID:"    font="bold 12" value=0                      mode=numeric   sticky=W padx=1 width=3 edit=FALSE noeditbg="#FDB3C1"
+        label "/"                           font="12"
+        entry name=nTrial    label=""       font="bold 12" value=0                      mode=numeric   sticky=W padx=1 width=3 edit=FALSE noeditbg="#FDB3C1"
+
+      grid 1 6 pady=2
+        button text="Add"    function=.subGuiRef action=addTrial  padx=2 width=7
+        button text="Remove" function=.subGuiRef action=remTrial  padx=2 width=7
+        button text="<"      function=.subGuiRef action=prevTrial padx=2 width=5 bg="gray85"
+        button text=">"      function=.subGuiRef action=nextTrial padx=2 width=5 bg="gray85"
+        button text="Export" function=.subGuiRef action=export    padx=2 width=7 
+        button text="Import" function=.subGuiRef action=import    padx=2 width=7
+
+    grid 2 1
+      button text="Tables" action="tables" function=.subGuiRef width=10 padx=2 pady=2
+      button text="Exit"   action="exit"   function=.subGuiRef width=10 padx=2 pady=2
+
+  

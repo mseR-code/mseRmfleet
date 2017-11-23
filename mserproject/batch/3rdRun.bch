@@ -1,0 +1,61 @@
+## mseR batch file written: 6-Jan-16
+#
+parameter value
+#
+# Scenario 1  base
+#
+scenario$scenario1$gui$nReps 100
+scenario$scenario1$gui$scenarioLabel "base"
+#
+# Scenario 2  Stress
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "stress_h.1"
+#scenario$scenario2$opMod$repFileName "stress.rep"
+#scenario$scenario2$opMod$qg c(0.21802000,1,1,0.11591700,0.25152300)
+#
+# Scenario 3  recBump
+#
+#scenario$scenario2$gui$nReps 100
+#scenario$scenario2$gui$scenarioLabel "recBump"
+#scenario$scenario2$opMod$repFileName "recBump.rep"
+#
+# Management procedures for each scenario.
+#
+# Management procedure 1 : unConst
+#
+mp$mp1$gui$mpLabel "unConst"
+mp$mp1$mp$hcr$catchFloor 0
+mp$mp1$mp$hcr$maxDeltaTACc NULL
+#
+# Management procedure 2 : relFl.15
+#
+mp$mp2$gui$mpLabel "relFl.15"
+mp$mp2$mp$hcr$catchFloor 0
+mp$mp2$mp$hcr$maxDeltaTACf 0.15
+#
+# Management procedure 3 : currMP_rt
+#
+mp$mp3$gui$mpLabel "currMP_rt"
+mp$mp3$mp$hcr$catchCeiling NULL
+mp$mp3$mp$hcr$maxDeltaTACc NULL
+mp$mp3$opMod$futureOption 2
+#
+# Management procedure 4 : absCeil3.2_rt
+#
+mp$mp4$gui$mpLabel "absCeil3.2_rt"
+mp$mp4$mp$hcr$catchCeiling 3.2
+mp$mp4$mp$hcr$maxDeltaTACc 0.15
+mp$mp4$mp$hcr$deltaTACcType "absolute"
+mp$mp4$opMod$futureOption 2
+#
+# Management procedure 5 : relCeil.15_rt
+#
+mp$mp5$gui$mpLabel "relCeil.15_rt"
+mp$mp5$mp$hcr$catchCeiling NULL
+mp$mp5$mp$hcr$maxDeltaTACc 0.15
+mp$mp5$mp$hcr$deltaTACcType "relative"
+mp$mp5$opMod$futureOption 2
+#
+#
+# File Ends <not run>.

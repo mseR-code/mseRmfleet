@@ -1,0 +1,119 @@
+varType,varName,index,minVal,maxVal,description,label,units,prefix,bg,col,fg,lty,lwd,pch,cex
+opMod,Ct,1,0,100,Retained catch biomass,Retained catch,metric tons,.Ct,white,black,black,1,2,21,1.4
+opMod,Ctg,1,0,100,Retained trap biomass,Retained trap catch,metric tons,.Ctg,black,black,black,1,2,21,1.4
+opMod,Ctg,2,0,100,Retained hook biomass,Retained hook biomass,metric tons,.Ctg,red,red,black,1,2,21,1.4
+opMod,Ctg,3,0,100,Retained trawl biomass,Retained trawl biomass,metric tons,.Ctg,green,green,black,1,2,21,1.4
+opMod,Ctg,4,0,100,Retained std survey biomass,Retained std survey biomass,metric tons,.Ctg,blue,blue,black,1,2,21,1.4
+opMod,Ctg,5,0,100,Retained StRS survey biomass,Retained StRS survey biomass,metric tons,.Ctg,magenta,magenta,black,1,2,21,1.4
+opMod,Dt,1,0,100,Released catch biomass,Released catch,metric tons,.Dt,cyan,cyan,black,3,2,21,1.4
+opMod,Dtg,1,0,100,Catch biomass trap,Released trap catch,metric tons,.Dtg,black,black,black,3,2,21,1.4
+opMod,Dtg,2,0,100,Catch biomass hook,Relased hook catch,metric tons,.Dtg,red,red,black,3,2,21,1.4
+opMod,Dtg,3,0,100,Catch biomass trawl,Released trawl catch,metric tons,.Dtg,green,green,black,3,2,21,1.4
+opMod,Dtg,4,0,100,Catch biomass standardized survey,Released std catch,metric tons,.Dtg,blue,blue,black,3,2,21,1.4
+opMod,Dtg,5,0,100,Catch biomass StRS survey,Released StRs catch,metric tons,.Dtg,magenta,magenta,black,3,2,21,1.4
+opMod,Bt,1,0,100,Spawning biomass,Spawning biomass,metric tons,.Bt,white,red,black,1,3,21,1.4
+opMod,Btot,1,0,100,Total biomass,Total biomass,metric tons,.Btot,white,black,black,3,2,21,1.4
+opMod,Bsleg,1,0,100,Sublegal biomass,Sublegal biomass,metric tons,.Bsleg,white,blue,blue,4,2,21,1.4
+opMod,Bleg,1,0,100,Legal biomass,Legal biomass,metric tons,.Bleg,white,black,black,2,2,21,1.4
+opMod,Bexp,1,0,100,Exploitable biomass,Exploitable biomass,metric tons,.Bexp,white,gray,gray,1,2,21,1.4
+opMod,Nt,1,0,500,Spawning numbers,Spawning numbers,000s,.Nt,white,red,black,1,3,21,1.4
+opMod,Ntot,1,0,500,Total numbers,Total numbers,millions,.Ntot,white,black,black,3,2,21,1.4
+opMod,Nexp,1,0,500,Exploitable numbers,Exploitable numbers,,.Nexp,white,gray,gray,1,3,21,1.4
+opMod,Ft,1,0,10,Fishing mortality,Fishing mortality,,.Ft,white,black,black,1,2,21,1.4
+opMod,Ftg,1,0,10,Trap fishing mortality,Trap fishing mortality,,.Ftg,black,black,black,3,2,21,1.4
+opMod,Ftg,2,0,10,Hook fishing mortality,Hook fishing mortality,,.Ftg,red,red,black,3,2,21,1.4
+opMod,Ftg,3,0,10,Trawl fishing mortality,Trawl fishing mortality,,.Ftg,green,green,black,3,2,21,1.4
+opMod,Ftg,4,0,10,Std survey fishing mortality,Std survey fishing mortality,,.Ftg,blue,blue,black,3,2,21,1.4
+opMod,Ftg,5,0,10,StRS survey fishing mortality,StRS survey fishing mortality,,.Ftg,magenta,magenta,black,3,2,21,1.4
+opMod,M,1,0,10,Mean natural mortality,Mean natural mortality,,.M,purple,purple,black,4,2,21,1.4
+opMod,Mt,1,0,10,Natural mortality year t,Natural mortality,,.Mt,purple,purple,black,1,2,21,1.4
+opMod,Plg,1,0,1,Trap discard rate at length,Trap discard rate at length,,.Plg,black,black,black,1,2,21,1.4
+opMod,Plg,2,0,1,Hook discard rate at length,Hook discard rate at length,,.Plg,red,red,black,1,2,21,1.4
+opMod,Plg,3,0,1,Trawl discard rate at length,Trawl discard rate at length,,.Plg,green,green,black,1,2,21,1.4
+opMod,Plg,4,0,1,Std survey discard rate at length,Std survey discard rate at length,,.Plg,blue,blue,black,1,2,21,1.4
+opMod,Plg,5,0,1,StRs survey discard rate at length,StRs survey discard rate at length,,.Plg,magenta,magenta,black,1,2,21,1.4
+opMod,Rt,1,0,10000,Recruits,Recruits,000s,.Rt,darkorange,black,black,1,2,21,1.4
+opMod,Slg,1,0,1,Trap selectivity at length,Trap selectivity at length,,.Slg,black,black,black,1,2,21,1.4
+opMod,Slg,2,0,1,Hook selectivity at length,Hook selectivity at length,,.Slg,red,red,black,1,2,21,1.4
+opMod,Slg,3,0,1,Trawl selectivity at length,Trawl selectivity at length,,.Slg,green,green,black,1,2,21,1.4
+opMod,Slg,4,0,1,Std survey selectivity at length,Std survey selectivity at length,,.Slg,blue,blue,black,1,2,21,1.4
+opMod,Slg,5,0,1,Strs survey selectivity at length,Strs survey selectivity at length,,.Slg,magenta,magenta,black,1,2,21,1.4
+opMod,LegUt,1,0,10,Legal harvest rate,Legal harvest rate,,.LegUt,white,black,black,1,2,21,1.4
+opMod,SLegUt,1,0,10,Legal harvest rate,Sub-legal harvest rate,,.SlegUt,white,blue,blue,3,2,21,1.4
+opMod,LegUtg,1,0,10,Trap legal harvest rate,Trap legal harvest rate,,.LegUtg,black,black,black,1,2,21,1.4
+opMod,LegUtg,2,0,10,Hook legal harvest rate,Hook legal harvest rate,,.LegUtg,red,red,black,1,2,21,1.4
+opMod,LegUtg,3,0,10,Trawl legal harvest rate,Trawl legal harvest rate,,.LegUtg,green,green,black,1,2,21,1.4
+opMod,LegUtg,4,0,10,Std survey legal harvest rate,Std survey harvest rate,,.LegUtg,blue,blue,black,1,2,21,1.4
+opMod,LegUtg,5,0,10,StRS survey legal harvest rate,StRS survey harvest rate,,.LegUtg,magenta,magenta,black,1,2,21,1.4
+opMod,SlegUtg,1,0,10,Trap sub-legal harvest rate,Trap legal harvest rate,,.SlegUtg,black,black,black,3,2,21,1.4
+opMod,SlegUtg,2,0,10,Hook sub-legal harvest rate,Hook legal harvest rate,,.SlegUtg,red,red,black,3,2,21,1.4
+opMod,SlegUtg,3,0,10,Trawl sub-legal harvest rate,Trawl legal harvest rate,,.SlegUtg,green,green,black,3,2,21,1.4
+opMod,SlegUtg,4,0,10,Std survey sub-legal harvest rate,Std survey harvest rate,,.SlegUtg,blue,blue,black,3,2,21,1.4
+opMod,SlegUtg,5,0,10,StRS survey sub-harvest rate,StRS survey harvest rate,,.SlegUtg,magenta,magenta,black,3,2,21,1.4
+opMod,tMP,1,1,100,MP start year,tMP,years,.tMP,white,black,black,3,2,21,1.4
+opMod,Dept,1,0,10,Depletion,Depletion,,.Dept,white,black,black,1,1,21,1.4
+opMod,Gear,1,1,1,Trap gear,Trap,,.Gear,white,black,black,1,1,21,1.4
+opMod,Gear,2,1,1,Hook gear,Hook,,.Gear,white,red,black,1,1,21,1.4
+opMod,Gear,3,1,1,Trawl gear,Trawl,,.Gear,white,green,black,1,1,21,1.4
+opMod,Gear,4,1,1,Standardized survey,Std,,.Gear,white,blue,black,1,1,21,1.4
+opMod,Gear,5,1,1,Stratified random survey,StRs,,.Gear,white,magenta,black,1,1,21,1.4
+opMod,SizeLim,1,0,100,Size limit,Size limit,cm,.SizeLim,black,black,black,2,1,21,1.4
+data,Itg,1,0,1000,Trap index,Trap index,kg/trap,.Itg,black,black,black,1,2,21,1.4
+data,Itg,2,0,1000,Hook index,Hook index,kg/hook,.Itg,red,red,black,1,2,21,1.4
+data,Itg,3,0,1000,Trawl index,Trawl index,kg/hr,.Itg,green,green,black,1,2,21,1.4
+data,Itg,4,0,1000,Std survey index,Std survey index,kg/trap,.Itg,blue,blue,black,1,2,21,1.4
+data,Itg,5,0,1000,StRs survey index,StRs survey index,kg/trap,.Itg,magenta,magenta,black,1,2,21,1.4
+method,BtEst,1,0,100,Estimated biomass,Estimated biomass,metric tons,.BtEst,white,green4,black,1,3,21,1.4
+method,BtStep,1,0,100,Estimated biomass,Estimated biomass,metric tons,.BtStep,white,blue,black,1,2,21,1.4
+method,BmsyEst,1,0,100,Estimated Bmsy,Estimated Bmsy,metric tons,.BmsyEst,white,black,black,2,2,22,1.4
+method,FmsyEst,1,0,10,Estimated Fmsy,Estimated Fmsy,,.FmsyEst,cyan,cyan,black,2,2,22,1.4
+method,MsyEst,1,0,100,Estimated MSY,Estimated MSY,metric tons,.MsyEst,cyan,cyan,black,2,2,22,1.4
+method,BexpRetro,1,0,100,Retrospective exploitable biomass,Estimated exploitable biomass,,.BexpRetro,white,blue,black,1,2,21,1.4
+method,BspawnRetro,1,0,100,Retrospective spawning biomass,Estimated spawning biomass,,.BspawnRetro,white,blue,black,1,2,21,1.4
+method,RtRetro,1,-10,10,Retrospective recruitments,Estimated recruitment,,.RtRetro,white,orange,black,1,2,21,1.4
+hcr,lowerB,1,0,100,Lower bound of HCR,Lower Bound,metric tons,.HCRLB,red,black,black,3,1,24,1.4
+hcr,upperB,1,0,100,Upper bound of HCR,Upper Bound,metric tons,.HCRUB,yellow,black,black,3,1,24,1.4
+hcr,Bref,1,0,100,Target biomass control point,Bref,metric tons,.Bref,green,green,black,1,1,21,1.4
+hcr,Fref,1,0,10,Target F control point,Fref,,.Fref,green,green,black,1,1,21,1.4
+hcr,Fhcr,1,0,10,Harvest control rule F,Fhcr,,.Fhcr,green,green,black,1,1,21,1.4
+refPts,B0,1,0,100,Unfished spawning biomass,B0,metric tons,.B0,gray51,gray51,black,4,1,21,1.4
+refPts,Bmsy,1,0,100,Spawning biomass at MSY,Bmsy,metric tons,.Bmsy,green3,green3,black,4,2,21,1.4
+refPts,F0,1,0,10,Fishing mortality F0,F0,,.F0,purple,purple,black,3,2,21,1.4
+refPts,F01,1,0,10,Fishing mortality F0.1,F0.1,,.F01,aquamarine,aquamarine,black,3,2,21,1.4
+refPts,Fcra,1,0,10,Fishing mortality Fcrash,Fcra,,.Fcra,black,black,black,3,2,21,1.4
+refPts,Fmax,1,0,10,Fishing mortality Fmax,Fmax,,.Fmax,red,red,black,3,2,21,1.4
+refPts,FsprX,1,0,10,Fishing mortality FsprX%,FsprX,,.Fspr,steelblue1,steelblue1,black,3,2,21,1.4
+refPts,Fmsy,1,0,10,Fishing mortality Fmsy,Fmsy,,.Fmsy,green3,green3,black,3,2,21,1.4
+refPts,U0,1,0,10,Harvest rate U0,U0,,.U0,purple,purple,black,1,2,21,1.4
+refPts,U01,1,0,10,Harvest rate U01,U01,,.U01,aquamarine,aquamarine,black,1,2,21,1.4
+refPts,Ucra,1,0,10,Harvest rate Ucra,Ucra,,.Ucra,black,black,black,1,2,21,1.4
+refPts,Umax,1,0,10,Harvest rate Umax,Umax,,.Umax,red,red,black,1,2,21,1.4
+refPts,UsprX,1,0,10,Harvest rate UsprX,UsprX,,.Uspr,steelblue1,steelblue1,black,1,2,21,1.4
+refPts,Umsy,1,0,10,Harvest rate at MSY,Umsy,,.Umsy,green3,green3,black,4,2,21,1.4
+refPts,Uleg,1,0,10,Legal harvest rate at Fmsy,Uleg,,.Uleg,orange,orange,black,4,2,21,1.4
+refPts,MSY,1,0,100,Maximum sustainable yield,MSY,metric tons,.MSY,green3,green3,black,4,2,21,1.4
+objectives,CriticalZone,1,0,100,DFO Critical Zone,Critical Zone,metric tons,.Critical,pink,pink,black,1,2,21,1.4
+objectives,CautiousZone,1,0,100,DFO Cautious Zone,Cautious Zone,metric tons,.Cautious,yellow,yellow,black,1,2,21,1.4
+objectives,HealthyZone,1,0,1000,DFO Healthy Zone,Healthy Zone,metric tons,.Healthy,green,green,black,1,2,21,1.4
+objectives,LRP,1,0,100,Limit reference point,LRP,metric tons,.Lrp,pink,black,black,3,2,21,1.4
+objectives,USR,1,0,100,Upper stock reference point,USR,metric tons,.Usr,yellow,black,black,3,2,21,1.4
+objectives,TRP,1,0,100,Target reference point,TRP,metric tons,.Trp,green,black,black,3,2,21,1.4
+common,MP,1,0,0,MP,Management procedure,,.Mp,white,black,black,2,1,21,1.4
+common,OM,1,0,0,OM,Operating model,,.Om,red,red,black,2,1,21,1.4
+objectives,Obj1Dep,1,0,10,Objective 1 depletion,Objective 1 Depletion,,.Obj1Dep,red,red,black,2,2,21,1.6
+objectives,Obj1Prob,1,0,1,Objective 1 probability,Objective 1 Probability,,.Obj1Prob,magenta,magenta,black,2,2,21,1.6
+objectives,Obj1Yr,1,1,100,Objective 1 year,Objective 1 Year,,.Obj1Yr,deepskyblue,deepskyblue,black,2,2,21,1.6
+objectives,Obj2Dep,1,0,10,Objective 2 depletion,Objective 2 Depletion,,.Obj2Dep,red,red,black,2,2,21,1.6
+objectives,Obj2Prob,1,0,1,Objective 2 probability,Objective 2 Probability,,.Obj2Prob,magenta,magenta,black,2,2,21,1.6
+objectives,Obj2Yr,1,1,100,Objective 2 year,Objective 2 Year,,.Obj2Yr,deepskyblue,deepskyblue,black,2,2,21,1.6
+objectives,Obj3Dep,1,0,10,Objective 3 depletion,Objective 3 Depletion,,.Obj3Dep,red,red,black,2,2,21,1.6
+objectives,Obj3Prob,1,0,1,Objective 3 probability,Objective 3 Probability,,.Obj3Prob,magenta,magenta,black,2,2,21,1.6
+objectives,Obj3Yr,1,1,100,Objective 3 year,Objective 3 Year,,.Obj3Yr,deepskyblue,deepskyblue,black,2,2,21,1.6
+hcr,HCR,1,0,0,Harvest control rule,Harvest control rule,,.Hcr,white,black,black,1,2,21,1
+common,LifeHist,1,0,0,Life history,Life history,,.Lh,white,black,black,1,2,21,1.4
+common,LifeHist,1,0,1,Maturity at age,Maturity at age,,.Mat,white,black,black,1,2,21,1.4
+common,LifeHist,1,1,100,Age,Age,years,.Age,white,black,black,1,2,21,1.4
+common,LifeHist,1,0,100,Length,Length,cm,.Len,white,black,black,1,2,21,1.4
+common,LifeHist,1,0,10,Weight,Weight,kg,.Wgt,white,black,black,1,2,21,1.4
+common,Period1,1,0,0,Period 1,Period 1,,.Per1,white,black,black,1,2,21,1.4
+common,Period2,1,0,0,Period 2,Period 2,,.Per2,gray,gray,black,1,2,21,1.4

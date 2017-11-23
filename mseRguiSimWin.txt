@@ -1,0 +1,192 @@
+window name=mseRguiSim title="mseR-Sim: Management Strategy Evaluation in R"
+
+# (1) Main pull-down menu items.
+
+menu nitem=1 label="File"
+  menuitem label="Exit"                      function=.closeActWin
+menu nitems=3 label="View"
+  menu nitems=3 label=Docs
+    menuitem label="mseR-FinFish Components" function=.viewHelp action=mseR-Finfish.emf
+    menuitem label="Variable Description"    function=.viewHelp action=testDoc.txt
+    menuitem label="Plot Descriptions"       function=.viewHelp action=testDoc.txt
+  menu nitems=2 label="R Code"
+    menuitem label="GUI Functions"           function=.viewFile action=mseRguiSimFuns.r
+    menuitem label="Window Control Template" function=.viewFile action=mseRguiSimWin.txt
+menu nitems=4 label=Help
+    menuitem label="FAQ"                     function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Help"       function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Manual"     function=.viewHelp action=testDoc.txt
+    menuitem label="About mseR-FinFish"      function=.viewHelp action=mseR-FFabout.txt
+
+# (2) Grid of widgets.
+grid 4 1
+
+  # Row 1: General parameter entry.
+  grid 1 3
+    button name=simCtl  text="Control File" function=.subSim action="simCtl"    font="bold 10" padx=2 width=9 bg="gray85"
+    entry  name=simCtlFile                  function=.subSim action="simCtlFile" value="simCtlFile.txt" mode=character entryfont=10 width=60
+    button name=simEdit text="Edit"         function=.subSim action="simEdit"   font="bold 10" padx=2 width=4 bg="gray85"
+    
+  # Row 2: Operating model and management procedure.
+  grid 1 2 pady=4
+  
+    # Column 1, 2: Scenario.
+    grid 3 1 relief="sunken" padx=3
+    
+      grid 2 3
+
+        entry name=ssbFmsy label="Bmsy" mode=numeric value=29.10 width=8 sticky=E edit=FALSE noeditbg="gray90" font="10"
+        label "Scenario" font="bold 14"
+        entry name=yieldFmsy label="MSY" mode=numeric value=5.69 width=8 sticky=E edit=FALSE noeditbg="gray90" font="10"
+        entry name=legalHRFmsy label="UlegMsy" mode=numeric value=0.09 width=6 sticky=E edit=FALSE, noeditbg="gray90" font="10"
+        button text="OM" font="bold 10" name="simOM" function=.subSim action="simOM" padx=5 pady=5 width=8 bg="gray85"
+        null
+
+      # Fishery reference points.
+      grid 1 1
+        grid 3 6 sticky=E
+
+          entry name=Umsy label="U/Fmsy" mode=numeric value=0.22 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=Fmsy label=""       mode=numeric value=0.22 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkFmsy action=chkFmsy function=.subSim checked=T text=""
+
+          entry name=U0 label="U/F0"     mode=numeric value=0 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=F0 label=""         mode=numeric value=0 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkF0 action=chkF0 function=.subSim checked=T text=""
+
+          entry name=U01 label="U/F01"   mode=numeric value=0.193 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=F01 label=""        mode=numeric value=0.193 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkF01 action=chkF01 function=.subSim checked=T text=""
+
+          entry name=U40 label="U/F40"   mode=numeric value=0.179 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=F40 label=""        mode=numeric value=0.179 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkF40 action=chkF40 function=.subSim checked=T text=""
+
+          entry name=Umax label="U/Fmax" mode=numeric value=0.569 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=Fmax label=""       mode=numeric value=0.569 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkFmax action=chkFmax function=.subSim checked=T text=""
+
+          entry name=Ucra label="U/Fcra" mode=numeric value=1.191 width=6 sticky=E edit=FALSE noeditbg="gray90" font="10"
+          entry name=Fcra label=""       mode=numeric value=1.191 width=6 sticky=E edit=FALSE noeditbg="lightgray" font="10"
+          check name=chkFcra action=chkFcra function=.subSim checked=T text=""
+
+      # Label for scenario.
+      entry name=scenarioLabel value="S1" label="Label:" action="scenarioLabel" entryfont="11" \
+            font="italic 12" function=.subSim mode=character padx=2 width=28
+      
+    # Column 2, 2: Management procedure.
+    grid 3 1 relief="sunken" padx=3
+      label "Management Procedure" font="bold 14"
+
+      grid 3 2
+        button text="Data"       font="bold 10" name=simData   function=.subSim action="simData"   padx=5 pady=4 width=8 bg="gray85"
+        null
+        
+        button text="Method"     font="bold 10" name=simMethod function=.subSim action="simMethod" padx=5 pady=4 width=8 bg="gray85"
+        entry name=methodName value="Catch-At-Age" action=methodName edit=FALSE entryfont="11" noeditbg="lightyellow" mode=character padx=2 width=16
+		    
+        button text="HCR"        font="bold 10" name=simHCR    function=.subSim action="simHCR"    padx=5 pady=4 width=8 bg="gray85"
+        entry name=hcrName value="Variable F" action=hcrName entryfont="11" edit=FALSE noeditbg="lightyellow" mode=character padx=2 width=16
+
+      # Label for management procedure.
+      entry name=mpLabel value="MP1" label="Label:" action="mpLabel" entryfont="11" font="italic 12" function=.subSim \
+            mode=character padx=2 width=28
+
+  # Row 3: Plot area: options and choices.
+  grid 2 1 relief="raised" pady=2
+
+    # Plot control.
+    grid 2 1 relief="sunken"
+    
+      grid 1 10 relief="sunken"
+        label text="Plots:" font="bold 10"
+        check name=simAnnotate function=.subSim action="simAnnotate" checked=T text="Annotate"
+        check name=simGears    function=.subSim action="simGears"    checked=T text="Gears"      fg="darkgreen"
+        check name=simLegend   function=.subSim action="simLegend"   checked=T text="Legend"
+        check name=simSetXaxis function=.subSim action="simSetXaxis" checked=F text="Set X-axis"
+        check name=simSetYaxis function=.subSim action="simSetYaxis" checked=F text="Set Y-axis"
+        check name=simStamp    function=.subSim action="simStamp"    checked=T text="Stamp"      
+        check name=simYrs      function=.subSim action="simYrs"      checked=F text="Years"
+
+        button text="EMF"      function=.subSim action="simSaveEMF" width=5 font=10 padx=2 bg="gray85"
+        button text="PDF"      function=.subSim action="simSavePDF" width=5 font=10 padx=2 bg="gray85"
+
+      matrix nrow=2 ncol=13 rowlabels="'Min.' 'Max.'" \
+        collabels="'Age' 'Bio' 'Catch' 'Discard' 'U/F' 'Len' 'M' 'Rec' 'SSB' 'SSB/R' 'Wgt' 'Yield' 'YPR'" \
+        names="simMinAge simMinBio simMinCat simMinDis simMinF simMinLen simMinM simMinRec simMinSSB simMinSSBR simMinWgt simMinYield \
+               simMinYPR simMaxAge simMaxBio simMaxCat simMaxDis simMaxF simMaxLen simMaxM simMaxRec simMaxSSB simMaxSSBR simMaxWgt simMaxYield simMaxYPR" \
+        action="simPlotOpts" values="1 0 0 0 0 0 0 0 0 0 0 0 0 100 100 100 100 2 100 2 50 100 5 10 5 0.1" \
+        function=.subSim width=6
+
+    # Plot selection.
+    grid 7 7 byrow=FALSE
+
+      label "Config" font="bold 10"
+      radio name=simPlotType value=simSpecs     text="Specs"            function=.subSim mode=character sticky=W selected=T
+      radio name=simPlotType value=simDesign    text="Design"           function=.subSim mode=character sticky=W      
+      radio name=simPlotType value=simRefPtsF   text="Ref Pts F"        function=.subSim mode=character sticky=W      
+      radio name=simPlotType value=simRefPtsU   text="Ref Pts U"        function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simOM        text="OM"               function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simMP        text="MP"               function=.subSim mode=character sticky=W
+
+      label "Ref. Pts. (F)" font="bold 10"
+      radio name=simPlotType value=simYprF      text="YPR~F"            function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simSsbRF     text="SSB/R~F"          function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simYieldF    text="Y~F"              function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simSsbF      text="SSB~F"            function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simRecSSB    text="Recruits~SSB"     function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simYieldSSB  text="Y~SSB"            function=.subSim mode=character sticky=W
+
+      label "Ref. Pts. (U)" font="bold 10"
+      radio name=simPlotType value=simYprU      text="YPR~U"            function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simSsbRU     text="SSB/R~U"          function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simYieldU    text="Y~U"              function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simSsbU      text="SSB~U"            function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simRecSSB2   text="Recruits~SSB"     function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simYieldSSB2 text="Y~SSB"            function=.subSim mode=character sticky=W
+
+      label "Life History" font="bold 10"
+      radio name=simPlotType value=simLifeHist  text="Life History"     function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simNumAtAge  text="Numbers~Age"      function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simMatAtAge  text="Maturity~Age"     function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simLenAtAge  text="Length~Age"       function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simWgtAtAge  text="Weight~Age"       function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simWgtLen    text="Weight~Length"    function=.subSim mode=character sticky=W
+
+      label "Selectivity" font="bold 10"
+      radio name=simPlotType value=simSlg       text="Select (l,g)"     function=.subSim mode=character sticky=W fg="darkgreen"
+      radio name=simPlotType value=simSalg      text="Select (a,l,g)"   function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simPlg       text="Discard (l,g)"    function=.subSim mode=character sticky=W fg="darkgreen"
+      radio name=simPlotType value=simPalg      text="Discard (a,l,g)"  function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simdg        text="Discard Mort"     function=.subSim mode=character sticky=W
+      null
+
+      label "MP" font="bold 10"
+      radio name=simPlotType value=simCtg       text="Ctg~t"            function=.subSim mode=character sticky=W fg="darkgreen"
+      radio name=simPlotType value=simDtg       text="Dtg~t"            function=.subSim mode=character sticky=W fg="darkgreen"                  
+      radio name=simPlotType value=simIndexPars text="Itg~t"            function=.subSim mode=character sticky=W fg="darkgreen"
+      radio name=simPlotType value=simPriors    text="Priors"           function=.subSim mode=character sticky=W
+      radio name=simPlotType value=simOptHCR    text="HCR Options"      function=.subSim mode=character sticky=W
+      null
+
+      label "Other" font="bold 10"
+      radio name=simPlotType value=simHist      text="History"          function=.subSim mode=character sticky=W
+      radio name=simPlotType value=omYieldGear  text="Yield by Gear"    function=.subSim mode=character sticky=W
+      radio name=simPlotType value=omFvsh       text="Fmsy~h"           function=.subSim mode=character sticky=W
+      radio name=simPlotType value=omYieldVsF   text="Yield~Trawl F"    function=.subSim mode=character sticky=W
+      null
+      null
+
+  # Row 4: GUI control.
+  grid 1 11 relief="sunken"
+    button name=simPinDat text="PinDat" function=.subSim action="simPinDat" font="bold 12" padx=2 width=6 bg="gray85"    
+    button name=simReset  text="Reset"   function=.subSim action="simReset" font="bold 12" padx=2 width=5 bg="yellow"
+    button name=simBatch  text="Batch"   function=.subSim action="simBatch" font="bold 12" padx=2 width=5 bg="gray85"
+    button name=simView   text="View"    function=.subSim action="simView"  font="bold 12" padx=2 width=4 bg="gray85"
+    button name=simPerf   text="Perf"    function=.subSim action="simPerf"  font="bold 12" padx=2 width=4 bg="gray85"
+    button name=simOpt    text="Options" function=.subSim action="simOpt"   font="bold 12" padx=2 width=6 bg="gray85"
+    button name=simTrack  text="Track"   function=.subSim action="simTrack" font="bold 12" padx=2 width=5 bg="gray85"
+    button name=simRun    text="Run"     function=.subSim action="simRun"   font="bold 12" padx=2 width=5 bg="green"   
+    entry  name=nReps     label=""       function=.subSim action="nReps"    mode=numeric value=3 entryfont="12" width=4
+    label  text="Reps"    padx=1 font="italic 12"
+    button name=simExit   text="Exit"    function=.subSim action="simExit"  font="bold 12" padx=2  width=5 bg="gray95"

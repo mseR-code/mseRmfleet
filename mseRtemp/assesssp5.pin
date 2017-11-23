@@ -1,0 +1,18 @@
+##  ./assesssp : Surplus production model parameters.
+## Written: Mon Nov 21 13:40:54 2016 
+# lnMsy
+ 2.093671 
+# lnFmsy
+ -3.973095 
+# pmMsy
+ 3.4 
+# psdMsy
+ 1.7 
+# pmFmsy
+ 0.08 
+# psdFmsy
+ 0.04 
+# rho
+ 0.95 
+# lnOmega
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 

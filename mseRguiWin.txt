@@ -1,0 +1,611 @@
+window name=mseRgui title="mseR - Management Strategy Evaluation in R" onclose=.subSaveSim
+
+# Pull-down top menuitems.
+menu nitems=3 label="File"
+  menuitem label="Load parameters" action="simLoad" function=.subGui
+  menuitem label="Save parameters" action="simSave" function=.subGui
+  menuitem label="Exit"                             function=closeWin
+menu nitems=2 label="View"
+  menu nitems=1 label="R Code"
+    menuitem label="Functions"                      function=.viewFile action=mseRgui.r
+  menuitem label="Window"                           function=.viewFile action=mseRguiWin.txt
+menu nitems=1 label="Help"
+  menuitem label="About mseR"                       function=.viewHelp action=mseRAbout.txt
+
+
+# Notebook and footer buttons.
+grid 2 1
+
+  notebook name=nbPage tabs="OM MP Sim View Perf Options" function=.subGui font="12" homogeneous=TRUE
+
+#--------------------------------------------------------------------#
+#--               Notebook Page 1 - Operating Model                --#
+#--------------------------------------------------------------------#
+
+  grid 2 1
+
+    # Grid 1: The parameter object widget.
+    grid 1 2
+      grid 1 1 relief="raised"
+      object name=omPars rowshow=10 function=.subGui action="omPars" entrybg="white" width="20 30" entryfont="10" font="10" padx=5
+
+      grid 2 1
+        label text="Ref. Pts." font=bold
+      grid 8 2 sticky=E
+        entry name=ssbFmsy label="Bmsy" mode=numeric value=29.10 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        null
+
+        entry name=yieldFmsy label="MSY" mode=numeric value=5.69 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        null
+
+        entry name=Fmsy label="Umsy" mode=numeric value=0.22 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkFmsy action=chkFmsy function=.subGui checked=T text=""
+
+        entry name=F0 label="U0" mode=numeric value=0 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkF0 action=chkF0 function=.subGui checked=T text=""
+
+        entry name=F01 label="U01" mode=numeric value=0.193 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkF01 action=chkF01 function=.subGui checked=T text=""
+
+        entry name=F40 label="U40" mode=numeric value=0.179 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkF40 action=chkF40 function=.subGui checked=T text=""
+
+        entry name=Fmax label="Umax" mode=numeric value=0.569 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkFmax action=chkFmax function=.subGui checked=T text=""
+
+        entry name=Fcra label="Ucrash" mode=numeric value=1.191 width=10 sticky=E edit=FALSE noeditbg="#FDB3C1"
+        check name=chkFcra action=chkFcra function=.subGui checked=T text=""
+
+    # Grid 2: Plot area: options and choices.
+    grid 2 1 relief="raised" pady=2
+
+      # Grid 2.1: Plot option control.
+      grid 3 1 relief="sunken" padx=10 pady=3
+        grid 1 3
+          label text="Layout: " font="bold 10" sticky=W
+
+          grid 1 7 relief="sunken" pady=2
+            check name=omAuto      function=.subGui action="omAuto"      checked=T text="Auto"          sticky=W
+            check name=omOverWrite function=.subGui action="omOverWrite" checked=T text="Overwrite"     sticky=W
+            check name=omPlotByRow function=.subGui action="omPlotByRow" checked=F text="Plot by Row"   sticky=W
+            entry name=omNrows     function=.subGui action="omNrows"     mode=numeric value="1" width=3 sticky=W
+            label text="Rows"                                                                               sticky=W
+            entry name=omNcols     function=.subGui action="omNcols"     mode=numeric value="1" width=3 sticky=W
+            label text="Columns"
+
+          grid 1 3
+            button text="EMF"   action="omSaveEMF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="PDF"   action="omSavePDF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="Reset" action="omGfxOff"  function=.subGui width=5 padx=2 bg="gray85"
+
+        grid 1 6
+          label text="Options:" font="bold 10"
+          check name=omAnnotate function=.subGui action="omAnnotate" checked=T text="Annotate"
+          check name=omGears    function=.subGui action="omGears"    checked=F text="Gears"      fg="darkgreen"
+          check name=omLegend   function=.subGui action="omLegend"   checked=T text="Legend"
+          check name=omSetXaxis function=.subGui action="omSetXaxis" checked=F text="Set X-axis"
+          check name=omSetYaxis function=.subGui action="omSetYaxis" checked=F text="Set Y-axis"
+  
+        matrix nrow=2 ncol=13 rowlabels="'Min.' 'Max.'" \
+          collabels="'Age' 'Bio' 'Catch' 'Discard' 'U/F' 'Len' 'M' 'Rec' 'SSB' 'SSB/R' 'Wgt' 'Yield' 'YPR'" \
+          names="minAge minBio minCat minDis minF minLen minM minRec minSSB minSSBR minWgt minYield \
+                 minYPR maxAge maxBio maxCat maxDis maxF maxLen maxM maxRec maxSSB maxSSBR maxWgt maxYield maxYPR" \
+          action="omPlotOpts" values="1 0 0 0 0 0 0 0 0 0 0 0 0 100 100 100 100 2 100 2 50 100 5 10 5 0.1" \
+          function=.subGui width=6
+
+      # Grid 2.2: Plot selection.
+      grid 7 5 byrow=FALSE
+
+        label "Life History" font="bold 10"
+        radio name=omPlotType value=omLifeHist  text="Life History"        function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omNumAtAge  text="Numbers at Age"      function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omMatAtAge  text="Maturity at Age"     function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omLenAtAge  text="Length at Age"       function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omWgtAtAge  text="Weight at Age"       function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omWgtLen    text="Weight-Length"       function=.subGui mode=character sticky=W
+
+        label "Gear Plots" font="bold 10"
+        radio name=omPlotType value=omSlg       text="Selectivity (len,g)" function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=omPlotType value=omSalg      text="Selectivity (a,l,g)" function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omPlg       text="Discard (l,g)"       function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=omPlotType value=omPalg      text="Discard (a,l,g)"     function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omdg        text="Discard Mortality"   function=.subGui mode=character sticky=W
+        null
+
+        label "Ref. Pts. (F)" font="bold 10"
+        radio name=omPlotType value=omYprF      text="YPR ~ F"             function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omSsbRF     text="SSB/R ~ F"           function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldF    text="Y~F"                 function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omSsbF      text="SSB~F"               function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omRecSSB    text="Recruits~SSB"        function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldSSB  text="Y~SSB"               function=.subGui mode=character sticky=W
+
+        label "Ref. Pts. (U)" font="bold 10"
+        radio name=omPlotType value=omYprU      text="YPR ~ U"             function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omSsbRU     text="SSB/R ~ U"           function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldU    text="Y~U"                 function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omSsbU      text="SSB~U"               function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omRecSSB    text="Recruits~SSB"        function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldSSB  text="Y~SSB"               function=.subGui mode=character sticky=W
+
+        label "Custom Plots" font="bold 10"
+        radio name=omPlotType value=omRefPoints  text="Ref. Pts. (F)"      function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omRefPointsU text="Ref. Pts. (U)"      function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldGear  text="Yield by Gear"      function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omFvsh       text="Fmsy ~ h"           function=.subGui mode=character sticky=W
+        radio name=omPlotType value=omYieldVsF   text="Yield ~ Trawl F"    function=.subGui mode=character sticky=W
+        null
+
+#--------------------------------------------------------------------#
+#--            Notebook Page 2 - Management Procedure              --#
+#--------------------------------------------------------------------#
+
+  grid 4 1
+    grid 1 2 relief="raised" pady=3
+      label text="Data" font="bold 10" anchor="w" sticky="N" width=10
+      object name=dataPars rowshow=5 function=.subGui action="dataPars" entrybg="white" \
+        entryfont="10" font="10" padx=5 pady=5 width="20 30"
+
+    grid 1 2 relief="raised" pady=3
+      label text="Assessment" font="bold 10" anchor="w" sticky="N" width=10
+      object name=assessPars rowshow=5 function=.subGui action="assessPars" entrybg="white" \
+        entryfont="10" font="10" padx=5 pady=5 width="20 30"
+
+
+    grid 1 2 relief="raised" pady=3
+      label text="HCR" font="bold 10" anchor="w" sticky="N" width=10
+      object name=hcrPars rowshow=5 function=.subGui action="hcrPars" entrybg="white" \
+        entryfont="10" font="10" padx=5 pady=5 width="20 30"
+
+    # Plot area: options and choices.
+    grid 2 1 relief="raised" pady=2
+
+      grid 1 8
+        label text="Options:" font="bold 10"
+        check name=mpAnnotate function=.subGui action="mpAnnotate" checked=T text="Annotate"
+        check name=mpLegend   function=.subGui action="mpLegend"   checked=T text="Legend"
+        check name=mpSetXaxis function=.subGui action="mpSetXaxis" checked=F text="Set X-axis"
+        check name=mpSetYaxis function=.subGui action="mpSetYaxis" checked=F text="Set Y-axis"
+
+        button text="EMF"   action="mpSaveEMF" function=.subGui width=5 padx=2 bg="gray85"
+        button text="PDF"   action="mpSavePDF" function=.subGui width=5 padx=2 bg="gray85"
+        button text="Reset" action="mpGfxOff"  function=.subGui width=5 padx=2 bg="gray85"
+  
+      grid 1 2
+        matrix nrow=2 ncol=5 rowlabels="'Min.' 'Max.'" \
+          collabels="'Year' 'U/F' 'F/Ftarg' 'SSB' 'SSB/Btarg'" \
+          names="mpMinYr mpMinF mpMinFratio mpMinSSB mpMinSSBratio mpMaYr mpMaxF mpMaxFratio mpMaxSSB mpMaxSSBratio" \
+          action="mpPlotOpts" values="1 0 0 0 0 100 2.0 2.0 100 2" \
+          function=.subGui width=6
+
+        grid 3 1 padx=10
+          radio name=mpPlotType value=mpDataPlot text="Data Series"          function=.subGui mode=character sticky="W"
+          radio name=mpPlotType value=mpHcrPlot  text="Harvest Control Rule" function=.subGui mode=character sticky="W" selected=T
+          radio name=mpPlotType value=mpPriors   text="Priors"               function=.subGui mode=character sticky="W"
+
+#--------------------------------------------------------------------#
+#--            Notebook Page 3 - Run Simulation                    --#
+#--------------------------------------------------------------------#
+
+  grid 2 1
+
+    #grid 1 1 relief="raised"
+    #  object name=simPars rowshow=20 function=.subGui action="simPars" \
+    #    edit=FALSE entrybg="white" noeditbg="#FDB3C1" width="25 45" entryfont="10" font="10" padx=5 pady=5
+
+    grid 1 2 relief="raised" pady=5
+      grid 2 1
+        #entry name=nRep label="Number of replicates" mode=numeric value=10   width=10 sticky="E"
+        entry name=nRep label="Number of replicates" value=10 edit=FALSE action="nRep" width=10 mode=numeric sticky=E
+        entry name=simSeed label="Random number seed"   mode=numeric value=1234 width=10 sticky="E"
+      button text="Run" action="simRun" function=.subGui bg="yellow" font="bold 12" padx=10 width=6
+
+    grid 2 1 relief="raised"
+      grid 2 1
+        label text="ADMB Command Line Options" font="bold 10" sticky=W
+        grid 1 3
+          check name=simNox   function=.subGui action="simNox"    checked=T text="-nox"    sticky=W
+          check name=simEst   function=.subGui action="simEst"    checked=F text="-est"    sticky=W
+          entry name=simPrint function=.subGui action="simPrint"  label="-iprint" mode=numeric value=1000  width=6 sticky=W
+      
+      grid 3 1
+        label text="R system Call Options" font="bold 10" sticky=W
+        check name=simInvis function=.subGui action="simInvis"  checked=T text="invisible"           sticky=W
+        check name=simShow  function=.subGui action="simShow"   checked=F text="showoutputonconsole" sticky=W
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 4 - View                       --#
+#--------------------------------------------------------------------#
+
+
+  grid 2 1 padx=3 pady=3 sticky=W
+
+    # Grid 1: Reference points.
+    grid 2 8 pady=2
+      label "Bmsy"
+      label "MSY"
+      label "Umsy"
+      label "U0"
+      label "U01"
+      label "U01"
+      label "Umax"
+      label "Ucrash"
+      entry name=ssbFmsy   mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=yieldFmsy mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=Fmsy      mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=F0        mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=F01       mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=F40       mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=Fmax      mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+      entry name=Fcra      mode=numeric value=0.0 width=10 sticky=E edit=FALSE noeditbg="pink" padx=2
+
+    # Grid 2: Plot area options and plot selection, replicate widget.
+    grid 3 1 relief="raised" pady=2
+
+      # Plot option control.
+      grid 3 1 relief="sunken" padx=5 pady=3
+
+        # Layout.
+        grid 1 3
+          label text="Layout: " font="bold 10" sticky=W
+
+          grid 1 8 relief="sunken" pady=2
+            check name=vwAuto       function=.subGui action="vwAuto"      checked=T text="Auto"          sticky=W
+            check name=vwOverWrite  function=.subGui action="vwOverWrite" checked=T text="Overwrite"     sticky=W
+            check name=vwPlotByRow  function=.subGui action="vwPlotByRow" checked=F text="Plot by Row"   sticky=W
+            entry name=vwNrows      function=.subGui action="vwNrows"     mode=numeric value="1" width=3 sticky=W
+            label text="Rows"                                                                            sticky=W
+            entry name=vwNcols      function=.subGui action="vwNcols"     mode=numeric value="1" width=3 sticky=W
+            label text="Columns"
+            check name=vwStamp      function=.subGui action="vwStamp"     checked=T text="Stamp"                                                                                     sticky=W
+
+          grid 1 3
+            button text="EMF"   action="vwSaveEMF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="PDF"   action="vwSavePDF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="Reset" action="vwGfxOff"  function=.subGui width=5 padx=2 bg="gray85"
+
+        # Plot options.
+        grid 1 8
+          label text="Options: " font="bold 10" 
+          check name=vwAnnotate function=.subGui action="vwAnnotate" checked=T text="Annotate"
+          check name=vwGears    function=.subGui action="vwGears"    checked=F text="Gears"       fg="darkgreen"
+          check name=vwLegend   function=.subGui action="vwLegend"   checked=T text="Legend"
+          check name=vwProj     function=.subGui action="vwProj"     checked=F text="Projection"
+          check name=vwSetXaxis function=.subGui action="vwSetXaxis" checked=F text="Set X-axis"
+          check name=vwSetYaxis function=.subGui action="vwSetYaxis" checked=F text="Set Y-axis"
+          check name=vwUseYears function=.subGui action="vwUseYears" checked=F text="Use Years"
+  
+        # Plot axis ranges.
+        matrix nrow=2 ncol=15 rowlabels="'Min' 'Max'" \
+          collabels="'Age' 'Bio' 'Catch' 'Disc' 'U/F' 'HR' 'Index' 'Len' 'M' 'Num' 'Rec' 'Sel' 'SSB' 'Year' 'Yield'" \
+          names="vwMinAge vwMinBio vwMinCat vwMinDis vwMinF vwMinHR vwMinIdx vwMinLen vwMinM vwMinNum vwMinRec vwMinSel vwMinSSB vwMinYr vwMinYield  \
+                 vwMaxAge vwMaxBio vwMaxCat vwMaxDis vwMaxF vwMaxHR vwMaxIdx vwMaxLen vwMaxM vwMaxNum vwMaxRec vwMaxSel vwMaxSSB vwMaxYr vwMaxYield" \
+          action="vwPlotOptions" values="1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 100 100 10 1 2 1 50 100 0.5 100 50 1 100 100 5" \
+          function=.subGui padx=2 pady=2 width=5
+
+      # Grid 2.2: Plot selection.
+      grid 6 5
+
+        radio name=vwPlotType value=vwBiomass    text="Biomass"               function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwNumbers    text="Numbers"               function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwRecruits   text="Recruits"              function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwRecSpawn   text="Rec-Spawn"             function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwRefPoints  text="Ref. Pts. (U)"         function=.subGui mode=character sticky=W
+
+        radio name=vwPlotType value=vwSlg        text="Selectivity (l,g)"     function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwSalg       text="Selectivity (a,l.g)"   function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwPlg        text="Discard Rate (l,g)"    function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwPalg       text="Discard Rate (a,l,g)"  function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwSSBIndex   text="SSB~Index"             function=.subGui mode=character sticky=W
+
+        radio name=vwPlotType value=vwCatgProp   text="Catch-Age Prop"        function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwCatgFreq   text="Catch-Age Freq"        function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwItg        text="Stock Indices"         function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwObsSurvey  text="SSB Survey Fit"        function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwFmort      text="Fishing mortality"     function=.subGui mode=character sticky=W fg="darkgreen"
+
+        radio name=vwPlotType value=vwCatch      text="Catch biomass"         function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwCtg        text="Catch By Gear"         function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwDtg        text="Discards By Gear"      function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwCatDis     text="Catch & Discards"      function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwHR         text="HR Series"             function=.subGui mode=character sticky=W fg="darkgreen"
+ 
+        radio name=vwPlotType value=vwOmHCR      text="OM LegHR~SSB"          function=.subGui mode=character sticky=W fg="blue"
+        radio name=vwPlotType value=vwMpHCR      text="MP Rate~SSB"           function=.subGui mode=character sticky=W fg="blue"
+        radio name=vwPlotType value=vwRefSeries  text="Ref. Pt. Series"       function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwBioCatF    text="SSB Catch F"           function=.subGui mode=character sticky=W fg="blue"
+        radio name=vwPlotType value=vwBioCatR    text="SSB Catch Rec"         function=.subGui mode=character sticky=W fg="blue"
+
+        radio name=vwPlotType value=vwParEst     text="Parameter Ests."       function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwParCor     text="Parameter Cors."       function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwSSBFit     text="Assessment Fit"        function=.subGui mode=character sticky=W fg="darkgreen"
+        radio name=vwPlotType value=vwDiags      text="Diagnostics"           function=.subGui mode=character sticky=W
+        radio name=vwPlotType value=vwBioHrR     text="SSB HR Rec"            function=.subGui mode=character sticky=W fg="blue"
+
+      # Selection criteria.
+      #grid 1 3 relief="sunken" pady=3
+      #  label text="Filter Replicates:" font="bold 10"
+      #  check name=vwFilterCode function=.subGui action="vwFilterCode" checked=F text="Exit=1"
+      #  check name=vwFilterGrad function=.subGui action="vwFilterGrad" checked=F text="Max Grad"
+    
+
+      # Grid 2.3: Replicate widget.
+      grid 1 8 padx=10 pady=5 sticky=N
+        label text="Replicate" font="bold 12"
+        entry name=iRep value="1" function=.subGui  action="iRep"    width=5 mode=numeric sticky=W
+        label text="of " font="bold 12"
+        entry name=nRep value=10 edit=FALSE         action="nRep"    width=5 mode=numeric sticky=W
+        null
+        button text="Previous"                  function=.subGui action="vwPrevRep"                   width=10 sticky=E
+        button text="Next"                      function=.subGui action="vwNextRep"                   width=10 sticky=E
+        button name="vwAnimate" text="Animate " function=.subGui action="vwAnimate" fg="blue" padx=10 width=10 sticky=E
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 5 - Perf                       --#
+#--------------------------------------------------------------------#
+
+  grid 3 1 padx=5 pady=5 sticky=W
+
+    # Row 1: Performance header and time period specifications.
+    grid 2 1 relief="raised"
+ 
+      object name=pfSimList function=.subGui rowshow=5 action="pfSimList" width="15 25 25 14 1" entrybg="#FDB3C1" font="10"
+
+      grid 1 6
+        label    text="Showing"
+        entry    name=pfShow       value=1 mode=numeric edit=FALSE noeditbg="pink" width=4
+        label    text="/"
+        entry    name=pfNsim       value=10 mode=numeric edit=FALSE noeditbg="pink" width=4
+        button   text="Select All" function=.subGui action=pfSelectAll padx=2 pady=1 width=8
+        button   text="Clear"      function=.subGui action=pfClearAll  padx=2 pady=1 width=8
+    
+    # Row 2: Simulation dimensions, time periods, objective.
+    grid 1 4
+      
+      object name=pfPeriodList function=.subGui action="pfPeriodList" width="15 4 4" pady=2
+
+      # Base and multipliers.
+      grid 3 3 relief="sunken" byrow=FALSE padx=3
+        label text="Base"
+        radio name=pfBase value="Bmsy" text="Bmsy" function=.subGui mode=character sticky=W
+        radio name=pfBase value="B0"   text="B0"   function=.subGui mode=character sticky=W
+      
+        null
+        label text="LRP"
+        label text="USR"
+
+        label text="Mult"
+        entry name=multLrpBmsy value=0.4 width=5 mode="numeric" action="multLrpBmsy" function=.subGui entrybg="yellow"
+        entry name=multUsrBmsy value=0.8 width=5 mode="numeric" action="multUsrBmsy" function=.subGui entrybg="lightgreen"
+
+      matrix nrow=4 ncol=1 rowlabels="'Base Mult' 'Year' 'Probability' 'Trend Period'" collabels=NULL \
+             names="targMult targYear targProb trendPeriod" values="0.4 57 0.95 10" function=.subGui padx=5 width=6
+
+      grid 3 2 relief="sunken"
+        check name=chkFmsy action=chkFmsy function=.subGui checked=T text="Umsy" sticky=W
+        check name=chkF0   action=chkF0   function=.subGui checked=T text="U0"   sticky=W
+        check name=chkF01  action=chkF01  function=.subGui checked=T text="U01"  sticky=W
+        check name=chkF40  action=chkF40  function=.subGui checked=T text="U40"  sticky=W
+        check name=chkFmax action=chkFmax function=.subGui checked=T text="Umax" sticky=W
+        check name=chkFcra action=chkFcra function=.subGui checked=T text="Ucra" sticky=W
+
+    # Row 3: Plot option controls and plot radio buttons.
+    grid 2 1 relief="raised" padx=2 pady=2
+    
+      # Row 3.1: Plot layout and options.
+      grid 3 1 relief="sunken" padx=2 pady=2
+      
+        grid 1 3
+          label text="Layout: " font="bold 10" sticky=W
+ 
+          grid 1 8 relief="sunken" pady=2
+            check name=pfAuto      function=.subGui action="pfAuto"      checked=T text="Auto"          sticky=W
+            check name=pfOverWrite function=.subGui action="pfOverWrite" checked=T text="Overwrite"     sticky=W
+            check name=pfPlotByRow function=.subGui action="pfPlotByRow" checked=F text="Plot by Row"   sticky=W
+            entry name=pfNrows     function=.subGui action="pfNrows"     mode=numeric value="1" width=3 sticky=W
+            label text="Rows"                                                                               sticky=W
+            entry name=pfNcols     function=.subGui action="pfNcols"     mode=numeric value="1" width=3 sticky=W
+            label text="Columns"
+            check name=pfStamp     function=.subGui action="pfStamp"     checked=T text="Stamp"
+          
+          grid 1 3
+            button text="EMF"   action="pfSaveEMF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="PDF"   action="pfSavePDF" function=.subGui width=5 padx=2 bg="gray85"
+            button text="Reset" action="pfGfxOff"  function=.subGui width=5 padx=2 bg="gray85"
+
+        grid 1 9
+          label text="Options:" font="bold 10"
+          check name=pfAnnotate function=.subGui action="pfAnnotate" checked=T text="Annotate"
+          check name=pfGears    function=.subGui action="pfGears"    checked=F text="Gears"      fg="darkgreen"
+          check name=pfGrid     function=.subGui action="pfGrid"     checked=F text="Grid"
+          check name=pfLegend   function=.subGui action="pfLegend"   checked=T text="Legend"
+          check name=pfProj     function=.subGui action="pfProj"     checked=F text="Projection"
+          check name=pfSetXaxis function=.subGui action="pfSetXaxis" checked=F text="Set X-axis"
+          check name=pfSetYaxis function=.subGui action="pfSetYaxis" checked=F text="Set Y-axis"
+          check name=pfUseYears function=.subGui action="pfUseYears" checked=F text="Use Years"
+
+        grid 1 4
+
+          grid 2 1 padx=10
+            label text="Traces"
+            entry name=pfTraces  function=.subGui value="3" width=4 mode=numeric action="pfTraces" sticky=W
+
+          matrix nrow=2 ncol=1 rowlabels="'Hi' 'Lo'" collabels="Quantile" \
+            names="pfUpQuant pfLoQuant" values="0.9 0.1" function=.subGui width=5
+
+          matrix nrow=2 ncol=9 rowlabels="'Min' 'Max' " collabels="'Year' 'Dep' 'Catch' 'Disc' 'U/F' 'HR' 'SSB' 'B/Base' 'C/MSY'" \
+            names="pfMinYr pfMinDep pfMinCat pfMinDis pfMinF pfMinHR pfMinSSB pfMinBase pfMinMSY pfMaxYr pfMaxDep pfMaxCat pfMaxDis pfMaxF pfMaxHR pfMaxSSB pfMaxBase pfMaxMSY" \
+            values="1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 100 0.6 10.0 10.0 1.0 1.0 100.0 3.0 3.0" function=.subGui width=6
+
+          grid 3 1 padx=3
+            radio name=pfFailType value=pfFailKeep   text="Keep Fails"       function=.subGui mode=character sticky=W selected=T
+            radio name=pfFailType value=pfFailAcross text="Rem Fails Across" function=.subGui mode=character sticky=W
+            radio name=pfFailType value=pfFailWithin text="Rem Fails Within" function=.subGui mode=character sticky=W
+
+
+      # Row 3.2: Plot radio buttons.
+      grid 1 5
+
+        # Column 1: Envelopes.
+        grid 2 1 sticky=NW
+          label text="Envelopes" font="bold 10" sticky=W
+      
+          grid 7 1 sticky=W
+            radio name=pfPlotType value=pfTulipBmsy    text="SSB/Bmsy"      function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfTulipBmsyMSY text="SSB/Bmsy+C/MSY" function=.subGui mode=character sticky=W  
+            radio name=pfPlotType value=pfTulipDep     text="Depletion"     function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfTulipCat     text="Catch"         function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfTulipDis     text="Discards"      function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfTulipDepCat  text="Dep. & Catch"  function=.subGui mode=character sticky=W  
+            radio name=pfPlotType value=pfTulipF       text="Legal HR"      function=.subGui mode=character sticky=W
+
+        # Column 2: Barplots.
+        grid 2 1 sticky=NW
+          label text="Barplots" font="bold 10" sticky=W
+
+          grid 5 2 sticky=W
+            radio name=pfPlotType value=pfBarDepPer   text="Depletion"   function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarShort    text="Short-term"  function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarCatPer   text="Catch"       function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarMedium   text="Med-term"    function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarDisPer   text="Discards"    function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarLong     text="Long-term"   function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarAAVPer   text="AAV"         function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarAllPer   text="All Periods" function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarAllStats text="All Stats"   function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfBarAllPerSL text="S,L Periods" function=.subGui mode=character sticky=W
+
+        # Columns 3: Other
+        grid 2 1 sticky=NW
+          label text="Other Plots" font="bold 10" sticky=W
+
+          grid 4 1 sticky=W
+            radio name=pfPlotType value=pfFvsSSB  text="Legal HR vs SSB"    function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfQboxDep text="Depletion boxplot"  function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfQboxSSB text="SSB/Bmsy boxplot"   function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfTrend text="Stock Trend Obj."     function=.subGui mode=character sticky=W
+ 
+        # Columns 3: Equilibrium
+        grid 2 1 sticky=NW
+          label text="Equilbrium" font="bold 10" sticky=W
+
+          grid 6 1 sticky=W
+            radio name=pfPlotType value=pfEqYprU      text="YPR ~ U"             function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfEqSsbRU     text="SSB/R ~ U"           function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfEqYieldU    text="Y~U"                 function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfEqSsbU      text="SSB~U"               function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfEqRecSSB    text="Recruits~SSB"        function=.subGui mode=character sticky=W
+            radio name=pfPlotType value=pfEqYieldSSB  text="Y~SSB"               function=.subGui mode=character sticky=W
+
+        # Column 4: Diagnostics
+        grid 3 1 sticky=NW
+           label text="Diagnostics" font="bold 10" sticky=W
+           grid 1 1 sticky=W
+             radio name=pfPlotType value=pfDiag     text="Diagnostics"  function=.subGui mode=character sticky=W
+             radio name=pfPlotType value=pfParPairs text="Par Pairs"    function=.subGui mode=character sticky=W
+             #radio name=pfPlotType value=convCode  text="Conv. Codes" function=.subGui mode=character sticky=W
+
+#--------------------------------------------------------------------#
+#--                   Notebook Page 6 - Options                    --#
+#--------------------------------------------------------------------#
+# C++ Compiler is defaulted to be MinGW in the GUI.  Change below if alternative desired.
+
+  grid 10 1 relief="raised" padx=2
+  
+    label text="ADMB Options" font="bold 12" sticky="W"
+    grid 1 3 sticky="W"
+      label text="ADMB Library Path" font="12" width=15
+       entry name=opAdmbPath action="opAdmbPath"  value="C:/ADMB/MinGW" \
+         function=.subGuiMod mode=character width=60
+      button text="Set"      action="opSetAdmb" function=.subGuiMod padx=5 width=5
+    null
+
+    label text="C++ Compiler Options" font="bold 12" sticky="W"
+    grid 4 1
+      grid 1 4 sticky="W"
+        label text="Compiler" font="12" width=15
+        radio name=opCompiler value="GCC"     text="GCC"      action="opCompiler" function=.subGuiMod mode=character selected=TRUE
+        radio name=opCompiler value="Borland" text="Borland"  action="opCompiler" function=.subGuiMod mode=character
+        radio name=opCompiler value="VisualC" text="Visual C" action="opCompiler" function=.subGuiMod mode=character
+      grid 1 3 sticky="W"
+        label text="C++ Compiler Path" font="12" width=15
+        entry name=opCppPath action="opCppPath" value="C:/ADMB/MinGW/utilities/MinGW/bin" \
+          function=.subGuiMod mode=character sticky="E" width=60
+        button text="Set" action="opSetCPP" function=.subGuiMod padx=5 width=5
+  
+      grid 1 2 sticky="W"
+        label text="Compile Options" font="12" width=15
+        entry name=opCompOpt action="opCompOpt" value="NOT IMPLEMENTED" function=.subGuiMod mode=character sticky="W" width=60
+    
+      grid 1 2 sticky="W"
+        label text="Link Options" font="12" width=15
+        entry name=opLinkOpt action="opLinkOpt" value="NOT IMPLEMENTED" function=.subGuiMod mode=character sticky="W" width=60
+    null
+
+    label text="Project Options" font="bold 12" sticky="W"
+    grid 1 3 pady=2 sticky="W"
+      label text="Results Path" font="12" padx=5 sticky="E" width=15
+      entry name=opProjDir action="opProjDir" value="" function=.subGuiMod mode=character width=60
+      button text="Set"    action="opSetProj" function=.subGuiMod padx=5 width=5
+
+    grid 1 3 pady=2 sticky="W"
+      label text="Text Editor" font="12" padx=5 sticky="E" width=15
+      entry name=opEditor action="opEditor"  function=.subGuiMod value="notepad.exe" mode=character width=60
+      button text="Set"   action="opSetEdit" function=.subGuiMod padx=5 width=5
+
+    grid 5 1 relief="sunken" pady=10
+      label text="IMPORTANT!" font="12" bg="yellow" width=60
+      label text="Directory paths must always be specified using forward slashes:" bg="yellow" font="12" width=60
+      label text="e.g.,      C:/MyProjects/MyWorkingDirectory" bg="yellow" font="12" width=60
+      label text="\nWindows paths containing spaces must be enclosed in double quotes:" bg="yellow" font="12" width=60
+      label text="e.g.,      \"C:/My Projects/My Working Directory\"" bg="yellow" font="12" width=60
+
+#--------------------------------------------------------------------#
+#--                            Footer                              --#
+#--------------------------------------------------------------------#
+     
+  # Grid 3: Simulation Widget, Tables and Exit buttons.
+  grid 1 2 pady=2
+
+    # Simulation control widget.
+    grid 3 1 relief="raised" padx=5
+      grid 1 5
+        entry name=simName label="Simulation:" action="simName" font="bold 12" value="" function=.subGui \
+              mode=character padx=2 width=30
+        entry name=iSim   value=1 function=.subGui mode=numeric action="iSim" padx=1 width=3 edit=TRUE noeditbg="#FDB3C1"
+        label "/"         font="12"
+        entry name=nSim   value=1 mode=numeric padx=1 width=3 edit=FALSE noeditbg="#FDB3C1"
+        grid 1 4 relief="raised" padx=4
+          entry name=indFit mode=character width=4 value="Fit"  edit=TRUE bg="red" noeditbg="gray" padx=1
+          entry name=indOM  mode=character width=4 value="OM "  edit=TRUE bg="red" noeditbg="gray" padx=1
+          entry name=indMP  mode=character width=4 value="MP"   edit=TRUE bg="red" noeditbg="gray" padx=1
+          entry name=indSim mode=character width=4 value="Sim"  edit=TRUE bg="red" noeditbg="gray" padx=1
+          #entry name=indPrf mode=character width=4 value="Perf" edit=TRUE bg="red" noeditbg="gray" padx=1
+
+      grid 1 2 pady=1
+        entry name=scenarioName label="Scenario:" action="scenarioName" font="italic 12" value="" function=.subGui \
+              mode=character sticky=W padx=2 width=30
+        entry name=mpName       label="MP:"       action="mpName"       font="italic 12" value="" function=.subGui \
+              mode=character sticky=W padx=2 width=30
+
+      grid 1 11 pady=1
+        button text="New"    name=newSim  function=.subGui action=newSim   padx=2 width=6
+        button text="Del"    name=remSim  function=.subGui action=remSim   padx=2 width=6
+        button text="<"      name=prevSim function=.subGui action=prevSim  padx=2 width=5 bg="gray85"
+        button text=">"      name=nextSim function=.subGui action=nextSim  padx=2 width=5 bg="gray85"
+
+        button text="L"      name=moveL   function=.subGui action=moveL    padx=2 width=2
+        button text="R"      name=moveR   function=.subGui action=moveR    padx=2 width=2
+
+        button text="Add blob" name=addSim  function=.subGui action=addSim   padx=2 width=8
+        button text="Load Track" name=export  function=.subGui action="import" padx=2 width=9
+        button text="Save Track" name=import  function=.subGui action="export" padx=2 width=9
+        button text="Batch"  name=batch   function=.subGui action="batch"  padx=2 width=6
+        button text="Pin+Dat" name=dataSim  function=.subGui action="dataSim" padx=2 width=6
+
+
+    # Footer button controls.
+    grid 3 1 pady=2
+      button text="Sim Stats"      function=.subGui action="simStats"  padx=2 pady=1 width=10 bg="beige"
+      button text="Perf Stats"     function=.subGui action="perfStats" padx=2 pady=1 width=10 bg="lightblue"
+      button text="Exit"           function=.subGui action="simExit"   padx=2 pady=5 width=6  font="bold 12" bg="green"

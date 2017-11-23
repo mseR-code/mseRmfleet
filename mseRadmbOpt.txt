@@ -1,0 +1,13 @@
+# Options for ADMB (PBSadmb NOT required)
+$admpath
+$$vector mode="character" names=""
+C:/ADMB/MinGW
+$gccpath
+$$vector mode="character" names=""
+C:/ADMB/MinGW/utilities/MinGW/bin
+$editor
+$$vector mode="character" names=""
+C:/WINDOWS/notepad.exe
+$ver
+$$vector mode="character" names=""
+gcc421

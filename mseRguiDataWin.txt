@@ -1,0 +1,52 @@
+window name=mseRguiData title="mseR Data GUI"
+
+# (1) Main pull-down menu items.
+
+menu nitem=1 label="File"
+  menuitem label="Exit"                      function=.closeActWin
+menu nitems=2 label="View"
+  menu nitems=3 label=Docs
+    menuitem label="mseR-FinFish Components" function=.viewHelp action=mseR-Finfish.emf
+    menuitem label="Variable Description"    function=.viewHelp action=testDoc.txt
+    menuitem label="Plot Descriptions"       function=.viewHelp action=testDoc.txt
+  menu nitems=2 label="R Code"
+    menuitem label="GUI Functions"        	 function=.viewFile action=mseRguiSimFuns.r
+    menuitem label="Window Control Template" function=.viewFile action=mseRguiDataWin.txt
+menu nitems=4 label=Help
+    menuitem label="FAQ"                     function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Help"       function=.viewHelp action=testDoc.txt
+    menuitem label="mseR-FinFish Manual"     function=.viewHelp action=testDoc.txt
+    menuitem label="About mseR"              function=.viewHelp action=mseR-FFabout.txt
+
+#------------------------------------------------------------------------------#
+#--                               Method GUI                                 --#
+#------------------------------------------------------------------------------#
+
+grid 2 1
+
+  # MP Data.
+  grid 2 1
+  
+    grid 2 1 relief="sunken"
+      label text="Ages" font="bold 12" sticky=W
+      
+      grid 3 2 byrow=TRUE
+        entry name=useAges label="useAges" function=.subSim mode=character value="c(1,4,5)"    width=15 entryfont="12" font="12" sticky="E"
+        entry name=minAge  label="minAge"  function=.subSim mode=numeric   value=3             width=15 entryfont="12" font="12" sticky="E"
+        entry name=t1Ages  label="t1Ages"  function=.subSim mode=character value="c(15,26,39)" width=15 entryfont="12" font="12" sticky="E"
+        entry name=k1Ages  label="k1Ages"  function=.subSim mode=character value="c(1,1,1)"    width=15 entryfont="12" font="12" sticky="E"
+        entry name=t2Ages  label="t2Ages"  function=.subSim mode=character value="c(47,47,47)" width=15 entryfont="12" font="12" sticky="E"       
+        entry name=k2Ages  label="k2Ages"  function=.subSim mode=character value="c(0,1,1)"    width=15 entryfont="12" font="12" sticky="E"
+
+    grid 2 1 relief="sunken" pady=5
+      label text="Stock Index" font="bold 12" sticky=W    
+         
+      grid 3 2 byrow=TRUE
+        entry name=useIndex  label="useIndex"  function=.subSim mode=character value="c(1,4,5)"    width=15 entryfont="12" font="12" sticky="E"
+        entry name=indexType label="indexType" function=.subSim mode=character value="c(1,1,1)"    width=15 entryfont="12" font="12" sticky="E"
+        entry name=t1Index   label="t1Index"   function=.subSim mode=character value="c(15,26,39)" width=15 entryfont="12" font="12" sticky="E"
+        entry name=k1Index   label="k1Index"   function=.subSim mode=character value="c(1,1,1)"    width=15 entryfont="12" font="12" sticky="E"
+        entry name=t2Index   label="t2Index"   function=.subSim mode=character value="c(47,47,47)" width=15 entryfont="12" font="12" sticky="E"
+        entry name=k2Index   label="k2Index"   function=.subSim mode=character value="c(0,1,1)"    width=15 entryfont="12" font="12" sticky="E"
+      
+  button name=dataOK text="Save" function=.subSim action="dataOK" font="bold 12" padx=2 width=6
