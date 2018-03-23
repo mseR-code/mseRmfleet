@@ -1306,7 +1306,7 @@ assessModISCAM <- function( caObj )
     # This condition is then flagged in mp$assess$runStatus$hessPosDef (T,F).
     tmpMCMC  <- try( read.table( mcmcFile, header=T, sep="",
                       strip.white = TRUE ), silent=TRUE ) 
-    # Increment starting B0 value to hopefully get convergence
+    # Increment starting R0 and R value to hopefully get convergence
     if ( class( tmpMCMC )=="try-error" )
     {
       caObj$R0 <- exp(log(caObj$R0)*(1.0+i*xFactor))
