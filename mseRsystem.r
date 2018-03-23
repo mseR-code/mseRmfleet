@@ -767,7 +767,9 @@ ageLenOpMod <- function( objRef, t )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
   legalHR    <- (legalC + legalD)/Bt[t]
-  sublegalHR <- sublegalD/sublegalB
+  if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
+  else sublegalHR <- sublegalD/sublegalB
+
 
   # Gear-specific cpue, catch, discards, and sample age-proportions
   for( i in 1:length(useIndex) )
@@ -1924,13 +1926,12 @@ iscamWrite <- function ( obj )
   # Safeguards to limit F in case assessment failed in a particular year
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- 1 - exp( - obj$maxF) # Maximum allowable F in case estimation fails.
-  
-  # HCR as defined in Eqs H4.2 in Table 5 of main doc.
+
 
   if( legalBiomass < lowerBound ) 
     adjF <- 0.
   if( legalBiomass >= lowerBound & legalBiomass < upperBound )
-    adjF <- remRate*(legalBiomass-lowerBound)/(upperBound-lowerBound)
+    adjF <- (legalBiomass-lowerBound)/legalBiomass
   if( legalBiomass >= upperBound ) 
     adjF <- remRate 
   
@@ -1938,7 +1939,7 @@ iscamWrite <- function ( obj )
   if( fail==TRUE & adjF > maxF )
     adjF <- maxF
 
-  # Final catch limit using Baranov equation
+  # Final catch limit treating adjF as a harvest rate
   catchLim <- adjF*legalBiomass
 
 
@@ -2893,9 +2894,10 @@ iscamWrite <- function ( obj )
       ranM      <- ranM/mean( ranM ) 
       Mt[1]     <- ctlList$opMod$M                # Scale Mt[1] to equal input mean M.
       Mt[2:nT]  <- Mt[1] * ranM[ c(2:nT) ]
-      
+      endM      <- ctlList$opMod$endM
+
       # Trend M
-      trendM    <- (log(ctlList$opMod$endM) - log( Mt[1]) ) / (nT-1)
+      trendM    <- (log(endM) - log( Mt[1]) ) / (nT-1)
       Mt[2:nT]  <- Mt[1]*exp( trendM*c(2:nT) ) * ranM[2:nT]
 
       # PulseM
@@ -2917,14 +2919,23 @@ iscamWrite <- function ( obj )
   if( !is.null( ctlList$opMod$estMdevs) )
   {
     Mdevs <- ctlList$opMod$estMdevs$log_m_devs
-    for(t in 2:(tMP-1) ) obj$om$Mt[t] <- obj$om$Mt[t-1]*exp(Mdevs[t-1])
+    for(t in 2:(tMP-1) ) 
+      obj$om$Mt[t] <- obj$om$Mt[t-1]*exp(Mdevs[t-1])
+
+    if( !is.null(ctlList$opMod$kYearsMbar) )
+    {
+      k <-  ctlList$opMod$kYearsMbar
+      Mbar <- mean( obj$om$Mt[ (tMP - k):(tMP - 1 ) ] )
+      endM <- Mbar
+    }
+
     if(is.null(ctlList$opMod$endMphase))
     {
-      trendM    <- (log(ctlList$opMod$endM) - log( obj$om$Mt[t]) ) / (nT - t)
+      trendM    <- (log(endM) - log( obj$om$Mt[t]) ) / (nT - t)
       obj$om$Mt[tMP:nT] <- obj$om$Mt[tMP-1] * ranM[tMP:nT] * exp( trendM * (1:(nT-tMP+1)) )
     } else {
       phaseTime <- ctlList$opMod$endMphase
-      trendM    <- (log(ctlList$opMod$endM) - log( obj$om$Mt[t]) ) / phaseTime
+      trendM    <- (log(endM) - log( obj$om$Mt[t]) ) / phaseTime
       obj$om$Mt[tMP:(tMP+phaseTime-1)] <- obj$om$Mt[tMP-1] * ranM[tMP:(tMP+phaseTime-1)] * exp( trendM * (1:phaseTime) )
       obj$om$Mt[(tMP + phaseTime):nT] <- obj$om$Mt[tMP + phaseTime-1] * ranM[(tMP+phaseTime):nT]
     }
@@ -2947,7 +2958,10 @@ iscamWrite <- function ( obj )
 
   # Draw tsBoot indices anyways, then use in projected Mt
   # matrices (this way the random draws for each run are the same)
-  bootMt <- tsBoot( x = obj$om$Mt[1:(tMP-1)], 
+  if(!is.null(ctlList$opMod$kBoot))
+    initBoot <- tMP - ctlList$opMod$kBoot
+  else initBoot <- 1
+  bootMt <- tsBoot( x = obj$om$Mt[initBoot:(tMP-1)], 
                     length = length((tMP):nT), 
                     tolSD = ctlList$opMod$bootTolSD,
                     tolMult = ctlList$opMod$bootTolMult )

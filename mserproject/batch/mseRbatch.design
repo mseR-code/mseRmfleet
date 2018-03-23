@@ -1,6 +1,7 @@
-# mseR batch design file,  Thu Sep 28 09:59:26 2017 
+# mseR batch design file,  Tue Mar 20 11:18:40 2018 
 "parFile","prefixName","stampName","blobName","scenarioName","mpName","dataName","methodName","ruleName","scCol","scLty","scLwd","scSym","mpCol","mpLty","mpLwd","mpSym","join"
-"simCtlBat1.txt","simCtlBat","simCtlBat280920170959261","simCtlBat1","scenario1","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
-"simCtlBat2.txt","simCtlBat","simCtlBat280920170959262","simCtlBat2","scenario1","mp2","data","method","rule","black",1,1,1,"black",1,1,1,0
-"simCtlBat3.txt","simCtlBat","simCtlBat280920170959263","simCtlBat3","scenario2","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
-"simCtlBat4.txt","simCtlBat","simCtlBat280920170959264","simCtlBat4","scenario2","mp2","data","method","rule","black",1,1,1,"black",1,1,1,0
+"simCtlBat1.txt","simCtlBat","simCtlBat200320181118391","simCtlBat1","scenario1","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
+"simCtlBat2.txt","simCtlBat","simCtlBat200320181118392","simCtlBat2","scenario2","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
+"simCtlBat3.txt","simCtlBat","simCtlBat200320181118393","simCtlBat3","scenario3","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
+"simCtlBat4.txt","simCtlBat","simCtlBat200320181118394","simCtlBat4","scenario4","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0
+"simCtlBat5.txt","simCtlBat","simCtlBat200320181118395","simCtlBat5","scenario5","mp1","data","method","rule","black",1,1,1,"black",1,1,1,0

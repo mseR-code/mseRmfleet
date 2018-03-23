@@ -91,7 +91,13 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 
 # Flag to produce Mt envelopes in Perf under legal HR
 .USEMt <- TRUE
+if( .USEMt ) 
+  cat("HR plots in guiPerf will show Mt simulation envelope.\n")
+# Same, but for Rt
 .USERt <- FALSE
+if( .USERt ) 
+  cat("HR plots in guiPerf will show Rt simulation envelope.\n")
+
 
 # Lables for each harvest control rule.
 .HCRNAMES <- c( "Constant F", "Variable F", "Decline Risk", "User Rule" )

@@ -1920,6 +1920,8 @@
   if ( is.null(yLim3) )
     yLim3 <- range( c(0,Rt) )
 
+  if( any(!is.finite(yLim2) ) ) yLim2 <- range(c(0,legalHR))
+
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
@@ -1938,7 +1940,8 @@
   plot( xLim, yLim2, type="n", axes=FALSE, xlab="", ylab="" )
   
   lines( c(1:nT), legalHR,    col=.LegUtCOL,  lty=.LegUtLTY,  lwd=.LegUtLWD )
-  lines( c(1:nT), sublegalHR, col=.SlegUtCOL, lty=.SlegUtLTY, lwd=.SlegUtLWD )
+  if( all(is.finite(sublegalHR)))
+    lines( c(1:nT), sublegalHR, col=.SlegUtCOL, lty=.SlegUtLTY, lwd=.SlegUtLWD )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
   
@@ -2271,6 +2274,21 @@
   nT  <- length( Mt )
   tMP <- obj$ctlList$opMod$tMP
   
+  # What about Mt fits?
+  retroMt <- obj$mp$assess$retroMt
+  retroMt <- retroMt[retroMt[,"iRep"] == iRep, 2:ncol(retroMt)]
+
+  # Turn deviations into M values
+  for( c in 2:ncol(retroMt))
+  {
+    if(c == 2) 
+    {
+      retroMt[,c] <- M
+      next
+    }
+    retroMt[,c] <- retroMt[,c-1] * exp(retroMt[,c])
+  }
+
   xLim <- gfx$xLim
   yLim <- gfx$yLim
     
@@ -2289,10 +2307,22 @@
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
   
   abline( h=M, col=.MCOL, lty=.MLTY, lwd=.MLWD )
+
+  #Plot retroMt values
+  for( r in 1:nrow(retroMt) )
+  {
+    Mcol <- "grey70"
+    lines( x = (1:nT), y = retroMt[r,2:(nT+1)], col = Mcol ) 
+  }
+
+  lines( x = (1:nT), y = retroMt[1,2:(nT+1)], col = "darkgreen", lwd = 3 ) 
+  lines( x = (1:nT), y = retroMt[nrow(retroMt),2:(nT+1)], col = "red", lwd = 3 ) 
    
   lines( c(1:nT), Mt, col=.MtCOL, lty=.MtLTY, lwd=.MtLWD )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
+
+
     
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
   axis( side=2, cex.axis=.CEXAXIS2, las=.YAXISLAS )
@@ -5000,8 +5030,8 @@
   if ( is.null(yLim) )
   {
     tdx <- c( xLim[1]:xLim[2] )
-    # yLim <- range( Ct[ ,tdx ], na.rm=TRUE )
-    yLim <- c(0,.MAXCATCH)
+    yLim <- range( Ct[ ,tdx ], na.rm=TRUE )
+    # yLim <- c(0,.MAXCATCH)
   }
   
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )

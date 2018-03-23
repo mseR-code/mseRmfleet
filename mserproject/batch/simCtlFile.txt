@@ -160,6 +160,7 @@ opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
+opMod$kYearsMbar NULL
 opMod$endM 0.5927078923
 opMod$endMphase NULL
 opMod$futureOption 3
@@ -178,10 +179,10 @@ opMod$initKnots 3
 opMod$initMaxF 1
 opMod$initScale 0.1
 opMod$L1 c(10.29)
-opMod$L50Cg1 c(18.8870054,20.2172675,24.05514639,17.35874785,17.35874785)
+opMod$L50Cg1 c(18.47074,14.838,24.25497,17.35876,17.35876)
 opMod$L50Cg2 c(40,40,40,48.40,89.99)
 opMod$L50Dg c(5,5,5,5,5)
-opMod$L95Cg1 c(22.2883772,22.84380144,25.39780762,19.74042003,19.74042003)
+opMod$L95Cg1 c(21.89537,22.90673,25.58395,19.74041,19.74041)
 opMod$L95Cg2 c(50,50,50,40,40)
 opMod$L95Dg c(1,1,1,1,1)
 opMod$Linf c(27)
@@ -195,8 +196,8 @@ opMod$nT 90
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMFrq 0
 opMod$pulseMSize 1.5
-opMod$qg c(1,1,1,0.829599,0.998582)
-opMod$recDevsOffset 1
+opMod$qg c(1,1,1,0.922718,0.998343)
+opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.5927078923
 opMod$repFileName 'mserproject/history/simWCVIHerring2015.rep'
@@ -209,6 +210,7 @@ opMod$sigmaR 0.582186
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
 opMod$useBoot FALSE
+opMod$kBoot 10
 opMod$bootTolSD .1
 opMod$bootTolMult 1
 opMod$volSizeRelease c(65,65,65,65,65)

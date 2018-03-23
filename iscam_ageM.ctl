@@ -1,6 +1,6 @@
 ## CTL file written by herringM sim-est procedure## _______________________________________________________________________________________
 ##                         GENERIC HERRING CONTROLS
-##                            written: Thu Nov 23 10:44:17 2017 
+##                            written: Mon Mar 19 15:19:08 2018 
 ## ___________________________CONTROLS FOR ESTIMATED PARAMETERS__________________________
 ##   Prior descriptions:
 ##                    -0 uniform (0,0)
@@ -13,7 +13,7 @@
 ##    ival  lb   ub  phz  prior  p1  p2  parameter name 
 ## ______________________________________________________________________________________
 7.028008 -5 15 4 0 -5 15  # log_r0 
-0.796918 0.2 1 4 3 10 4.92  # steepness 
+0.732133 0.2 1 4 3 10 4.92  # steepness 
 -0.5425262 -5 5 3 1 -0.79 0.4  # log.m 
 7.028008 -5 15 1 0 -5 15  # log_avgrec 
 7.028008 -5 15 1 0 -5 15  # log_recinit 

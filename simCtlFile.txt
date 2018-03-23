@@ -1,8 +1,8 @@
-# simCtlBat2.txt: mseR parameter file written Thu Sep 21 16:52:54 2017.
+# mseRguiSim GUI parameters written Thu Jul 27 09:21:26 2017 
 parameter value
 gui$mpLabel "DFO_12"
-gui$nReps 3
-gui$scenarioLabel "WCVI_tsBoot"
+gui$nReps 5
+gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -142,7 +142,7 @@ mp$hcr$Stable2b 0.5
 mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
-mp$hcr$statusSource "statusSrceEst"
+mp$hcr$statusSource "statusSrceEquil"
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
 mp$hcr$upperBoundMult 0.3125
@@ -160,6 +160,7 @@ opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
+opMod$kYearsMbar NULL
 opMod$endM 0.5927078923
 opMod$endMphase NULL
 opMod$futureOption 3
@@ -196,19 +197,20 @@ opMod$powerg c(1,1,1,1,1)
 opMod$pulseMFrq 0
 opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,0.922718,0.998343)
-opMod$recDevsOffset 1
+opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
-opMod$recM 0.5872269
+opMod$recM 0.5927078923
 opMod$repFileName 'mserproject/history/simWCVIHerring2015.rep'
 opMod$rSeed 1234
-opMod$rSteepness 0.796918
+opMod$rSteepness 0.732133
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
 opMod$sigmaM 0.1
 opMod$sigmaR 0.582186
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
-opMod$useBoot TRUE
+opMod$useBoot FALSE
+opMod$kBoot 10
 opMod$bootTolSD .1
 opMod$bootTolMult 1
 opMod$volSizeRelease c(65,65,65,65,65)

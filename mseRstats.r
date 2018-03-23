@@ -69,7 +69,8 @@
                     "pObj1","pObj3","pHealthy",
                     "t1Trend","trendPeriod","avgExpSlope",
                     "trendDec","trendInc","obsPdecline","pDecline",
-                    "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4")
+                    "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
+                    "pGT.75B0","pGt.3B0")
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -275,12 +276,21 @@
 
       if ( validSim )
       {
+
         tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=guiInfo$pfLimitMultBmsy, refProb=0.95 )
         result[ iRow,"pGTlrp" ] <- tmp
         tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=1, refProb=0.5 )
         result[ iRow,"pGTtarg" ] <- tmp
       }
 
+      # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
+      if( validSim )
+      {  
+        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .75, refProb = 1 )
+        result[ iRow, "pGT.75B0" ] <- tmp
+        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .3, refProb = 1 )
+        result[ iRow, "pGT.3B0" ] <- tmp
+      }
       #--- Objective Statistics from GUI.
 
       if ( validSim )
@@ -332,9 +342,7 @@
       if ( validSim )
       {
         # Objective 1 - the mean proportion of projected years where SSB is in
-
-      
-         # the Cautious or Healthy zones.
+        # the Cautious or Healthy zones.
         tmpObj1 <- .calcPropGtTarget( Bt[,tdx], target=limitB, FUN=mean )
         tmpObj3 <- .calcPropGtTarget( Bt[,tdx], target=Bmsy,   FUN=mean )
         tmpHealthy <- .calcPropGtTarget( Bt[,tdx], target=upperB, FUN=mean )

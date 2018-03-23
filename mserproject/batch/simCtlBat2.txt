@@ -1,8 +1,8 @@
-# simCtlBat2.txt: mseR parameter file written Thu Sep 28 09:59:26 2017.
+# simCtlBat2.txt: mseR parameter file written Tue Mar 20 11:18:39 2018.
 parameter value
-gui$mpLabel "SurvIdxData"
+gui$mpLabel "DFO_12"
 gui$nReps 10
-gui$scenarioLabel "WCVI_tsBoot"
+gui$scenarioLabel "WCVI_Mbar10"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -43,7 +43,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 1
+mp$assess$methodId 5
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -160,6 +160,7 @@ opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
+opMod$kYearsMbar 10
 opMod$endM 0.5927078923
 opMod$endMphase NULL
 opMod$futureOption 3
@@ -196,7 +197,7 @@ opMod$powerg c(1,1,1,1,1)
 opMod$pulseMFrq 0
 opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,0.922718,0.998343)
-opMod$recDevsOffset 1
+opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.5927078923
 opMod$repFileName 'mserproject/history/simWCVIHerring2015.rep'
@@ -208,7 +209,8 @@ opMod$sigmaM 0.1
 opMod$sigmaR 0.582186
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
-opMod$useBoot TRUE
+opMod$useBoot FALSE
+opMod$kBoot 10
 opMod$bootTolSD .1
 opMod$bootTolMult 1
 opMod$volSizeRelease c(65,65,65,65,65)
