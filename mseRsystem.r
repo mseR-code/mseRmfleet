@@ -632,6 +632,10 @@ ageLenOpMod <- function( objRef, t )
   epsilontg  <- obj$om$errors$epsilontg  # std normal error in log-indices
   epsilongat <- obj$om$errors$epsilongat # std normal error in age-proportions
 
+  # Compute pulse limit
+  pulseLim <- ctlList$opMod$pulseMfrac * B0
+  
+
   # Initialise population if t=1, else update variables from last time step.
   if ( t==1 )
   {
@@ -684,9 +688,17 @@ ageLenOpMod <- function( objRef, t )
     Balt[,,t] <- Nalt[,,t]*Wal
 
 
-    # Total biomass and number
+    # Total and spawning biomass and number
     Btot[t] <- sum( Balt[,,t] )
     Ntot[t] <- sum( Nalt[,,t] )
+    Bt[t]   <- sum(Balt[,1:nGrps,t]*Ma)
+    Nt[t]   <- sum(Nalt[,1:nGrps,t]*Ma)
+    
+    # Switch out Mt for pulseMt for the previous time step 
+    # if spawning biomass is below the pulse limit
+    if( t >= tMP )
+      if( Bt[t] < pulseLim ) Mt[t] <- obj$om$pulseMt[t]
+
   }  # end t>1 ifelse
   
   # Calc fishing mortality by age-/growth-group
@@ -823,6 +835,7 @@ ageLenOpMod <- function( objRef, t )
   obj$om$Btot  <- Btot    # total biomass
   obj$om$Ntot  <- Ntot    # total abundance
   obj$om$Rt    <- Rt      # recruitment
+  obj$om$Mt    <- Mt      # natural mortality - may have been pulsed
   
   if( t==1 )
     obj$om$avgR  <- avgR      # recruitment
@@ -2906,10 +2919,14 @@ iscamWrite <- function ( obj )
       else pPulse <- 0
       nPulse   <- rbinom( n=1, size=(nT-tMP + 1), prob=pPulse ) # number of events to sample
       pulseYrs <- sample( x=tMP:nT, size=nPulse, replace=FALSE )# sampled years 
-      Mt[pulseYrs] <- Mt[pulseYrs] * ctlList$opMod$pulseMSize 
+      pulseMt <- Mt
+      pulseMt[pulseYrs] <- pulseMt[pulseYrs] * ctlList$opMod$pulseMSize 
+
+
       
-      # Output
-      obj$om$Mt <- Mt
+      # Output a base version and a pulse version
+      obj$om$Mt       <- Mt
+      obj$om$pulseMt  <- pulseMt
   }
   else
   {
@@ -2929,6 +2946,8 @@ iscamWrite <- function ( obj )
       endM <- Mbar
     }
 
+    # Now modify the projected Mt time series to begin at the end of 
+    # the history  
     if(is.null(ctlList$opMod$endMphase))
     {
       trendM    <- (log(endM) - log( obj$om$Mt[t]) ) / (nT - t)
@@ -2940,10 +2959,13 @@ iscamWrite <- function ( obj )
       obj$om$Mt[(tMP + phaseTime):nT] <- obj$om$Mt[tMP + phaseTime-1] * ranM[(tMP+phaseTime):nT]
     }
 
-
-    # Now modify the projected Mt time series to begin at the end of 
-    # the history    
-    obj$om$Mt[pulseYrs] <- obj$om$Mt[pulseYrs] * ctlList$opMod$pulseMSize
+    # Save a copy of Mt to use as the pulsed
+    # version, this way the pulse is still drawn
+    # and the random values line up
+    obj$om$pulseMt <- obj$om$Mt
+    
+    # And add the pulse
+    obj$om$pulseMt[pulseYrs] <- obj$om$Mt[pulseYrs] * ctlList$opMod$pulseMSize
   }
 
   if( !is.null( ctlList$opMod$obsWtAge) )
