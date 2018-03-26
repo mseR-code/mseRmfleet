@@ -1943,7 +1943,6 @@ iscamWrite <- function ( obj )
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- 1 - exp( - obj$maxF) # Maximum allowable F in case estimation fails.
 
-
   if( legalBiomass < lowerBound ) 
     adjF <- 0.
   if( legalBiomass >= lowerBound & legalBiomass < upperBound )
