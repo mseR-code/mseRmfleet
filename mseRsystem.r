@@ -691,13 +691,16 @@ ageLenOpMod <- function( objRef, t )
     # Total and spawning biomass and number
     Btot[t] <- sum( Balt[,,t] )
     Ntot[t] <- sum( Nalt[,,t] )
-    Bt[t]   <- sum(Balt[,1:nGrps,t]*Ma)
-    Nt[t]   <- sum(Nalt[,1:nGrps,t]*Ma)
     
     # Switch out Mt for pulseMt for the previous time step 
     # if spawning biomass is below the pulse limit
     if( t >= tMP )
-      if( Bt[t] < pulseLim ) Mt[t] <- obj$om$pulseMt[t]
+    {
+      if( Bt[t-1] < pulseLim ) 
+      {
+        Mt[t] <- obj$om$pulseMt[t]
+      }
+    }
 
   }  # end t>1 ifelse
   
