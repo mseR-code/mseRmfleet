@@ -2,59 +2,21 @@
 #
 parameter value
 #
-# Scenario 1: WCVI_Mbar.nT
+# Scenario 1: WCVI_PulseM_1.5x16
 #
-scenario$scenario1$gui$nReps 10
-scenario$scenario1$gui$scenarioLabel "WCVI_Mbar"
-scenario$scenario1$opMod$useBoot FALSE
-scenario$scenario1$opMod$B0 42.9348
-scenario$scenario1$opMod$c1 c(0.000184208185)
-scenario$scenario1$opMod$c2 c(1.999008)
-scenario$scenario1$opMod$endM 0.5927078923
-scenario$scenario1$opMod$repFile read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$estMdevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$estQdevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$estRecDevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$M c(0.581278)
-scenario$scenario1$opMod$obsWtAge read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$qg c(1,1,1,0.922718,0.998343)
-scenario$scenario1$opMod$recM 0.5927078923
-scenario$scenario1$opMod$repFileName 'mserproject/history/simWCVIHerring2015.rep'
-scenario$scenario1$opMod$rSteepness 0.796918
-scenario$scenario1$opMod$tauAgeg c(0.4420701302,0.3209439203,0.5335447498)
-scenario$scenario1$opMod$tauIndexg c(0.415457,.35600)
-scenario$scenario1$mp$data$inputCatch read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$mp$data$inputIndex read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario1$opMod$L50Cg1 c(18.47074,14.838,24.25497,17.35876,17.35876)
-scenario$scenario1$opMod$L95Cg1 c(21.89537,22.90673,25.58395,19.74041,19.74041)
+scenario$scenario1$gui$nReps 100
+scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
+scenario$scenario1$opMod$pulseMfrac 0.3
+scenario$scenario1$opMod$pulseMFrq 16
+scenario$scenario1$opMod$pulseMSize 1.5
 #
-# Scenario 1: WCVI_Mbar10
+# Scenario 2: WCVI_Mbar10
 #
 scenario$scenario2$opMod$kYearsMbar 10
-scenario$scenario2$gui$nReps 10
+scenario$scenario2$gui$nReps 100
 scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
-scenario$scenario2$opMod$useBoot FALSE
-scenario$scenario2$opMod$B0 42.9348
-scenario$scenario2$opMod$c1 c(0.000184208185)
-scenario$scenario2$opMod$c2 c(1.999008)
-scenario$scenario2$opMod$endM 0.5927078923
-scenario$scenario2$opMod$repFile read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$estMdevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$estQdevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$estRecDevs read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$M c(0.581278)
-scenario$scenario2$opMod$obsWtAge read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$qg c(1,1,1,0.922718,0.998343)
-scenario$scenario2$opMod$recM 0.5927078923
-scenario$scenario2$opMod$repFileName 'mserproject/history/simWCVIHerring2015.rep'
-scenario$scenario2$opMod$rSteepness 0.796918
-scenario$scenario2$opMod$tauAgeg c(0.4420701302,0.3209439203,0.5335447498)
-scenario$scenario2$opMod$tauIndexg c(0.415457,.35600)
-scenario$scenario2$mp$data$inputCatch read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$mp$data$inputIndex read.rep('mserproject/history/simWCVIHerring2015.rep')
-scenario$scenario2$opMod$L50Cg1 c(18.47074,14.838,24.25497,17.35876,17.35876)
-scenario$scenario2$opMod$L95Cg1 c(21.89537,22.90673,25.58395,19.74041,19.74041)
 #
+<<<<<<< HEAD
 # Scenario 3: WCVI_Mbar20
 #
 scenario$scenario3$opMod$kYearsMbar 20
@@ -135,6 +97,8 @@ scenario$scenario5$mp$data$inputCatch read.rep('mserproject/history/simWCVIHerri
 scenario$scenario5$mp$data$inputIndex read.rep('mserproject/history/simWCVIHerring2015.rep')
 scenario$scenario5$opMod$L50Cg1 c(18.47074,14.838,24.25497,17.35876,17.35876)
 scenario$scenario5$opMod$L95Cg1 c(21.89537,22.90673,25.58395,19.74041,19.74041)
+=======
+>>>>>>> ebc93314a8670f39933a68736c018d525cda50f9
 #
 ## Management Procedure 1: DFO_12
 #

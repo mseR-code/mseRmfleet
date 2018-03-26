@@ -1,8 +1,8 @@
 # mseRguiSim GUI parameters written Thu Jul 27 09:21:26 2017 
 parameter value
 gui$mpLabel "DFO_12"
-gui$nReps 10
-gui$scenarioLabel "WCVI_pulseM1.5x5_pulseLim.3"
+gui$nReps 1
+gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -194,8 +194,8 @@ opMod$nGrps 1
 opMod$obsWtAge read.rep('mserproject/history/simWCVIHerring2015.rep')
 opMod$nT 90
 opMod$powerg c(1,1,1,1,1)
-opMod$pulseMfrac .3
-opMod$pulseMFrq 5
+opMod$pulseMfrac 0
+opMod$pulseMFrq 0
 opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,0.922718,0.998343)
 opMod$recDevsOffset 2

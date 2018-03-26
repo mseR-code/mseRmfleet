@@ -1,6 +1,10 @@
 ## CTL file written by herringM sim-est procedure## _______________________________________________________________________________________
 ##                         GENERIC HERRING CONTROLS
+<<<<<<< HEAD
 ##                            written: Mon Mar 26 13:09:16 2018 
+=======
+##                            written: Mon Mar 26 12:57:36 2018 
+>>>>>>> ebc93314a8670f39933a68736c018d525cda50f9
 ## ___________________________CONTROLS FOR ESTIMATED PARAMETERS__________________________
 ##   Prior descriptions:
 ##                    -0 uniform (0,0)
