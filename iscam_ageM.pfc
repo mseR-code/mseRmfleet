@@ -1,4 +1,4 @@
-## simulation for Herring SOG ## written: Mon Mar 26 12:36:54 2018 
+## simulation for Herring SOG ## written: Mon Mar 26 12:57:36 2018 
 ## Projection file control (pfc) ## 
 ## n_tac  length of catch vector 
 15 
@@ -10,11 +10,11 @@
 ## - 1) Start year for mean natural mortality rate 
 2011 
 ## - 2)  Last year for mean natural mortality rate 
-2035 
+2039 
 ## - 3) Start year for average fecundity/weight-at-age in projections 
 2011 
 ## - 4)  Last year for average fecundity/weight-at-age in projections 
-2035 
+2039 
 ##not currently used 
 ## - 5) Start year for average recruitment period in projections. 
 1951 
