@@ -109,7 +109,7 @@ scenario$scenario4$mp$data$inputIndex read.rep('mserproject/history/simWCVIHerri
 scenario$scenario4$opMod$L50Cg1 c(18.47074,14.838,24.25497,17.35876,17.35876)
 scenario$scenario4$opMod$L95Cg1 c(21.89537,22.90673,25.58395,19.74041,19.74041)
 #
-# Scenario 4: WCVI_tsBoot20
+# Scenario 5: WCVI_tsBoot20
 #
 scenario$scenario5$opMod$kBoot 20
 scenario$scenario5$gui$nReps 10
