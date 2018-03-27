@@ -1937,18 +1937,21 @@ iscamWrite <- function ( obj )
   upperBound   <- obj$upperBound[t]    # Upper control point, where remRate
   
   # convert remRate to U
+
   remRate <- 1 - exp( - remRate )
 
   # Safeguards to limit F in case assessment failed in a particular year
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- 1 - exp( - obj$maxF) # Maximum allowable F in case estimation fails.
 
+  if(!is.null(obj$fixCutoffHerring)) lowerBound <- obj$fixCutoffHerring
+  if(!is.null(obj$targHRHerring)) remRate <- targHR
+
+
   if( legalBiomass < lowerBound ) 
     adjF <- 0.
-  if( legalBiomass >= lowerBound & legalBiomass < upperBound )
-    adjF <- (legalBiomass-lowerBound)/legalBiomass
-  if( legalBiomass >= upperBound ) 
-    adjF <- remRate 
+  if( legalBiomass >= lowerBound )
+    adjF <- min( (legalBiomass-lowerBound)/legalBiomass, remRate)
   
   # If the assessment failed, limit F to maxF
   if( fail==TRUE & adjF > maxF )
@@ -2137,8 +2140,17 @@ iscamWrite <- function ( obj )
   {
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlObj$mp$data$inputCatch
-    nRow  <- nrow( t(catch$ct) )  
-    om$Ctg[1:nRow, ] <- t(catch$ct)
+    catch <- catch$dCatchData
+    years <- catch[,1]
+    times <- years - .INITYEAR + 1
+    gears <- catch[,2]
+
+    gearNums <- unique(gears)
+    for( g in gearNums )
+    {
+      gearTimes <- times[gears == g]
+      om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
+    }
 
     cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
     .CATCHSERIESINPUT <<- TRUE
@@ -2156,17 +2168,19 @@ iscamWrite <- function ( obj )
   {
     # Extract abundance indices from input file and assign 
     # to blob elements...
-    indices  <- ctlObj$mp$data$inputIndex$it
+    indices  <- ctlObj$mp$data$inputIndex$d3_survey_data
     useIndex <- tmpTimes$useIndex
     om$Itg[, useIndex] <- NA
 
-    initObs <- 1
-    for( rIdx in 1:nrow(indices) )
+    years <- indices[,1]
+    times <- years - .INITYEAR + 1
+    gears <- indices[,3]
+
+    gearNums <- unique(gears)
+    for( g in gearNums)
     {
-      nObs <- sum(!is.na(indices[rIdx,]))
-      gIdx <- useIndex[rIdx]
-      om$Itg[initObs:(initObs+nObs-1),gIdx] <- indices[rIdx,1:nObs]
-      initObs <- nObs+1
+      gearTimes <- times[gears == g]
+      om$Itg[gearTimes,g] <- indices[gearTimes, 2]
     }
 
     om$Itg[ om$Itg < 0 ] <- NA
@@ -2191,21 +2205,31 @@ iscamWrite <- function ( obj )
   if ( !is.null(ctlObj$mp$data$inputAges) )
   {
     ages <- ctlObj$mp$data$inputAges$Ahat
+    ageObs <- ctlObj$mp$data$inputAges$d3_A
+    
+    # Use observations from ISCAM in historical period
+    years <- ageObs[,1]
+    times <- years - .INITYEAR + 1
+    gears <- ageObs[,2]
 
-    # Extract age comps one-by-one and put into uCatg, this code assumes that
-    # the age compositions are always at EOF.
-    j <- length(ages) - length( ages$ageIndex ) + 1
-    for( i in ages$ageIndex )
+    minAge       <- ctlObj$mp$data$minAge
+    plusGroupAge <- ctlObj$opMod$nAges
+
+    gearNums <- unique(gears)
+    for( g in gearNums)
     {
-      paa          <- t( ages[[j]] )
-      paa[ paa<0 ] <- NA
-      minAge       <- ctlObj$mp$data$minAge
-      plusGroupAge <- ctlObj$opMod$nAges
-      # om$uCatg[minAge:plusGroupAge,1:ncol(paa),i] <- paa[minAge:plusGroupAge,]
-      # ARK (04-Nov-10) Revised because know no fill with -1 for ages < minAge.
-      om$uCatg[minAge:plusGroupAge,1:ncol(paa),i] <- paa
-      j <- j + 1
+      gearRows <- which(gears == g)
+      gearTimes <- times[gears == g]
+      for( gIdx in 1:length(gearTimes) )
+      {
+        gRow <- gearRows[gIdx]
+        gTime <- gearTimes[gIdx]
+        ageSamples <- ageObs[gRow, 6:14]
+        om$uCatg[minAge:plusGroupAge,gTime,g] <- ageSamples/sum(ageSamples)
+      }
     }
+
+    
     
     cat( "\nMSG (.createMP) Read age data from file.\n" )    
     .AGESERIESINPUT <<- TRUE
@@ -2872,12 +2896,20 @@ iscamWrite <- function ( obj )
    
   if ( !is.null(ctlList$mp$data$inputCatch) )
   {
-    # Extract catch and assign to blob elements...
+    # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlList$mp$data$inputCatch
-    nRow  <- nrow(t(catch$ct))
-     
-    # Scale catch to 000s metric tons.
-    obj$om$Ctg[1:nRow, ] <- t(catch$ct)
+    catch <- catch$dCatchData
+    years <- catch[,1]
+    times <- years - .INITYEAR + 1
+    gears <- catch[,2]
+
+    gearNums <- unique(gears)
+    for( g in gearNums )
+    {
+      gearTimes <- times[gears == g]
+      obj$om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
+    }
+
     cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
     .CATCHSERIESINPUT <<- TRUE         
   }
@@ -2924,8 +2956,6 @@ iscamWrite <- function ( obj )
       pulseMt <- Mt
       pulseMt[pulseYrs] <- pulseMt[pulseYrs] * ctlList$opMod$pulseMSize 
 
-
-      
       # Output a base version and a pulse version
       obj$om$Mt       <- Mt
       obj$om$pulseMt  <- pulseMt
@@ -2937,9 +2967,8 @@ iscamWrite <- function ( obj )
 
   if( !is.null( ctlList$opMod$estMdevs) )
   {
-    Mdevs <- ctlList$opMod$estMdevs$log_m_devs
-    for(t in 2:(tMP-1) ) 
-      obj$om$Mt[t] <- obj$om$Mt[t-1]*exp(Mdevs[t-1])
+    Mta <- ctlList$opMod$estMdevs$M
+    obj$om$Mt[1:(tMP-1)] <- Mta[,1]
 
     if( !is.null(ctlList$opMod$kYearsMbar) )
     {
@@ -2952,11 +2981,11 @@ iscamWrite <- function ( obj )
     # the history  
     if(is.null(ctlList$opMod$endMphase))
     {
-      trendM    <- (log(endM) - log( obj$om$Mt[t]) ) / (nT - t)
+      trendM    <- (log(endM) - log( obj$om$Mt[tMP-1]) ) / (nT - tMP+1)
       obj$om$Mt[tMP:nT] <- obj$om$Mt[tMP-1] * ranM[tMP:nT] * exp( trendM * (1:(nT-tMP+1)) )
     } else {
       phaseTime <- ctlList$opMod$endMphase
-      trendM    <- (log(endM) - log( obj$om$Mt[t]) ) / phaseTime
+      trendM    <- (log(endM) - log( obj$om$Mt[tMP-1]) ) / phaseTime
       obj$om$Mt[tMP:(tMP+phaseTime-1)] <- obj$om$Mt[tMP-1] * ranM[tMP:(tMP+phaseTime-1)] * exp( trendM * (1:phaseTime) )
       obj$om$Mt[(tMP + phaseTime):nT] <- obj$om$Mt[tMP + phaseTime-1] * ranM[(tMP+phaseTime):nT]
     }
@@ -2973,10 +3002,12 @@ iscamWrite <- function ( obj )
   if( !is.null( ctlList$opMod$obsWtAge) )
   {
     obj$om$Wta <- matrix(0, ncol = nAges, nrow = nT )
-    obj$om$Wta[1:(tMP),2:nAges] <- ctlList$opMod$obsWtAge$wt_obs
+    obsWtAge <- ctlList$opMod$obsWtAge$d3_wt_avg
+    obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
 
-    obj$om$Wta[(tMP+1):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP), 
-                                      ncol = nAges, byrow = T )
+    # Need to update how this is done...
+    obj$om$Wta[(tMP):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP + 1), 
+                                        ncol = nAges, byrow = T )
   }
 
 

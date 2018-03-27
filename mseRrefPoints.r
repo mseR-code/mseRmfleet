@@ -449,7 +449,7 @@ calcRefPoints <- function( opModList )
   nGear <- obj$nGear
 
   # HACK to use average M over history for ssbpr at initialisation
-  Mta <- obj$repFile$M_tot
+  Mta <- obj$repFile$M
   Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
   M <- Mbar[1]
   
