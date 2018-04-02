@@ -1355,9 +1355,9 @@ assessModISCAM <- function( caObj )
 
   if ( class( tmpFit )=="try-error" )
   {
+    cat( "\nISCAM hung on a bad parameter value, using last good report file","\n" )
     browser()
     assessComplete <- FALSE
-    cat( "\nISCAM hung on a bad parameter value, using last good report file","\n" )
     repFile <- file.path( getwd(), "rep.bck" )          
     if ( file.exists( repFile ) )
     {
@@ -1395,12 +1395,12 @@ assessModISCAM <- function( caObj )
       #print(assessment)
 
   assessment$mpdPars <- list( objFun        = tmpFit$fit$nlogl,
-                              R0            = tmpFit$ro,
-                              SSB0          = tmpFit$sbo,
-                              B0            = tmpFit$sbo,
+                              R0            = exp(mcOut["log.ro"]),
+                              SSB0          = mcOut["sbo"],
+                              B0            = mcOut["bo"],
                               Msy           = tmpFit$msy,
                               q             = tmpFit$q,
-                              projExpBio    = tmpFit$sum(future_sbt),
+                              projExpBio    = sum(tmpFit$future_sbt),
                               lastDt        = tmpFit$sbt[t]/tmpFit$sbo )
                               
   assessment$mcOut                    <- mcOut                                          

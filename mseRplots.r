@@ -3835,6 +3835,8 @@
     
     if ( runStatus$hessPosDef[j]==FALSE )
       lines( retroBt[ j, 3:ncol(retroBt) ], col="magenta", lty=.BtStepLTY, lwd=.BtStepLWD )
+    if ( runStatus$assessFailed[j]==TRUE )
+      lines( retroBt[ j, 3:ncol(retroBt) ], col="darkgreen", lty=.BtStepLTY, lwd=.BtStepLWD )
   
     if ( gfx$showProj )
     {
@@ -3910,6 +3912,8 @@
     
     if ( runStatus$hessPosDef[j]==FALSE )
       lines( retroBt[ j, 3:ncol(retroBt) ], col="magenta", lty=.BexpRetroCOL+0.2, lwd=.BexpRetroLWD )
+    if ( runStatus$assessFailed[j]==TRUE )
+      lines( retroBt[ j, 3:ncol(retroBt) ], col="darkgreen", lty=.BtStepLTY, lwd=.BtStepLWD )
   
     if ( gfx$showProj )
     {
@@ -3983,6 +3987,7 @@
   deadFlag   <- as.logical(runStatus$deadFlag)
   fisheryClosed <- as.logical(runStatus$fisheryClosed)
   hessPosDef <- as.logical(runStatus$hessPosDef)
+  assessFailed <- as.logical(runStatus$assessFailed)
   
   tColor <- rep( "white", length(tStep) )
   tColor <- ifelse( iExit==0, .EXIT0COL, tColor )
@@ -4026,6 +4031,14 @@
     points( tStep[!hessPosDef], yMid[!hessPosDef], bg="white", cex=4, pch=21 )
     text( tStep[!hessPosDef], yMid[!hessPosDef], "H", col="red", cex=1.5 )
   }
+
+  yMid <- yMid * 2.2
+  if ( any(assessFailed) )
+  {
+    points( tStep[assessFailed], yMid[assessFailed], bg="white", cex=4, pch=21 )
+    text( tStep[assessFailed], yMid[assessFailed], "A", col="red", cex=1.5 )
+  }
+
   
   abline( h=0, col="black", lty=3, lwd=2 )  
   abline( h=.MAXGRADCRIT, col="black", lty=2, lwd=2 )
@@ -4147,7 +4160,8 @@
   fisheryClosed <- as.logical( runStatus$fisheryClosed )
   deadFlag      <- as.logical( runStatus$deadFlag )
   hessPosDef    <- as.logical( runStatus$hessPosDef )
-
+  assessFailed    <- as.logical( runStatus$assessFailed )
+  
   nSteps <- nrow( runStatus )
 
   cexVec <- rep( .EXIT1CEX, nSteps )
@@ -4183,6 +4197,9 @@
   
   cexVec[ !hessPosDef ] <- .CEXANNO2
   symVec[ !hessPosDef ] <- 72     # ASCII number 72 is "H".
+
+  cexVec[ assessFailed ] <- .CEXANNO2
+  symVec[ assessFailed ] <- 72     # ASCII number 72 is "H".  
   
   idx <- fisheryClosed * !hessPosDef 
   cexVec[ idx ] <- .CEXANNO2
