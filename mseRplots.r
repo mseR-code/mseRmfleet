@@ -4008,6 +4008,7 @@
     yLim <- range( c(0,max( maxGrad ),.MAXGRADCRIT ) )
   
   plot( xLim, yLim, type="n",axes=FALSE,xlab="",ylab="" )
+  browser()
   lines( tStep, maxGrad, col=tColor, type="h", lwd=3 )
   
   usr <- par( "usr" )

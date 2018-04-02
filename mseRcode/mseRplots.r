@@ -3971,6 +3971,7 @@
 .plotDiagnostics <- function( obj, iSim=1, iRep=1,
                       gfx=list( annotate=TRUE, doLegend=FALSE, xLim=NULL, yLim=NULL ) )
 {
+  browser()
   runStatus <- obj$mp$assess$runStatus
   idx       <- runStatus$iRep == iRep
   nT        <- max( runStatus$tStep )
@@ -4008,6 +4009,7 @@
     yLim <- range( c(0,max( maxGrad ),.MAXGRADCRIT ) )
   
   plot( xLim, yLim, type="n",axes=FALSE,xlab="",ylab="" )
+  browser()
   lines( tStep, maxGrad, col=tColor, type="h", lwd=3 )
   
   usr <- par( "usr" )

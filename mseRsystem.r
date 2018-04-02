@@ -1367,6 +1367,7 @@ assessModISCAM <- function( caObj )
     else cat( "t == tMP, no backup rep file, fix it!!\n" )
     
   } else {
+    admbOut <- read.admb(exeFile)
     # Save the <exeFile>.rep file in case the next time step has a bad par value
     if( t < nT)
       file.copy( paste(exeFile,".rep", sep = ""),"rep.bck", overwrite=TRUE )  
@@ -1406,6 +1407,7 @@ assessModISCAM <- function( caObj )
   assessment$mcOut                    <- mcOut                                          
   assessment$runStatus                <- tmpFit$fit[c("nopar","nlogl","maxgrad","npar","logDetHess")]
   assessment$runStatus$hessPosDef     <- hessPosDef
+  assessment$runStatus$objFun         <- tmpFit$f
   assessment$runStatus$fisheryClosed  <- NA
   assessment$runStatus$deadFlag       <- NA
   assessment$runStatus$assessFailed   <- assessFailed 
