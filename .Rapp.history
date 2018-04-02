@@ -1,36 +1,30 @@
-source("mser.r")
-guiView()
-r
-c
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-retroMt[r,c] <- M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-c
-c
-c
-c
-c
-c
-c
-c
-retroMt[r,c]
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-cc
+sqrt(tau)
+415457/35600
+.415457/.35600
+457555/1.167
+0.24974 0.9 1 1 1 1 1 1 1
+ma <- scan()
+x <- 2:10
+spline(x,ma)
+splinefun(x,ma)
+maSpline <- splinefun(x,ma)
+maSpline(2.55)
+maSpline(2.3)
+maSpline(2.2)
+maSpline50 <- splinefun(x,ma-.5)
+uniroot(maSpline50, c(2,3))
+maSpline95 <- splinefun(x,ma-.95)
+uniroot(maSpline50, c(2,4))
+uniroot(maSpline95, c(2,4))
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+traceback()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+runMSE()
+Mta
+head(Mta)
 c
 c
 c
@@ -42,11 +36,216 @@ c
 c
 c
 c
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c] <- M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-retroMt[r,c-1]
-retroMt[r,c+1]
-sum(retroMt[r,2:c], na.rm =T)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+c
+c
+c
+c
+c
+c
+c
+c
+c
 Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+runMSE()
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+runMSE()
+Fmsy <- try( uniroot( f=fySplineFun,interval=c(0,maxF), deriv=1 )$root )
+maxF
+val0
+valMaxF
+tmp$F
+F
+fySplinefun(F)
+fySplineFun(F)
+plot(fySplineFun(F))
+L
+F
+M
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRglobals.r")
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseR.r")
+runMSE()
+maxF
+.MAXF
+obj$recM
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+Q
+runMSE()
+f
+print(f)
+eval(f)
+ls()
+c
+runMSE()
+ls()
+eval(f)
+optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+optF
+.FGINIT <<- exp( optF$par )
+.FGINIT
+f
+obj$F
+F <- as.vector(obj$F)
+L <- as.vector(obj$landed)
+F
+L
+plot(F,L)
+plot(F[1:10],L[1:10])
+maxF              <- max( tmp$F[tmpF>0] )
+maxF              <- max( tmp$F[tmp$F>0] )
+maxF
+maxF              <- max( tmp$F )
+maxF
+Fmsy <- try( uniroot( f=fySplineFun,interval=c(0,maxF), deriv=1 )$root )
+Fmsy
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRrefPoints.r")
+runMSE()
+traceback()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+gears
+years
+om$Ctg
+c
+om$Ctg
+indices
+indices  <- ctlObj$mp$data$inputIndex$d3_survey_data
+indices
+om$Itg
+gearNums <- unique(gears)
+times <- years - .INITYEAR + 1
+g <- 1
+g <- 4
+gearTimes <- times[gears == g]
+om$Itg[gearTimes,g] <- indices[which(gears == g), 2]
+om$Itg
+indices
+years <- indices[,1]
+times <- years - .INITYEAR + 1
+gears <- indices[,3]
+om$Itg[gearTimes,g] <- indices[which(gears == g), 2]
+om$Itg
+gears
+which(gears == g)
+om$Itg[gearTimes,g]
+g
+gearTimes
+times
+gearTimes <- times[gears == g]
+gearTimes
+om$Itg[gearTimes,g] <- indices[gearTimes, 2]
+om$Itg
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+ages
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+ctlList$opMod$estMdevs$M
+Mta[,1]
+Mta <- ctlList$opMod$estMdevs$M
+Mta
+Mta[,1]
+plot(Mta[,1])
+obj$om$Mt[1:nT] <- Mta[,1]
+obj$om$Mt[1:tMP] <- Mta[,1]
+obj$om$Mt[1:(tMP-1)] <- Mta[,1]
+obj$om$Mt
+t
+trendM    <- (log(endM) - log( obj$om$Mt[tMP-1]) ) / (nT - tMP+1)
+obj$om$Mt[tMP:nT] <- obj$om$Mt[tMP-1] * ranM[tMP:nT] * exp( trendM * (1:(nT-tMP+1)) )
+obj$om$Mt
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+d3_wt_avg
+obsWtAge
+head(obsWtAge)
+obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
+obj$om$Wta
+obj$om$Wta[1:10,]
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+nrow(obsWtAge)
+obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
+obj$om$Wta[(tMP):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP + 1), #
+                                        ncol = nAges, byrow = T )
+obj$om$Wta[68:75,]
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+ls()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+gearTimes <- times[gears == g]
+ageSamples <- ageObs[gears == g, 6:14]
+ageSamples
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+Q
+runMSE()
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+eval(f)
+eval(g)
+gearNums
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+ageSamples
+c
+ageSamples
+om$uCatg[minAge:plusGroupAge,gTime,g] <- ageSamples/sum(ageSamples)
+om$uCatg[,,1]
+c
+c
+om$uCatg[,,1]
+ageSamples
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+guiView()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/OM-AMcomp.R")
+guiSim()
+runMSE()

@@ -1,7 +1,7 @@
 # mseRguiSim GUI parameters written Tue Mar 27 15:47:09 2018 
 parameter value
 gui$mpLabel "DFO_12"
-gui$nReps 3
+gui$nReps 100
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
@@ -204,7 +204,7 @@ opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-opMod$rSeed 1260
+opMod$rSeed 1270
 opMod$rSteepness 0.73723
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
