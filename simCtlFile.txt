@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon Apr  2 14:00:18 2018 
 parameter value
-gui$mpLabel "DFO_12"
+gui$mpLabel "PerfectInfo_test1"
 gui$nReps 3
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE

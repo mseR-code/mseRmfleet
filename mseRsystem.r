@@ -2699,7 +2699,8 @@ iscamWrite <- function ( obj )
     {
       # If "NoFish" or "PerfectInfo", skip the assessment feedback
       # loop and use a projection function
-      if( ctlList$gui$mpLabel %in% c("NoFish", "PerfectInfo") )
+      if( ctlList$gui$mpLabel %in% c("NoFish", "PerfectInfo") |
+      	  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
       {
         obj <- .projPopNoAssess( obj )
       }
@@ -2923,7 +2924,7 @@ iscamWrite <- function ( obj )
     # Base assumption of 0
     remRate <- 0
     # If PerfectInfo, calculate based on spawning biomass
-    if( obj$ctlList$gui$mpLabel == "PerfectInfo" )
+    if(  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
     {
       targetHR    <- obj$ctlList$mp$hcr$targHRHerring
       cutoff      <- obj$ctlList$mp$hcr$fixCutoffHerring
