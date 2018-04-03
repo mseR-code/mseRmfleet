@@ -1829,7 +1829,8 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=Bmsy, lty=.BmsyLTY, lwd=.BmsyLWD )
+  browser()
+  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1896,6 +1897,7 @@
   
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
+  spawnHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
   sublegalHR <- obj$om$sublegalHR[ iRep,c(2:nCol) ]
 
   xLim  <- gfx$xLim
@@ -1915,7 +1917,7 @@
     yLim1 <- range( c(0,Bt),na.rm=TRUE )
 
   if ( is.null(yLim2) )
-    yLim2 <- range( c(0,c(legalHR,sublegalHR) ) )
+    yLim2 <- c(0,1)
   
   if ( is.null(yLim3) )
     yLim3 <- range( c(0,Rt) )
@@ -1925,7 +1927,7 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=obj$refPtList$ssbFmsy, lty=.BmsyLTY, lwd=.BmsyLWD )
+  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1940,10 +1942,10 @@
   plot( xLim, yLim2, type="n", axes=FALSE, xlab="", ylab="" )
   
   lines( c(1:nT), legalHR,    col=.LegUtCOL,  lty=.LegUtLTY,  lwd=.LegUtLWD )
-  if( all(is.finite(sublegalHR)))
-    lines( c(1:nT), sublegalHR, col=.SlegUtCOL, lty=.SlegUtLTY, lwd=.SlegUtLWD )
+  lines( c(1:nT), spawnHR,    col="darkgreen",  lty=.LegUtLTY,  lwd=.LegUtLWD )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
+  abline( h = obj$ctlList$mp$hcr$targHRHerring, lty = 2, lwd = 1 )
   
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYear )
   axis( side=2, las=.YAXISLAS )
@@ -1953,8 +1955,9 @@
   
   if ( gfx$doLegend )
   {
-    panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"), cex=1.2,
-      lty=c(.LegUtLTY, .SlegUtLTY), lwd=c(.LegUtLWD,.SlegUtLWD) )    
+    panLegend( 0.75,0.95, legTxt=c("Legal HR","Spawn HR"), cex=1.2,
+      col = c(.LegUtCOL, "darkgreen"), bty = "n",
+      lwd=c(.LegUtLWD,.SlegUtLWD) )    
   }
 
   # Panel 3: Plot recruits.
@@ -3835,6 +3838,8 @@
     
     if ( runStatus$hessPosDef[j]==FALSE )
       lines( retroBt[ j, 3:ncol(retroBt) ], col="magenta", lty=.BtStepLTY, lwd=.BtStepLWD )
+    if ( runStatus$assessFailed[j]==TRUE )
+      lines( retroBt[ j, 3:ncol(retroBt) ], col="darkgreen", lty=.BtStepLTY, lwd=.BtStepLWD )
   
     if ( gfx$showProj )
     {
@@ -3910,6 +3915,8 @@
     
     if ( runStatus$hessPosDef[j]==FALSE )
       lines( retroBt[ j, 3:ncol(retroBt) ], col="magenta", lty=.BexpRetroCOL+0.2, lwd=.BexpRetroLWD )
+    if ( runStatus$assessFailed[j]==TRUE )
+      lines( retroBt[ j, 3:ncol(retroBt) ], col="darkgreen", lty=.BtStepLTY, lwd=.BtStepLWD )
   
     if ( gfx$showProj )
     {
@@ -3983,6 +3990,7 @@
   deadFlag   <- as.logical(runStatus$deadFlag)
   fisheryClosed <- as.logical(runStatus$fisheryClosed)
   hessPosDef <- as.logical(runStatus$hessPosDef)
+  assessFailed <- as.logical(runStatus$assessFailed)
   
   tColor <- rep( "white", length(tStep) )
   tColor <- ifelse( iExit==0, .EXIT0COL, tColor )
@@ -4003,6 +4011,7 @@
     yLim <- range( c(0,max( maxGrad ),.MAXGRADCRIT ) )
   
   plot( xLim, yLim, type="n",axes=FALSE,xlab="",ylab="" )
+  browser()
   lines( tStep, maxGrad, col=tColor, type="h", lwd=3 )
   
   usr <- par( "usr" )
@@ -4026,6 +4035,14 @@
     points( tStep[!hessPosDef], yMid[!hessPosDef], bg="white", cex=4, pch=21 )
     text( tStep[!hessPosDef], yMid[!hessPosDef], "H", col="red", cex=1.5 )
   }
+
+  yMid <- yMid * 2.2
+  if ( any(assessFailed) )
+  {
+    points( tStep[assessFailed], yMid[assessFailed], bg="white", cex=4, pch=21 )
+    text( tStep[assessFailed], yMid[assessFailed], "A", col="red", cex=1.5 )
+  }
+
   
   abline( h=0, col="black", lty=3, lwd=2 )  
   abline( h=.MAXGRADCRIT, col="black", lty=2, lwd=2 )
@@ -4147,7 +4164,8 @@
   fisheryClosed <- as.logical( runStatus$fisheryClosed )
   deadFlag      <- as.logical( runStatus$deadFlag )
   hessPosDef    <- as.logical( runStatus$hessPosDef )
-
+  assessFailed    <- as.logical( runStatus$assessFailed )
+  
   nSteps <- nrow( runStatus )
 
   cexVec <- rep( .EXIT1CEX, nSteps )
@@ -4183,6 +4201,9 @@
   
   cexVec[ !hessPosDef ] <- .CEXANNO2
   symVec[ !hessPosDef ] <- 72     # ASCII number 72 is "H".
+
+  cexVec[ assessFailed ] <- .CEXANNO2
+  symVec[ assessFailed ] <- 72     # ASCII number 72 is "H".  
   
   idx <- fisheryClosed * !hessPosDef 
   cexVec[ idx ] <- .CEXANNO2

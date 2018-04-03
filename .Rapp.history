@@ -1,52 +1,16 @@
 source("mser.r")
 guiView()
-r
-c
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-retroMt[r,c] <- M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-c
-c
-c
-c
-c
-c
-c
-c
-retroMt[r,c]
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-cc
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-c
-M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c] <- M * exp(sum(retroMt[r,2:c], na.rm =T))
-retroMt[r,c]
-retroMt[r,c-1]
-retroMt[r,c+1]
-sum(retroMt[r,2:c], na.rm =T)
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+lines( tStep, objFun, col=tColor, type="h", lwd=3 )
+tstep
+tStep
+objFun
+lines( tStep, maxGrad, col=tColor, type="h", lwd=3 )
+maxGra
+maxGrad
+runStatus$maxGrad
+runStatus
+str(runStatus)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
 Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
