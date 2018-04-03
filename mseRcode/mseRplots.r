@@ -1896,6 +1896,7 @@
   
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
+  spawnHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
   sublegalHR <- obj$om$sublegalHR[ iRep,c(2:nCol) ]
 
   xLim  <- gfx$xLim
@@ -1915,7 +1916,7 @@
     yLim1 <- range( c(0,Bt),na.rm=TRUE )
 
   if ( is.null(yLim2) )
-    yLim2 <- range( c(0,c(legalHR,sublegalHR) ) )
+    yLim2 <- c(0,1)
   
   if ( is.null(yLim3) )
     yLim3 <- range( c(0,Rt) )
@@ -3971,7 +3972,6 @@
 .plotDiagnostics <- function( obj, iSim=1, iRep=1,
                       gfx=list( annotate=TRUE, doLegend=FALSE, xLim=NULL, yLim=NULL ) )
 {
-  browser()
   runStatus <- obj$mp$assess$runStatus
   idx       <- runStatus$iRep == iRep
   nT        <- max( runStatus$tStep )

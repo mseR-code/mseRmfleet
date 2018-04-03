@@ -781,7 +781,8 @@ ageLenOpMod <- function( objRef, t )
   sublegalB  <- sum( Balt[,,t]*(1.-obj$refPtList$Legal) )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
-  legalHR    <- (legalC + legalD)/Bt[t]
+  legalHR    <- (legalC + legalD)/legalB
+  spawnHR    <- (legalC + legalD)/Bt[t]
   if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
   else sublegalHR <- sublegalD/sublegalB
 
@@ -853,6 +854,7 @@ ageLenOpMod <- function( objRef, t )
   obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
   
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
+  obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate
   obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
   obj$om$legalB[t]         <- legalB       # legal biomass
   obj$om$sublegalB[t]      <- sublegalB    # sublegal biomass
@@ -2071,8 +2073,8 @@ iscamWrite <- function ( obj )
   om <- list( Nalt=NULL,      Balt=NULL,      Zalt=NULL,    Bt=NULL,
               Nt=NULL,        Btot=NULL,      Ntot=NULL,    Rt=NULL,
               uCatg=NULL,     Ct=NULL,        Ctg=NULL,     Catg=NULL,
-              Dt=NULL,        Dtg=NULL,       Mt=NULL,
-              Ft=NULL,        Ftg=NULL,       legalHR=NULL, sublegalHR=NULL,
+              Dt=NULL,        Dtg=NULL,       Mt=NULL,      Ft=NULL,        
+              Ftg=NULL,       legalHR=NULL, sublegalHR=NULL, spawnHR = NULL,
               legalB=NULL,    sublegalB=NULL, legalC=NULL,  legalD=NULL,
               sublegalD=NULL, Dt=NULL,        Dtg=NULL,     Itg=NULL )
 
@@ -2099,6 +2101,7 @@ iscamWrite <- function ( obj )
   om$Datg       <- array( data=NA, dim=c(nAges,nT,nGear) )
 
   om$legalHR    <- rep(NA,nT)
+  om$spawnHR    <- rep(NA,nT)
   om$sublegalHR <- rep(NA,nT)
   om$legalB     <- rep(NA,nT)
   om$sublegalB  <- rep(NA,nT)
@@ -2523,6 +2526,7 @@ iscamWrite <- function ( obj )
               Ftg        = array( data=NA,dim=c(nReps,nT,nGear) ),
               uCatg      = array( data=NA,dim=c(nReps,nAges,nT,nGear) ),
               legalHR    = matrix( NA, nrow=nReps, ncol=(nT+1) ),
+              spawnHR    = matrix( NA, nrow=nReps, ncol=(nT+1) ),
               sublegalHR = matrix( NA, nrow=nReps, ncol=(nT+1) ),
               legalB     = matrix( NA, nrow=nReps, ncol=(nT+1) ),
               sublegalB  = matrix( NA, nrow=nReps, ncol=(nT+1) ),
@@ -2721,6 +2725,7 @@ iscamWrite <- function ( obj )
     blob$om$Itg[i,,]       <- obj$om$Itg
     blob$om$uCatg[i,,,]    <- obj$om$uCatg
     blob$om$legalHR[i,]    <- c(i,obj$om$legalHR)
+    blob$om$spawnHR[i,]    <- c(i,obj$om$spawnHR)
     blob$om$sublegalHR[i,] <- c(i,obj$om$sublegalHR)
     blob$om$legalB[i,]     <- c(i,obj$om$legalB)
     blob$om$sublegalB[i,]  <- c(i,obj$om$sublegalB)
@@ -2792,6 +2797,9 @@ iscamWrite <- function ( obj )
 
   tmpNames <- paste("lHR",c(1:nT),sep="")
   colnames( blob$om$legalHR ) <- c( "iRep", tmpNames )
+
+  tmpNames <- paste("spHR",c(1:nT),sep="")
+  colnames( blob$om$spawnHR ) <- c( "iRep", tmpNames )
   
   tmpNames <- paste("slHR",c(1:nT),sep="")
   colnames( blob$om$sublegalHR ) <- c( "iRep", tmpNames )
@@ -2937,143 +2945,6 @@ iscamWrite <- function ( obj )
 
   return( obj )
 
-
-
-  # # runModel
-  # # Purpose:        Private function to run operating model and calculate objective
-  # #                 function based on depletion, cumulative catch, and closures
-  # # Parameters:     pars=log F values for tMP:nT
-  # # Returns:        List containing operating model states and objective function
-  # #                 value f=penalty for B < Bmsy plus log(cumulative catch).
-  # #                 Multiplier 1000 is for desired precision
-  # # Source:         S.P. Cox
-  # runModel <- function( pars, obj )
-  # {
-  #   # target depletion level - input from GUI
-  #   initDepTarg <- obj$opMod$initDepTarg
-  #   maxF        <- obj$opMod$initMaxF
-  #   Fmsy        <- obj$refPts$Fmsy
-  #   tMP         <- obj$opMod$tMP
-  #   nT          <- obj$opMod$nT
-    
-  #   # There are n = nT - tMP + 1 F parameters, so set F[nT-1]=F[n]
-  #   # and spread the remaining Fs out over the interval
-  #   # tMP - (nT-2)
-  #   tmpF     <- exp( pars ) # "pars" are the log-Fs
-  #   interval <- nT - tMP - 1
-  #   nKnots   <- length( tmpF )
-  #   space    <- interval / nKnots
-  #   knotPts  <- round( seq( from=space, to=nKnots*space, by=space ) )
-    
-  #   # Points for fitting interpolation spline to knot points and Fs
-  #   x <- c( 1, knotPts )
-  #   y <- c( 0, tmpF )
-    
-  #   # Use spline to interpolate Fs between knots
-  #   initF <- spline( x,y,n=(nT-tMP+1) )$y
-  #   initF[ initF < 0 ]    <- 0.
-  #   initF[ initF > maxF ] <- maxF
-    
-  #   # Set all initial Fs in operating model
-  #   obj$om$Ft[tMP:nT] <- initF*solveObj$mp$hcr$Fmult
-
-  #   # run model for the pre-MP period
-  #   for ( t in (tMP-1):nT )
-  #   {
-  #     obj <- asOMod( obj,t )
-  #   }
-    
-  #   # Barrier penalty on ssb < Bmsy---------------
-  #   Bmsy  <- obj$refPts$ssbFmsy
-  #   Bt    <- obj$om$Bt[tMP:nT]
-  #   bar                <- rep(0,length(Bt))
-  #   bar[ Bt <= Bmsy ]  <- (Bt[Bt<=Bmsy]-Bmsy)^2 # penalty grows quadratically below Bmsy
-  #   bar[ Bt > Bmsy ]   <- (-1.)*log( Bt[Bt>Bmsy] - Bmsy ) 
-    
-  #   barBt <- barrierPen( x= Bt, xBar=Bmsy, above=TRUE )
-    
-  #   # Average catch------------
-  #   Dt <- obj$om$Dt[(tMP-1):nT] 
-  #   fAvgCatch <- mean( Dt )
-    
-  #   # Barrier penalty on AAV > 50%------------
-  #   # Form the absolute catch differences over tMP:nT
-  #   diffDt    <- diff(Dt)
-  #   absDiffDt <- abs( diffDt )
-
-  #   # Sum the absolute differences
-  #   sumAbsDiffDt <- sum( absDiffDt )
-      
-  #   # Sum the catchover the period.
-  #   sumCatch <- sum( Dt )
-      
-  #   # Compute the AAV
-  #   AAV <- 100.*sumAbsDiffDt / sumCatch
-    
-  #   barAAV <- barrierPen( x=AAV, xBar=50, above=FALSE )
-    
-  #   # Count up fishery closures, or Dt < Dmin
-  #   Dmin        <- 0.5
-  #   closedCount <- rep(0,length(Dt)) 
-  #   closedCount[ Dt < Dmin ] <- 1.0
-  #   penClosed   <- 10.*sum( closedCount )
-    
-  #   # Total objective function
-  #   f <- - log(fAvgCatch) + 10.*barBt + barAAV + penClosed
-
-  #   result   <- obj
-  #   result$f <- f
-  #   result
-  # }     # END function runModel
-
-
-  # # getObjFunctionVal
-  # # Purpose:        Private function to run operating model and extract objective function
-  # # Parameters:     pars=log-Fs for t=tMP,...nT
-  # # Returns:        Objective function f=barrier penalty for biomass less than Bmsy plus
-  # #                 log(cumulative catch) and penalty for deviation from Fmsy. 
-  # #                 Multiplier 1000 is for desired precision
-  # # Source:         S.P. Cox
-  # getObjFunctionVal <- function( pars, obj ){
-  #   # Function to run asOM and return objective function
-  #   val <- runModel( pars, obj )$f
-  #   val
-  # }     # END function getObjFunctionVal
-
-  # #-----Beginning optimisation step--------#
-  # # all the stuff needed by optimization procedure
-  # solveObj <- list( opMod=obj$opMod, om=obj$om, mp=obj$mp, refPts=obj$refPts )
-
-  # # Initial F values: pick a bunch of random F multipliers of Fmsy to initialize
-  # initF    <- log(obj$refPts$Fmsy*exp(rnorm(n=obj$opMod$initKnots,sd=.3)))
-  
-  # # If the mpLabel uses the OMNI keyword, setup and run optimizations
-  # if( obj$gui$mpLabel=="OMNI" )
-  # {
-  #     # find Fs that give target depletion and max log(cumulative catch)
-  #     # SPC 12-Aug-2014: need to add some of the optimization outputs to blob so we
-  #     #                  can monitor optimization perfomance
-  #     optFs  <- optim( par=initF, fn=getObjFunctionVal, method="Nelder-Mead",
-  #                        obj=solveObj, control=list(maxit=3000, reltol=0.001,ndeps=c(.01,.01) )  )
-  #     cat( "Optimization for this rep completed with:\n ")
-  #     print( optFs ) 
-  #     logFt  <- optFs$par   
-  # }
-  # # If the mpLabel is NoFish keyword, multiply initial guess initF by 0
-  # if( obj$gui$mpLabel=="NoFish" )
-  # {
-  #   solveObj$mp$hcr$Fmult <- 0. 
-  #   logFt                 <- initF   
-  # }
-
-  # # re-generate the operating model and data objects with the optimised Fs
-  # solveObj    <- runModel( logFt, obj=solveObj )    
- 
-  # obj$om      <- solveObj$om
-  # # Initialize all Fts = NA for t  tMP
-  # obj$mp$data <- solveObj$mp$data
-  # obj$opMod   <- solveObj$opMod
-  # obj
 }     # END function .projPopNoAssess()
 
 # .initPop       
