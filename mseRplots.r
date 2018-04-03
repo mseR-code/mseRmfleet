@@ -1829,7 +1829,8 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=Bmsy, lty=.BmsyLTY, lwd=.BmsyLWD )
+  browser()
+  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1926,7 +1927,7 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=obj$refPtList$ssbFmsy, lty=.BmsyLTY, lwd=.BmsyLWD )
+  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1942,10 +1943,9 @@
   
   lines( c(1:nT), legalHR,    col=.LegUtCOL,  lty=.LegUtLTY,  lwd=.LegUtLWD )
   lines( c(1:nT), spawnHR,    col="darkgreen",  lty=.LegUtLTY,  lwd=.LegUtLWD )
-  if( all(is.finite(sublegalHR)))
-    lines( c(1:nT), sublegalHR, col=.SlegUtCOL, lty=.SlegUtLTY, lwd=.SlegUtLWD )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
+  abline( h = obj$ctlList$mp$hcr$targHRHerring, lty = 2, lwd = 1 )
   
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYear )
   axis( side=2, las=.YAXISLAS )
@@ -1955,8 +1955,9 @@
   
   if ( gfx$doLegend )
   {
-    panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"), cex=1.2,
-      lty=c(.LegUtLTY, .SlegUtLTY), lwd=c(.LegUtLWD,.SlegUtLWD) )    
+    panLegend( 0.75,0.95, legTxt=c("Legal HR","Spawn HR"), cex=1.2,
+      col = c(.LegUtCOL, "darkgreen"), bty = "n",
+      lwd=c(.LegUtLWD,.SlegUtLWD) )    
   }
 
   # Panel 3: Plot recruits.

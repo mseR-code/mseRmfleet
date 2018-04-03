@@ -1829,7 +1829,7 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=Bmsy, lty=.BmsyLTY, lwd=.BmsyLWD )
+  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1941,6 +1941,7 @@
   plot( xLim, yLim2, type="n", axes=FALSE, xlab="", ylab="" )
   
   lines( c(1:nT), legalHR,    col=.LegUtCOL,  lty=.LegUtLTY,  lwd=.LegUtLWD )
+  lines( c(1:nT), spawnHR,    col="darkgreen",  lty=.LegUtLTY,  lwd=.LegUtLWD )
   if( all(is.finite(sublegalHR)))
     lines( c(1:nT), sublegalHR, col=.SlegUtCOL, lty=.SlegUtLTY, lwd=.SlegUtLWD )
 
