@@ -1,6 +1,6 @@
-# mseRguiSim GUI parameters written Tue Mar 27 15:47:09 2018 
+# mseRguiSim GUI parameters written Mon Apr  2 14:00:18 2018 
 parameter value
-gui$mpLabel "DFO_12"
+gui$mpLabel "PerfectInfo_test1"
 gui$nReps 3
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
@@ -157,8 +157,8 @@ opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158
-opMod$baranovIter 4
-opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
+opMod$baranovIter 7
+opMod$baranovSteps c(0.5,0.5,0.5,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
@@ -204,7 +204,7 @@ opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-opMod$rSeed 1260
+opMod$rSeed 1270
 opMod$rSteepness 0.73723
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
@@ -212,6 +212,7 @@ opMod$sigmaM 0.1
 opMod$sigmaR 0.705998
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
+opMod$testFishery c(0,0.136078,0,0,0)
 opMod$useBoot FALSE
 opMod$kBoot 10
 opMod$bootTolSD .1
