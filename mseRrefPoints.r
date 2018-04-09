@@ -377,6 +377,7 @@ calcRefPoints <- function( opModList )
 
   if(!is.null(obj$selAge))
     selAge <- obj$selAge
+  else selAge <- FALSE
 
   salgPars <- list( L50Cg1 = obj$L50Cg1,
                     L95Cg1 = obj$L95Cg1,
