@@ -1,16 +1,18 @@
 source("mser.r")
 guiView()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-lines( tStep, objFun, col=tColor, type="h", lwd=3 )
-tstep
-tStep
-objFun
-lines( tStep, maxGrad, col=tColor, type="h", lwd=3 )
-maxGra
-maxGrad
-runStatus$maxGrad
-runStatus
-str(runStatus)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+blob$om$Nat
+names(blob$om()
+names(blob$om)
+source("mser.r")
+runMSE()
+blob$om$Nat
+Nat
+Nalt[,1,]
+blob$ctlList$opMod$repFile$Nta
+blob$ctlList$opMod$repFile$N
+str(blob$ctlList$opMod$repFile$N)
+t(blob$ctlList$opMod$repFile$N)
+Nalt[,1,1:68]
+Nalt[2:10,1,1:68]
+Nalt[2:10,1,1:68]/t(blob$ctlList$opMod$repFile$N)
 Q
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")

@@ -44,7 +44,6 @@ calcRefPoints <- function( opModList )
 
   # palgPars: used to compute proportion of age a, growth-group l discarded.
   obj$sizeLim <- obj$sizeLim
-  obj$L95Dg   <- obj$L95Dg
   obj$L50Dg   <- obj$L50Dg
   obj$volReleaseSize <- obj$volReleaseSize
 
@@ -218,6 +217,8 @@ calcRefPoints <- function( opModList )
   L95Cg2 <- salgPars$L95Cg2
   L50Cg2 <- salgPars$L50Cg2
 
+  selAge <- salgPars$selAge
+
   
 
   # From sableOpmod.tpl:
@@ -240,6 +241,10 @@ calcRefPoints <- function( opModList )
   Salg <- array( data=NA, dim=c(A,nGrps,nGear) )
   for( g in 1:nGear )
   {
+    if( selAge )
+    {
+      for( l in 1:ncol(Lal) ) Lal[,l] <- 1:nrow(Lal)
+    } 
     if ( selType[g] == 2 )     # Use dome-shaped function (normal).
     {
       Salg[,,g] <- exp(-(L50Cg1[g] - Lal)^2/2/L95Cg1[g]/L95Cg1[g])
@@ -368,13 +373,19 @@ calcRefPoints <- function( opModList )
   A50       <- obj$aMat50
   A95       <- obj$aMat95
 
+
+
+  if(!is.null(obj$selAge))
+    selAge <- obj$selAge
+
   salgPars <- list( L50Cg1 = obj$L50Cg1,
                     L95Cg1 = obj$L95Cg1,
                     L95Cg2 = obj$L95Cg2,
                     L50Cg2 = obj$L50Cg2,
                     selType = obj$selType,
                     nGrps  = obj$nGrps,
-                    nGear  = obj$nGear
+                    nGear  = obj$nGear,
+                    selAge = selAge
                   )
 
   palgPars <- list( sizeLim  = obj$sizeLim,

@@ -704,6 +704,8 @@ ageLenOpMod <- function( objRef, t )
 
   }  # end t>1 ifelse
   
+  # if( t > tMP ) browser()
+
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
         
@@ -718,19 +720,28 @@ ageLenOpMod <- function( objRef, t )
     Ftg[t,] <- t(tmp$ft)[t,]
   }
 
-  if ( sum(Ctg[t,1:3]) > 0. & t >= tMP ) # don't bother if fishery catch=0
+  if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
-    
-    initF <- c(rep(0.223,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
+
+    if( t < tMP ) initF <- c( obj$ctlList$opMod$repFile$ft[,t])
+    else initF <- c(rep(0.223,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
     idx0  <- which(Ctg[t,] < 0)
     Ctg[t,idx0] <- 0.
     baranovTime <<- t
     #if(t>17) browser()
 
-    solveF <- .solveBaranovMfleet( B=Balt[,,t], S=Salg, F=initF, M=M,
-                                   C=Ctg[t,], lam=ctlList$opMod$baranovSteps )
-    
+    if( t < tMP )
+    {
+      solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
+                                      C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                      nIter = ctlList$opMod$baranovIter )      
+    } else {
+      solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
+                                      C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
+                                      nIter = ctlList$opMod$baranovIter )
+    }
+
     solveF[ solveF > 10 ] <- 10
     if( any( solveF < 0 ) )
     {
@@ -2147,6 +2158,7 @@ iscamWrite <- function ( obj )
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlObj$mp$data$inputCatch
     catch <- catch$dCatchData
+    catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
     years <- catch[,1]
     times <- years - .INITYEAR + 1
     gears <- catch[,2]
@@ -2995,6 +3007,8 @@ iscamWrite <- function ( obj )
       obj$om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
     }
 
+    obj$om$Ctg[is.na(obj$om$Ctg)] <- 0
+
     cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
     .CATCHSERIESINPUT <<- TRUE         
   }
@@ -3465,10 +3479,8 @@ iscamWrite <- function ( obj )
     # Run model for the pre-MP period
     for ( t in 1:(tMP-1) )
     {
-      obj <- ageLenOpMod( as.ref(obj),t )
+      obj <- deref(ageLenOpMod( as.ref(obj),t ))
     }
-
-    obj <- deref( obj )
     
     f <- NA
     if( !is.null(pars) )
@@ -3501,7 +3513,7 @@ iscamWrite <- function ( obj )
   }      # END function getObjFunctionVal function
   
   #----------------------------------------------------------------------------#
-  
+
   # Begin solveInitPop
   obj <- deref( objRef )  
   
@@ -3543,6 +3555,7 @@ iscamWrite <- function ( obj )
   obj$om      <- solveObj$om
   obj$mp$data <- solveObj$mp$data
   obj$pars    <- solveObj$pars
+
   
   # Fish population should now be close to the initial target
   # depletion regardless of the stochastic recruitment history.
