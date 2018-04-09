@@ -1,4 +1,4 @@
-# mseRguiSim GUI parameters written Mon Apr  2 14:00:18 2018 
+# mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
 gui$mpLabel "NoFish"
 gui$nReps 3
@@ -225,17 +225,17 @@ opMod$tauReleaseg c(0.42436000,0.83308600,0.65831000,0,0)
 opMod$tMP 68
 opMod$vonK c(0.48)
 refPts$F0 0
-refPts$F01 0.0266566029037666
-refPts$F40 0.0123823113119409
-refPts$Fcra 0.0418368374559283
-refPts$Fmax 0.0887366882671049
-refPts$Fmsy 0.016890200729348
-refPts$ssbFmsy 10.7194650284166
-refPts$yieldFmsy 12.885012887089
+refPts$F01 0.583934
+refPts$F40 0.217766617452171
+refPts$Fcra 0.583934
+refPts$Fmax 0.583934
+refPts$Fmsy 0.352392428361543
+refPts$ssbFmsy 10.3351330893833
+refPts$yieldFmsy 13.4974666775765
 refPts$U0 0
-refPts$U01 0.272548497551039
-refPts$U40 0.159516371708274
-refPts$Ucra 0.351649400963336
-refPts$Umax 0.48691190083063
-refPts$Umsy 0.201030255919287
-refPts$legalHRFmsy 0.201031266967409
+refPts$U01 0.23539809697471
+refPts$U40 0.153922809101815
+refPts$Ucra 0.23539809697471
+refPts$Umax 0.23539809697471
+refPts$Umsy 0.1938396172684
+refPts$legalHRFmsy 0.193839617221515
