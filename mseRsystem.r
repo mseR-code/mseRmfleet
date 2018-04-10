@@ -651,17 +651,18 @@ ageLenOpMod <- function( objRef, t )
     # Total biomass and number
     Btot[t] <- sum( Balt[,,t] )
     Ntot[t] <- sum( Nalt[,,t] )
+    Bt[t]   <- sum( Balt[,,t] * Ma )
+    Nt[t]   <- sum( Nalt[,,t] * Ma )
   } # end "if(t==1)"
   else  # t>1
   {
     # Spawning biomass and number.
-    Bt[t-1] <- sum(Balt[,nGrps,t-1]*Ma*exp(-Zalt[,1:nGrps,t-1]))
-    Nt[t-1] <- sum(Nalt[,nGrps,t-1]*Ma*exp(-Zalt[,1:nGrps,t-1]))
+    SBt <- sum(Balt[,nGrps,t-1]*Ma*exp(-Zalt[,1:nGrps,t-1]))
     # Calculate age-1 recruitment, Beverton-Holt stock-recruitment.
     #if( t>44 )
     if( recOption=="Beverton-Holt" )
     {
-      tmpR      <- rec.a*Bt[t-1]/( 1.0 + rec.b*Bt[t-1] )
+      tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
       if( t < tMP ) omegat[t] <- exp(Mt[t]) * tmp$N[t+1,1] / tmpR
     }
     else
@@ -690,13 +691,15 @@ ageLenOpMod <- function( objRef, t )
 
     # Total and spawning biomass and number
     Btot[t] <- sum( Balt[,,t] )
+    Bt[t]   <- sum( Balt[,,t] * Ma )
+    Nt[t]   <- sum( Nalt[,,t] * Ma )
     Ntot[t] <- sum( Nalt[,,t] )
     
     # Switch out Mt for pulseMt for the previous time step 
     # if spawning biomass is below the pulse limit
     if( t >= tMP )
     {
-      if( Bt[t-1] < pulseLim ) 
+      if( Bt[t] < pulseLim ) 
       {
         Mt[t] <- obj$om$pulseMt[t]
       }
@@ -757,13 +760,6 @@ ageLenOpMod <- function( objRef, t )
   for( g in 1:(nGear-2) )
     Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]
 
-
-  # Spawning biomass and number - this recalculates from earlier, apply mortality as
-  # spawning as at the end of the year
-  Bt[t]   <- sum(Balt[,1:nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
-  Nt[t]   <- sum(Nalt[,1:nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
-    
-
   # Catch- and dead-discards-at-age 
   legalC <- 0.; legalD <- 0.; sublegalD <- 0.
   for( g in 1:(nGear-2) )
@@ -794,8 +790,8 @@ ageLenOpMod <- function( objRef, t )
   Dt[t]      <- sum( Dtg[t,1:3] )
   legalHR    <- (legalC + legalD)/legalB
   spawnHR    <- (legalC + legalD)/Bt[t]
-  if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
-  else sublegalHR <- sublegalD/sublegalB
+  # if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
+  # else sublegalHR <- sublegalD/sublegalB
 
 
   # Gear-specific cpue, catch, discards, and sample age-proportions
@@ -864,9 +860,12 @@ ageLenOpMod <- function( objRef, t )
   obj$om$Datg  <- Datg    # dead discards by age/gear
   obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
   
+  if(t > 1)
+    obj$om$SBt[t-1]        <- SBt          # Spawning biomass at time of spawning
+
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
-  obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate
-  obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
+  obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
+  # obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
   obj$om$legalB[t]         <- legalB       # legal biomass
   obj$om$sublegalB[t]      <- sublegalB    # sublegal biomass
   obj$om$legalC[t]         <- legalC       # legal catch
@@ -2093,6 +2092,7 @@ iscamWrite <- function ( obj )
   om$Nalt       <- array( data=NA, dim=c(nAges,nGrps,nT) )
   om$Balt       <- array( data=NA, dim=c(nAges,nGrps,nT) )
   om$Zalt       <- array( data=NA, dim=c(nAges,nGrps,nT) )
+  om$SBt        <- rep( NA, nT )
   om$Bt         <- rep( NA,nT )
   om$Nt         <- rep( NA,nT )
   om$Btot       <- rep( NA,nT )
@@ -2526,6 +2526,7 @@ iscamWrite <- function ( obj )
   # Operating model objects to attached to blob for performance analysis. 
   om <- list( iSeed      = rep( NA, nReps ),
               Bt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
+              SBt        = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Nt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Btot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ntot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
@@ -2725,6 +2726,7 @@ iscamWrite <- function ( obj )
     
     # Fill current row of the blob for operating model components.
     blob$om$Bt[i,]         <- c( i, obj$om$Bt )
+    blob$om$SBt[i,]        <- c( i, obj$om$SBt )
     blob$om$Nt[i,]         <- c( i, obj$om$Nt )
     blob$om$Btot[i,]       <- c( i, obj$om$Btot )
     blob$om$Ntot[i,]       <- c( i, obj$om$Ntot )
@@ -2792,6 +2794,9 @@ iscamWrite <- function ( obj )
   # Label columns the OM components of the blob.
   tmpNames <- paste("B",c(1:nT),sep="")
   colnames( blob$om$Bt ) <- c( "iRep", tmpNames )
+
+  tmpNames <- paste("SB",c(1:nT),sep="")
+  colnames( blob$om$SBt ) <- c( "iRep", tmpNames )
   
   tmpNames <- paste("N",c(1:nT),sep="")
   colnames( blob$om$Nt ) <- c( "iRep", tmpNames )

@@ -1,6 +1,6 @@
-# mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
+# mseRguiSim GUI parameters written Tue Apr 10 12:13:56 2018 
 parameter value
-gui$mpLabel "NoFish"
+gui$mpLabel "PerfectInfo_currMP"
 gui$nReps 3
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE

@@ -1829,7 +1829,6 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  browser()
   abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
@@ -1955,7 +1954,7 @@
   
   if ( gfx$doLegend )
   {
-    panLegend( 0.75,0.95, legTxt=c("Legal HR","Spawn HR"), cex=1.2,
+    panLegend( 0.75,0.95, legTxt=c("Total HR","Spawn HR"), cex=1.2,
       col = c(.LegUtCOL, "darkgreen"), bty = "n",
       lwd=c(.LegUtLWD,.SlegUtLWD) )    
   }
