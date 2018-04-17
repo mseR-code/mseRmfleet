@@ -70,7 +70,8 @@
                     "t1Trend","trendPeriod","avgExpSlope",
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
-                    "pGT.75B0","pGt.3B0")
+                    "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
+                    "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0")
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -163,6 +164,7 @@
       {
         # Get the variables to be summarized, these are nReps by nT matrices.
         Bt   <- blob$om$Bt[ ,c(2:ncol(blob$om$Bt)) ]
+        SBt  <- blob$om$Bt[ ,c(2:ncol(blob$om$SBt)) ]
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
@@ -222,16 +224,6 @@
         result[ iRow, "Q1HighCatch" ]  <- tmp$qVals[2]
         result[ iRow, "Q2HighCatch" ]  <- tmp$qVals[4]
       }
-
-      
-      # ---- Probability catch is below floor of 1192 tonnes (Added by K.Holt)
-      if ( validSim )
-      {
-        floor <-1.992
-        tmp<-.calcPropFloor(Ct[,tdx], floor)
-        result[ iRow, "pObj4" ] <- mean(tmp)
-      }
-      
       
       
       
@@ -286,10 +278,14 @@
       # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
       if( validSim )
       {  
-        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .75, refProb = 1 )
-        result[ iRow, "pGT.75B0" ] <- tmp
-        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .3, refProb = 1 )
-        result[ iRow, "pGT.3B0" ] <- tmp
+        tmp <- .calcQuantsRefPoints( Bt[,tMP:nT], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
+        tmp <- .calcQuantsRefPoints( Bt[,tMP:nT], target = B0, targMult = .3, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.3B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.3B0" ] <- tmp[5]
       }
       #--- Objective Statistics from GUI.
 
@@ -737,6 +733,27 @@
 
   # Compute the mean proportion of years GT refPt.
   result <- mean( pVal )
+  result
+}
+
+.calcQuantsRefPoints <- function( Bt, target, targMult, refProb, probs )
+{
+  refPt <- targMult * target
+
+  # Find all years in period where Bt > refPt.
+  tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
+  tmp[ Bt >= refPt ] <- 1
+
+  # Count the number of years in each replicate where where Bt > refPt.
+  val <- apply( tmp,1,sum )
+
+  # Calculate the proportion of years in each replicate where Bt > refPt.
+  pVal <- val / ncol( Bt )
+
+  # browser()
+
+  # Compute the mean proportion of years GT refPt.
+  result <- quantile( pVal, probs )
   result
 }
 

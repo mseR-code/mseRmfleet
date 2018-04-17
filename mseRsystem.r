@@ -656,8 +656,9 @@ ageLenOpMod <- function( objRef, t )
   } # end "if(t==1)"
   else  # t>1
   {
-    # Spawning biomass and number.
-    SBt <- sum(Balt[,nGrps,t-1]*Ma*exp(-Zalt[,1:nGrps,t-1]))
+    # Spawning biomass
+    SBt <- obj$om$SBt[t-1]
+
     # Calculate age-1 recruitment, Beverton-Holt stock-recruitment.
     #if( t>44 )
     if( recOption=="Beverton-Holt" )
@@ -668,9 +669,7 @@ ageLenOpMod <- function( objRef, t )
     else
         tmpR <- avgR
 
-    Rt[t] <- omegat[t]*tmpR #(S-R gives females only)
-
-    # if ( t == tMP) browser()
+    Rt[t] <- omegat[t]*tmpR 
     
     # Update numbers-at-age.
     # Nalt[1,,t] <- outer( Rt[t], rep( obj$pars$piOne, nGrps ) )
@@ -783,15 +782,23 @@ ageLenOpMod <- function( objRef, t )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
   }
 
+  # Calculate spawning biomass at spawn time (post F and M)
+  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
+
+  # Calculate spawning biomass before fishing (post M, pre F)
+  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-Mt[t]))
+
   # Total landings and harvest rates.
   legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
   sublegalB  <- sum( Balt[,,t]*(1.-obj$refPtList$Legal) )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
   legalHR    <- (legalC + legalD)/legalB
-  spawnHR    <- (legalC + legalD)/Bt[t]
+  spawnHR    <- (legalC + legalD)/FBt
   # if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
   # else sublegalHR <- sublegalD/sublegalB
+
+  
 
 
   # Gear-specific cpue, catch, discards, and sample age-proportions
@@ -860,8 +867,8 @@ ageLenOpMod <- function( objRef, t )
   obj$om$Datg  <- Datg    # dead discards by age/gear
   obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
   
-  if(t > 1)
-    obj$om$SBt[t-1]        <- SBt          # Spawning biomass at time of spawning
+  obj$om$SBt[t]             <- SBt          # Spawning biomass at time of spawning
+  obj$om$FBt[t]             <- FBt          # Spawning biomass before fishing occurs (post M)
 
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
   obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
@@ -2081,6 +2088,7 @@ iscamWrite <- function ( obj )
 
   # Set om list elements to NULL as placeholders.
   om <- list( Nalt=NULL,      Balt=NULL,      Zalt=NULL,    Bt=NULL,
+              SBt = NULL,     FBt=NULL,
               Nt=NULL,        Btot=NULL,      Ntot=NULL,    Rt=NULL,
               uCatg=NULL,     Ct=NULL,        Ctg=NULL,     Catg=NULL,
               Dt=NULL,        Dtg=NULL,       Mt=NULL,      Ft=NULL,        
@@ -2093,6 +2101,7 @@ iscamWrite <- function ( obj )
   om$Balt       <- array( data=NA, dim=c(nAges,nGrps,nT) )
   om$Zalt       <- array( data=NA, dim=c(nAges,nGrps,nT) )
   om$SBt        <- rep( NA, nT )
+  om$FBt        <- rep( NA, nT )
   om$Bt         <- rep( NA,nT )
   om$Nt         <- rep( NA,nT )
   om$Btot       <- rep( NA,nT )
@@ -2527,6 +2536,7 @@ iscamWrite <- function ( obj )
   om <- list( iSeed      = rep( NA, nReps ),
               Bt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               SBt        = matrix( NA,nrow=nReps,ncol=(nT+1) ),
+              FBt        = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Nt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Btot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ntot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
@@ -2727,6 +2737,7 @@ iscamWrite <- function ( obj )
     # Fill current row of the blob for operating model components.
     blob$om$Bt[i,]         <- c( i, obj$om$Bt )
     blob$om$SBt[i,]        <- c( i, obj$om$SBt )
+    blob$om$FBt[i,]        <- c( i, obj$om$FBt )
     blob$om$Nt[i,]         <- c( i, obj$om$Nt )
     blob$om$Btot[i,]       <- c( i, obj$om$Btot )
     blob$om$Ntot[i,]       <- c( i, obj$om$Ntot )
@@ -2797,6 +2808,9 @@ iscamWrite <- function ( obj )
 
   tmpNames <- paste("SB",c(1:nT),sep="")
   colnames( blob$om$SBt ) <- c( "iRep", tmpNames )
+
+  tmpNames <- paste("FB",c(1:nT),sep="")
+  colnames( blob$om$FBt ) <- c( "iRep", tmpNames )
   
   tmpNames <- paste("N",c(1:nT),sep="")
   colnames( blob$om$Nt ) <- c( "iRep", tmpNames )
@@ -2934,7 +2948,7 @@ iscamWrite <- function ( obj )
     if( obj$ctlList$gui$mpLabel == "NoFish" ) next
 
     # 1. Pull out population right now
-    Bt    <- obj$om$Bt[t+1]
+    Bt    <- obj$om$FBt[t+1]
 
     # 2. Calculate catch for next time step based on 
     # mpLabel

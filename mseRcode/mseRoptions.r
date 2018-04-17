@@ -89,7 +89,7 @@
 .CtLWD <- 2 
 .CtPCH <- 21 
 .CtCEX <- 1.4 
-.CtLAB  <- "Retained catch (000s t)" 
+.CtLAB  <- "Catch (000s t)" 
 .CtUNIT <- "metric tons"
 .PLOT.MED.PEAKCATCH <- FALSE 
 #
@@ -374,7 +374,7 @@
 #
 # Settings for .Dept 
 #
-.DeptIsBiomass <- TRUE
+.DeptIsBiomass <- FALSE
 .DeptBG <- "white" 
 .DeptCOL <- "black" 
 .DeptFG <- "black" 
@@ -382,10 +382,11 @@
 .DeptLWD <- 1 
 .DeptPCH <- 21 
 .DeptCEX <- 1.4 
-.DeptBLIM <- 0.0326
-.DeptBUPPER <- 0.0836
+.DeptBLIM <- .3
+.DeptBUPPER <- 0.525
 #.DeptLAB  <- "Female spawning biomass (000s t)" # Using biomass for Atl Hal
-.DeptLAB  <- "fSSB Depletion" 
+.DeptLAB  <- "SSB (pre-fishing)" 
+if( .SBt_Perf ) .DeptLAB <- "SSB (post-fishing)"
 .DeptUNIT <- "" 
 #
 # Settings for .Gear 

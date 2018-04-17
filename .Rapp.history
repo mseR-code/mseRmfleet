@@ -1,18 +1,74 @@
 source("mser.r")
 guiView()
-blob$om$Nat
-names(blob$om()
-names(blob$om)
-source("mser.r")
-runMSE()
-blob$om$Nat
+c
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+guiView()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
 Nat
-Nalt[,1,]
-blob$ctlList$opMod$repFile$Nta
-blob$ctlList$opMod$repFile$N
-str(blob$ctlList$opMod$repFile$N)
-t(blob$ctlList$opMod$repFile$N)
-Nalt[,1,1:68]
-Nalt[2:10,1,1:68]
-Nalt[2:10,1,1:68]/t(blob$ctlList$opMod$repFile$N)
-Q
+names(rep)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+sel
+head(sel()
+head(sel())
+head(sel)
+Fta <- rep$F
+Fta
+fgt <- rep$ft
+ft
+fgtr
+fgt
+names(rep)
+rep$M
+head(rep$M)
+head(Sel)
+head(el)
+head(sel)
+names(rep)
+head(wra)
+head(wta)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+Zta
+sel[t,]
+Zta[t,] <- Zta[t,] + selGear[t,]*ftg[t,g]
+selGear
+c
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+Cta_w
+names(rep)
+(rep$ma)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+Cta_immat[t,]
+Cta_immat
+Cta_mat
+Ct_mat <- apply(X = Cta_mat, FUN = sum, MARGIN = 1 )
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+Ct == Ct_immat + Ct_mat
+Ct
+Ct_mat
+Ct_immat
+rep$ma
+Ct <- apply(X = Cta_w, FUN = sum, MARGIN = 1 )
+Ct == Ct_immat + Ct_mat
+Ct - (Ct_immat + Ct_mat)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
+Ct
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+guiView()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+runMSE()

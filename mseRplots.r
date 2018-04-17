@@ -1891,8 +1891,16 @@
   
   Bmsy <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
+
+  if( !is.null(obj$om$FBt) ) 
+    Bt <- obj$om$FBt[ iRep,(2:ncol(obj$om$FBt)) ]
+  else 
+    Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ] * exp(-Mt)
+  
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
+
+
   
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
@@ -1933,7 +1941,7 @@
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
   axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
   box()
-  mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Biomass" )
+  mtext( side=2, line=.INLINE3, cex=.CEXLAB2, "Biomass (kt)" )
 
   # Panel 2: Plot harvest rate.
 
@@ -1950,7 +1958,7 @@
   axis( side=2, las=.YAXISLAS )
   box()
 
-  mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Harvest rate" )
+  mtext( side=2, line=.INLINE3, cex=.CEXLAB2, "Harvest rate" )
   
   if ( gfx$doLegend )
   {
@@ -1970,7 +1978,7 @@
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYear )
   axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
   box()
-  mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Recruits" )
+  mtext( side=2, line=.INLINE3, cex=.CEXLAB2, "Recruits" )
   
   mtext( side=1, line=.OUTLINE, cex=.CEXAXIS2, outer=TRUE, "Year" )
 }     # END function .plotBtUtRt
@@ -5061,10 +5069,8 @@
 
   # X-axis (bottom): panel is in the last row.
   if ( mfg[1]==mfg[3] )
-    #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
     .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
- # else
-  #  #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
+  else axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
    # .addXaxis( xLim, initYear=.INITYEAR, side=3, years=FALSE )
 
   # X-axis (top): panel is in the first row.
@@ -5074,7 +5080,7 @@
 #  else
 #    axis( side=3, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
 
-  yTicks <- round(seq(from=0,to=yLim[2],length=5))
+  yTicks <- round(seq(from=0,to=yLim[2],length=5),2)
   axis( side=2, cex.axis=.CEXAXIS2, las=.YAXISLAS, at=yTicks, ... )
 
   axis( side=4, labels=FALSE, at=yTicks )
@@ -13256,7 +13262,9 @@ plotRefPts <- function( obj )
                                  showProj=pfProj, xLim=xLim, yLim=yLim, useYears=FALSE ),... )                                 
 {
   # Get the spawning biomass and number of replicates.
-  Bt    <- obj$om$Bt[ ,c(2:ncol(obj$om$Bt)) ]
+  Bt    <- obj$om$SBt[ ,c(2:ncol(obj$om$Bt)) ]
+  if( .FBt_Perf )
+    Bt   <- obj$om$FBt[ ,c(2:ncol(obj$om$SBt))]
   nReps <- nrow( Bt )
 
   opMod  <- obj$ctlList$opMod
@@ -13268,7 +13276,7 @@ plotRefPts <- function( obj )
   # Extract B0 and Bmsy for depletion calculations.
   B0     <- obj$ctlList$opMod$B0
   Bmsy   <- obj$ctlList$refPts$ssbFmsy
-#browser()
+  #browser()
   # Convert MSY and Bt to depletion scale.
   depMSY <- Bmsy / B0
   Dept   <- Bt   / B0
@@ -13310,8 +13318,8 @@ plotRefPts <- function( obj )
   if ( mfg[1]==mfg[3] )
     #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
     .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
- # else
-  #  #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
+  else
+    axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
    # .addXaxis( xLim, initYear=.INITYEAR, side=3, years=FALSE )
 
   # X-axis (top): panel is in the first row.
@@ -13336,29 +13344,57 @@ plotRefPts <- function( obj )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
-  quants <- apply( Dept, 2, quantile, probs=qProbs )
 
-  medBt <- apply(X=Dept,MARGIN=2,FUN=quantile,probs=0.5)
+  quants <- apply( Dept, 2, quantile, probs=qProbs, na.rm = T )
+
+  medBt <- apply(X=Dept,MARGIN=2,FUN=quantile,probs=0.5, na.rm = T)
 
   peakMedianBiomassYear <- which.max(medBt[tMP:nT])
 
 
   # Plot the shaded envelope.
   nQuants <- nrow( quants )
-  polygon ( x=c(tVec,rev(tVec)),y=c(quants[1,],rev(quants[nQuants,])),
+
+  # If final year has NAs, remove that year from tVec
+  if(all(is.na(quants[,nT]))) tVec <- tVec[-length(tVec)]
+
+  polygon ( x=c(tVec,rev(tVec)),y=c(quants[1,tVec],rev(quants[nQuants,tVec])),
             density=-1, col=.TULENVCOL, border=FALSE )
 
   # Plot the quantiles.
-  lines( tVec,quants[3,], lwd=2, lty=1 )
+  lines( tVec,quants[3,tVec], lwd=2, lty=1 )
   if ( allQuants )
   {
-    lines( tVec,quants[2,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
-    lines( tVec,quants[4,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
+    lines( tVec,quants[2,tVec], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
+    lines( tVec,quants[4,tVec], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
   }
   # lines for limit and upper ref pts for Atl Hal
   # Biomass reference lines
-  abline( h=depMSY, lty="dashed", col="black")
-  abline( h=0.4*depMSY, lty="dotted", col="black")
+  if( .ISCAMFLAG )
+  {
+    # Blim
+    depBlim <- .BlimHerring
+    # USR (not sure what this is yet)
+    depUSR <- .USRHerring
+    # TRP (NCN objective 1)
+    depTRP <- .TRPHerring
+
+    abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
+    abline( h = depUSR, lty = 2, col = "orange", lwd = 2 )
+    abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
+
+    panLegend(  x = .4, y =.8, bty = "n",
+                legTxt = c( expression(.3*B[0]),
+                            expression(.525*B[0]),
+                            expression(.75*B[0])),
+                lty = 2, lwd = 2,
+                col = c("red","orange","darkgreen")  )
+
+  } else {
+    abline( h=depMSY, lty="dashed", col="black")
+    abline( h=0.4*depMSY, lty="dotted", col="black")  
+  }
+  
   
 
     if( .PLOT.MED.PEAKBIOMASS )
@@ -13390,7 +13426,7 @@ plotRefPts <- function( obj )
   if ( !is.null(traces) && traces!=0.0 )
   {
     for ( i in traces )
-      lines( tVec, Dept[i,] )
+      lines( tVec, Dept[i,tVec] )
   }
 
   return( invisible() )

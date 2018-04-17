@@ -89,6 +89,13 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 # Flag to indicate ISCAM is being used as the AM
 .ISCAMFLAG <- TRUE
 
+# Herring related objective depletion values
+.BlimHerring  <- .3
+.USRHerring   <- .525
+.TRPHerring   <- .75
+
+.FBt_Perf <- TRUE
+
 # Flag to produce Mt envelopes in Perf under legal HR
 .USEMt <- TRUE
 if( .USEMt ) 
