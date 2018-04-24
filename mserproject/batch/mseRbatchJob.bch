@@ -129,8 +129,14 @@ mp$mp16$mp$hcr$targHRHerring .1
 mp$mp16$mp$hcr$herringCutoffVal .5
 mp$mp16$mp$hcr$herringCutoffType "relative"
 #
-## Management Procedure 17: NoFish
+## Management Procedure 17: ccRule
 #
-mp$mp17$gui$mpLabel "NoFish"
+mp$mp17$gui$mpLabel "ccRule"
+mp$mp16$mp$hcr$targHRHerring .2
+mp$mp16$mp$assess$methodId 1
+#
+## Management Procedure 18: NoFish
+#
+mp$mp18$gui$mpLabel "NoFish"
 #
 # File Ends <not run>.

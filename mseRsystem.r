@@ -4140,7 +4140,11 @@ iscamWrite <- function ( obj )
 
   choice   <- which.min(tmpCatch)
   if ( choice==2 )
-    .FISHERYCLOSED <<- TRUE  
+  {
+    .FISHERYCLOSED <<- TRUE
+    tmpCatch[1] <- 0
+  }
+
   
   # Set catch limit for the year
   om$Ctg[ t, ]  <- rep( 0, ncol(om$Ctg) )
