@@ -3565,19 +3565,29 @@
   if ( obj$mp$hcr$specs$statusBase == "statusBaseB0" )
     base <- "B0"
 
-  if( obj$mp$hcr$specs$remRefBase=="rrBaseFmsy" & obj$mp$hcr$specs$remRefSource=="rrSrceEst" )
-    remRate <- obj$ctlList$refPts$Fmsy
-	if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
-	  remRate <- obj$mp$hcr$specs$remRateInput
+ #  if( obj$mp$hcr$specs$remRefBase=="rrBaseFmsy" & obj$mp$hcr$specs$remRefSource=="rrSrceEst" )
+ #    remRate <- obj$ctlList$refPts$Fmsy
+	# if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
+	#   remRate <- obj$mp$hcr$specs$remRateInput
+
+  remRate <- obj$mp$hcr$targHRHerring
 
   # HCR control point multipliers.
-  lowerBoundMult <- obj$ctlList$mp$hcr$lowerBoundMult
-  upperBoundMult <- obj$ctlList$mp$hcr$upperBoundMult
+  # lowerBoundMult <- obj$ctlList$mp$hcr$lowerBoundMult
+  # upperBoundMult <- obj$ctlList$mp$hcr$upperBoundMult
 
   # Lower and upper control points for HCR, plus base.
   lowerB  <- obj$mp$hcr$lowerBound
   upperB  <- obj$mp$hcr$upperBound
   Bref    <- obj$mp$hcr$Bref
+
+  if( all(is.na(lowerB) ) )
+  {
+    lowerB <- rep(obj$mp$hcr$herringCutoffVal,nT)
+    if( obj$mp$hcr$herringCutoffType == "relative")
+      lowerB <- lowerB * B0
+    upperB <- lowerB / (1 - remRate)
+  }
 
   # Operating model Bt and Ft.
   Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
@@ -11504,7 +11514,7 @@
   projExpBio <- mpdPars[ mpdPars$iRep==iRep, "projExpBio" ]
   if( is.null(projExpBio) ) projExpBio <- obj$om$FBt[iRep, 1 + idx]
 
-  # Get annual estimates of lower and upper control points from the management procedure. 
+  # Get annual estimates of lower and upp er control points from the management procedure. 
   lowerBound <- obj$mp$hcr$lowerBound[ iRep,c(2:ncol(obj$mp$hcr$lowerBound)) ]
   lowerBound <- lowerBound[idx]
   upperBound <- obj$mp$hcr$upperBound[ iRep,c(2:ncol(obj$mp$hcr$upperBound)) ]

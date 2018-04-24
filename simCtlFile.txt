@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Tue Apr 10 12:13:56 2018 
 parameter value
-gui$mpLabel "currMP"
+gui$mpLabel "PerfectInfo_currMP"
 gui$nReps 3
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE

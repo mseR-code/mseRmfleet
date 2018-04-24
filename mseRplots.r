@@ -1894,6 +1894,7 @@
   Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
 
   Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$FBt)) ]
+  B0 <- obj$ctlList$opMod$B0
   
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
 
@@ -1902,7 +1903,6 @@
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
   spawnHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
-  sublegalHR <- obj$om$sublegalHR[ iRep,c(2:nCol) ]
 
   xLim  <- gfx$xLim
   yLim1 <- gfx$yLim1
@@ -1931,7 +1931,10 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
+  cutoff <- obj$ctlList$mp$hcr$herringCutoffVal
+  if( obj$ctlList$mp$hcr$herringCutoffType == "relative")
+    cutoff <- cutoff * B0
+  abline( h=cutoff, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 

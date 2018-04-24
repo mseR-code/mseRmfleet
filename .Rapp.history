@@ -1,73 +1,245 @@
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/pullSetData.R")
+setStarts
+setEnds
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/pullSetData.R")
+write.csv( VMdata, file = "VMdata_classified.csv")
+install.packages("viridis")
+library( viridis )
+VMdata$Col <- inferno(256)[as.numeric(cut(VMdata$Pressure,breaks = 10))]
+for( i in 1:max(VMdata$eventID) )#
+{#
+  subData <- VMdata %>% filter( eventID == i )#
+  set <- subData[subData$type == "Set",]#
+  haul <- subData[subData$type == "Haul",]#
+#
+  xRange <- range(subData$lon)#
+  yRange <- range(subData$lat)#
+#
+  plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)#
+#
+  readline(prompt="Press [enter] to continue")#
+}
+for( i in 1:max(VMdata$eventID,na.rm = T) )#
+{#
+  subData <- VMdata %>% filter( eventID == i )#
+  set <- subData[subData$type == "Set",]#
+  haul <- subData[subData$type == "Haul",]#
+#
+  xRange <- range(subData$lon)#
+  yRange <- range(subData$lat)#
+#
+  plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)#
+#
+  readline(prompt="Press [enter] to continue")#
+}
+for( i in 1:max(VMdata$eventID,na.rm = T) )#
+{#
+  browser()#
+  subData <- VMdata %>% filter( eventID == i )#
+  set <- subData[subData$type == "Set",]#
+  haul <- subData[subData$type == "Haul",]#
+#
+  xRange <- range(subData$lon)#
+  yRange <- range(subData$lat)#
+#
+  plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)#
+#
+  readline(prompt="Press [enter] to continue")#
+}
+i
+subData <- VMdata %>% filter( eventID == i )
+subData
+set <- subData[subData$type == "Set",]
+haul <- subData[subData$type == "Haul",]
+xRange <- range(subData$lon)
+xRange
+subData$lon
+VMdata <- VMdata %>%#
+          mutate( lon = -Lon - Lonmin/60,#
+                  lat = Lat + Latmin/60 )
+subData <- VMdata %>% filter( eventID == i )
+set <- subData[subData$type == "Set",]
+haul <- subData[subData$type == "Haul",]
+xRange <- range(subData$lon)
+yRange <- range(subData$lat)
+plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)
+VMdata$Col <- inferno(10)[as.numeric(cut(VMdata$Pressure,breaks = 10))]
+plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)
+points( set$lon, set$lat, col = VMdata$Col, pch = 16, cex= .8)
+points( haul$lon, haul$lat, col = haul$Col)
+c
+c
+c
+c
+Q
+VMdata$Col <- inferno(10)[as.numeric(cut(VMdata$Pressure,breaks = 10))]#
+#
+for( i in 1:max(VMdata$eventID,na.rm = T) )#
+{#
+  subData <- VMdata %>% filter( eventID == i )#
+  set <- subData[subData$type == "Set",]#
+  haul <- subData[subData$type == "Haul",]#
+#
+  xRange <- range(subData$lon)#
+  yRange <- range(subData$lat)#
+#
+  plot(xRange, yRange, type = "n")#
+    points( set$lon, set$lat, col = set$Col, pch = 16, cex= .8)#
+    points( haul$lon, haul$lat, col = haul$Col, pch = 16)#
+#
+  readline(prompt="Press [enter] to continue")#
+}
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+dev.off()
+dev.off()
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+dev.off()
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+violateSets.DF$Pressure
+inferno(256)[as.numeric(cut(violateSets.DF$Pressure,breaks = 10))]
+plot(inferno(256)[as.numeric(cut(violateSets.DF$Pressure,breaks = 10))])
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+inferno(10)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+?color.legend
+gradLeg <- round(cut(haulData$Pressure,breaks = 5))
+cut(haulData$Pressure,breaks = 5)
+viridis(20)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+color.legend(-133.91,54.31,-133.905,54.34,cut(haulData$Pressure,breaks = 5),viridis(20),cex=1,align="lt",gradient="y")
+c
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+color.legend(-133.91,54.31,-133.905,54.34,range(violateSets.DF$Pressure),viridis(20),cex=1,align="lt",gradient="y")
+c
+dev.off()
+dev.off()
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+color.legend(-133.91,54.31,-133.905,54.34,range(violateSets.DF$Pressure),viridis(20),cex=1,align="lt",gradient="y")
+color.legend(-133.91,54.31,-133.905,54.33,range(violateSets.DF$Pressure),viridis(20),cex=1,align="lt",gradient="y")
+color.legend(-133.91,54.31,-133.905,54.33,c(1,2),VMdata$Col,cex=1,align="lt",gradient="y")
+color.legend(-133.91,54.31,-133.905,54.33,c(1,2),VMdata$Col,cex=1,align="lt",gradient="y")
+color.legend()
+color.legend(-133.91,54.31,-133.905,54.33,c(1,2),rect.col = viridis(10),cex=1,align="lt",gradient="y")
+color.legend(-133.91,54.31,-133.905,54.33,rect.col = viridis(10))
+color.legend(-133.91,54.31,-133.905,54.33,legend = 1,rect.col = viridis(10))
+color.legend(-133.91,54.31,-133.905,54.33,legend = 1,rect.col = viridis(1000))
+color.legend(0,0,1,1,legend = 1,rect.col = viridis(1000))
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+c
+c
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+?legend.scale
+install.packages(autoimage)
+install.packages("autoimage")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+legend.scale( range(violateSets.DF$Pressure), col = viridis(20), horizontal = FALSE,#
+                    seq(min(violateSets.DF$Pressure), max(violateSets.DF$Pressure), length = 21), #
+                    axis.args = list(las = 1))
+legend.scale( range(violateSets.DF$Pressure), col = viridis(20), horizontal = FALSE,#
+                    seq(min(violateSets.DF$Pressure), max(violateSets.DF$Pressure), length = 21), #
+                    axis.args = list(las = 1))
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+install.packages("fifer")
+require
+require(figire)
+require(fifer)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+gradient.legend(  y = violateSets.DF$Pressure, cols = viridis(20),#
+                        location = c(0,0.1,0,0.5), n = 100)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+c
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+c
+c
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+install.packages("SDMTools")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+library(SDMTools)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+pnts
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+pnts
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+pnts
+str(pnts)
+class(pnts)
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/pullSetData.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/pullSetData.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
+source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/analyses.R")
 source("mser.r")
-guiView()
-c
-c
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-Bt
-Bt    <- obj$om$FBt[t+1]
-Bt
-Bt    <- obj$om$FBt[t+1]
-obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
-Bt    <- obj$om$FBt[t+1]
-Bt
-Q
 runMSE()
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-Bt
-c
-Bt
-obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
-Bt    <- obj$om$FBt[t+1]
-Bt
-c
-c
-c
-c
-c
-Q
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-guiView()
-c
-c
-c
-c
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-c
-c
-c
-c
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-blob$om$spawnHR
-runMSE()
-guiView()
-blob$om$spawnHR
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-blob$om$FBt[3,76]
-projExpBio
-blob$om$Ct[3,76]
-blob$om$Ct[3,76]/blob$om$Fbt[3,76]
-blob$om$Ct[3,76]/blob$om$FBt[3,76]
-Q
+blob
+blob$mp$data
+blob$mp$data$It
+names(blob$mp$data)
+obj$om$Ct
+blob$om$Ct
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+source("mseR.r")
 runMSE()
-newCatch
-targetHarv
-Bt
-c
-targetHarv
-c
-c
-c
-c
-Q
 source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+t(mp$data$Itg[1:(t-1),5])
+mp$data$Itg[1:(t-1),5]
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
+rule              <- mp$hcr

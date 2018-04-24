@@ -733,7 +733,9 @@ ageLenOpMod <- function( objRef, t )
     baranovTime <<- t
     #if(t>17) browser()
 
-    solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
+    # browser()
+
+    solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
                                     C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
                                     nIter = ctlList$opMod$baranovIter )
 
@@ -758,8 +760,6 @@ ageLenOpMod <- function( objRef, t )
   {
     Cal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
     Dal <- 0
-    # Dal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
-    #Dal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*Palg[,,g]/Zalt[,,t]            
     
     # catch-age/year/gear
     Catg[,t,g]  <- Cal
@@ -884,7 +884,7 @@ ageLenOpMod <- function( objRef, t )
 #-- MP Assessment Method Helper functions                                    --#
 #------------------------------------------------------------------------------#
 
-# .assessMod       
+# .assessModMA       
 # Purpose:        generates the "stock assessment", here an n-point
 #                 moving average of a reference survey
 # Parameters:     obj=list containing It=survey biomasses;
@@ -896,7 +896,6 @@ ageLenOpMod <- function( objRef, t )
   # Compute the moving average of the survey
   # using the most recent avgPoints surveys
   It        <- obj$It
-  q         <- obj$q # this needs to be in mp!!
   avgPoints <- obj$avgPoints
 
   # Remove missing values.
@@ -905,11 +904,35 @@ ageLenOpMod <- function( objRef, t )
   tVec    <- c( (length(tmp) - nPoints + 1 ):length(tmp) )
 
   # Moving average of survey values.
-  movinAvg <- exp( mean( log(tmp[tVec]/q) ) )
+  movinAvg <- exp( mean( log(tmp[tVec]) ) )
   assessment         <- list()
   assessment$biomass <- movinAvg
   return( assessment )
 }    # END function .assessModMA
+
+# .assessModMA       
+# Purpose:        wrapper function for the MovAvg MP
+# Parameters:     obj=list containing om and mp lists
+#                 t=current time step
+# Returns:        stock assessment output from .assessModMA()
+# Source:         S.P. Cox
+.callProcedureMovingAvg <- function( obj, t )
+{
+  # Extract operating model and management procedure objects
+  om <- obj$om
+  mp <- obj$mp
+
+  # Extract index values - take last survey
+  It <- mp$data$Itg[ c(1:(t-1)), 5 ]
+ 
+  # Assessment frequency information - not implemented yet
+  tmp             <- list()               # Temporary list
+  tmp$It          <- It                   # Stock index      
+  tmp$avgPoints   <- mp$assess$avgPoints  # Number of index point to average
+  stockAssessment <- .assessModMA( tmp )   # Call moving average method
+  stockAssessment
+}     # END function callAssessMovingAvg
+
 
 # .assessModMA_Herring      
 # Purpose:        generates the "stock assessment", here a simple
@@ -1980,6 +2003,76 @@ iscamWrite <- function ( obj )
   result
 }     # END function .calcHarvRuleHerringDFOMP
 
+
+# .calcHCR_ccRule       
+# Purpose:        harvest control rule to generate the quota
+# Parameters:     obj=list containing all variables and parameters
+#                 necessary to compute the quota
+# Requires:       global variable Bmin = initial value for lowest biomass
+# Returns:        the quota=catch
+# Source:         S.P. Cox
+.calcHCR_ccRule <- function( hcrList )
+{
+  
+  # Function to find the minimum biomass over past 10 years
+  # from which the stock has recovered.  
+  find_min <- function(x)
+  {
+    # Goal: find the minumum value of x that has been "recovered" from.
+    # In other words, find the smallest datapoint x[t] such that x[t] < x[t+1].
+    # If NA is returned, then no such point has been found.
+  
+    if( length(x) == 1 ) return(NA)
+  
+    # propose first datapoint as current minimum
+    min_curr <- x[1]
+  
+    # find another datapoint that is less than the current minimum
+    # and also has a subsequent datapoint that is smaller than itself
+    if( length(x)>2 ) {
+      for( i in 2:(length(x)-1) ) {
+        if( x[i]<min_curr && x[i]<x[i+1] ) min_curr <- x[i]
+      }
+    }
+    # if the current minimum is still the first datapoint,
+    # check the subsequent point
+    if( min_curr==x[1] && x[1]>x[2] ) min_curr <- NA
+    if(!is.na(min_curr)){
+      if(min_curr==0) {
+        min_curr <- 0.05
+      }
+    }
+    min_curr
+  }
+
+  t   <- hcrList$t - 1
+  I   <- hcrList$ccBiomass # this is survey only
+  C   <- hcrList$Dt
+  u   <- hcrList$remRate[t]
+
+  # Biomass over previous ten years
+  if( t > 10 ) B10 <- I[(t-10):t] + C[(t-10):t]
+  else         B10 <- I[1:t] + C[1:t]
+
+  # Proposed Bmin
+  Bmin_prop <- find_min(B10)
+
+
+
+  # Accept Bmin_prop if it exists, otherwise use last year's
+  if(!is.na(Bmin_prop)) Bmin <<- Bmin_prop
+
+  if( I[t] > Bmin ) {
+    catchLimit <- u*(I[t]+C[t])
+  } else {
+    catchLimit <- 0
+  }
+
+  result <- list( catchLimit=max( 0, catchLimit ), 
+                  precautionaryF=min(u,catchLimit/(I[t] + C[t])),
+                  eBioAdj=NA )
+  result
+}     # END function calcHCR_ccRule
 
 # .calcHCRsmoother       
 # Purpose:        empirical harvest control rule to generate the quota
@@ -3644,7 +3737,7 @@ iscamWrite <- function ( obj )
   }
   if ( ctlList$mp$assess$methodId == .KALMAN )
   {
-    tmp$It <- mp$data$Itg[1:(t-1),1]
+    tmp$It <- mp$data$Itg[1:(t-1),5]
     tmp$kfGain <- ctlList$mp$assess$kfGain
     stockAssessment <- assessModKF( tmp )
   }
@@ -3652,16 +3745,14 @@ iscamWrite <- function ( obj )
   if ( ctlList$mp$assess$methodId == .MOVAVG )
   {
 
-    # browser()
-    tmp$avgPoints   <- ctlList$mp$assess$avgPoints
-    tmp$q           <- ctlList$mp$hcr$qIndex
-    tmp$t           <- t - 1
+    tmp$om          <- om
+    tmp$mp          <- mp
 
-    stockAssessment <- .assessModMA_Herring( tmp )
+    stockAssessment <- .callProcedureMovingAvg( tmp, t )
     tRow <- t - tMP + 1
     
     # Update ItgScaled.
-    val <- t(tmp$Itg)
+    val <- t(mp$data$Itg[1:(t-1),tmpTimes$useIndex])
     mp$assess$ItgScaled[tmpTimes$useIndex,c(1:(t-1)) ] <- val
     mp$assess$ItgScaled[mp$assess$ItgScaled < 0] <- NA
     
@@ -3823,7 +3914,8 @@ iscamWrite <- function ( obj )
   # above sb: inputF 
      
   # STOCK STATUS Control points from the operating model.
-  if ( statusSource == "statusSrceEquil" )
+  if ( statusSource == "statusSrceEquil" |
+       methodId %in% c(.MOVAVG,.KALMAN ) )
   {
     if ( statusBase == "statusBaseBmsy" )
       mp$hcr$Bref[t] <- refPtList$ssbFmsy
@@ -3856,7 +3948,8 @@ iscamWrite <- function ( obj )
   }     # ENDIF statusSource != statusSrceEquil
   
   # REFERENCE REMOVAL RATE from the operating model.
-  if ( remRefSource == "rrSrceEquil" )
+  if ( remRefSource == "rrSrceEquil" |
+       methodId %in% c(.MOVAVG,.KALMAN )  )
   {
     if ( remRefBase == "rrBaseFmsy" )
       mp$hcr$remRate[t] <- refPtList$Fmsy
@@ -3920,6 +4013,7 @@ iscamWrite <- function ( obj )
  
   # Update lower and upper HCR control points.
   targHR <- ctlList$mp$hcr$targHRHerring
+  mp$hcr$remRate[t]  <- ctlList$mp$hcr$targHRHerring
   
   if( ctlList$mp$hcr$herringCutoffType == "absolute" )
     mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
@@ -3931,17 +4025,30 @@ iscamWrite <- function ( obj )
   # HCRs based on Empirical methods
   if ( (ctlList$mp$assess$methodId == .MOVAVG) ) 
   {
+
       # Build harvest control rule list object.
       rule              <- mp$hcr
       rule$assessMethod <- ctlList$mp$assess$methodId
       rule$t            <- t
       rule$biomass      <- stockAssessment$biomass
-      rule$maxF         <- log(1/(1-ctlList$mp$hcr$targHRHerring))
-      rule$catchFloor   <- ctlList$mp$hcr$catchFloor
-      rule$assessFailed <- FALSE
+      rule$ccBiomass    <- mp$data$Itg[1:(t-1),5]
+      rule$Dt           <- om$Ct[1:(t-1)]
+      
+      # ccRule lifted from previous LRP paper
+      if( ctlList$gui$mpLabel == "ccRule" )
+      {
+        targetHarv <- .calcHCR_ccRule( rule )
 
-      # Calculate catch limit
-      targetHarv   <- .calcHarvRuleHerringDFOMP( rule )  
+      } else {
+        # Calculate catch limit using herring 
+        # cutoff/targHR rule
+        targetHarv   <- .calcHarvRuleHerringDFOMP( rule )  
+
+      }
+      
+      
+
+      
   }
   else
   {
