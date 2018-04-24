@@ -11539,7 +11539,7 @@
   
   # Lay down heat colors for HCRs applied by management procedure.
   colVec <- rev( heat.colors( n=length(Bref) ) )
-  if( all(!is.na(lowerBound)) & all(is.na(upperBound)) )
+  if( all(!is.na(lowerBound)) & all(!is.na(upperBound)) )
   {
     for ( i in 1:length(colVec) )
     {
@@ -11563,7 +11563,6 @@
   y <- x
   for( xidx in 1:length(x))
     y[xidx] <- min( targHR, (x[xidx] - trueLowerBound)/x[xidx] )
-  browser()
   lines(x,y, lty = 1, lwd = 3)
   segments( trueUpperBound, targHR, usr[2],  targHR, lty=1, lwd=3 )  
 

@@ -3919,17 +3919,14 @@ iscamWrite <- function ( obj )
   }  # ENDIF remRefSource != "rrSrceEquil"
  
   # Update lower and upper HCR control points.
+  targHR <- ctlList$mp$hcr$targHRHerring
+  
   if( ctlList$mp$hcr$herringCutoffType == "absolute" )
-  { 
-    targHR <- mp$hcr$targHRHerring
     mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
-    mp$hcr$upperBound[t] <- ctlList$mp$hcr$herringCutoffVal / (1 - targHR)
-  }
   if( ctlList$mp$hcr$herringCutoffType == "relative") 
-  {
     mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
-    mp$hcr$upperBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal / (1 - targHR)
-  }
+
+  mp$hcr$upperBound[t] <- mp$hcr$lowerBound[t] / (1 - targHR)
                   
   # HCRs based on Empirical methods
   if ( (ctlList$mp$assess$methodId == .MOVAVG) ) 
