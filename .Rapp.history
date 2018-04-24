@@ -1,74 +1,14 @@
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
+source("mser.r")
+dev.off()
+dev.off()
+dev.off()
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
+source("plotDepCatchBatch.R")
 source("mser.r")
 guiView()
-c
-c
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
-guiView()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Nat
-names(rep)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-sel
-head(sel()
-head(sel())
-head(sel)
-Fta <- rep$F
-Fta
-fgt <- rep$ft
-ft
-fgtr
-fgt
-names(rep)
-rep$M
-head(rep$M)
-head(Sel)
-head(el)
-head(sel)
-names(rep)
-head(wra)
-head(wta)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Zta
-sel[t,]
-Zta[t,] <- Zta[t,] + selGear[t,]*ftg[t,g]
-selGear
-c
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Cta_w
-names(rep)
-(rep$ma)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Cta_immat[t,]
-Cta_immat
-Cta_mat
-Ct_mat <- apply(X = Cta_mat, FUN = sum, MARGIN = 1 )
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Ct == Ct_immat + Ct_mat
-Ct
-Ct_mat
-Ct_immat
-rep$ma
-Ct <- apply(X = Cta_w, FUN = sum, MARGIN = 1 )
-Ct == Ct_immat + Ct_mat
-Ct - (Ct_immat + Ct_mat)
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/checkCatchAgeISCAM.R")
-Ct
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-guiView()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()
-source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRsystem.r")
-runMSE()

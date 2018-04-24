@@ -21,52 +21,116 @@ scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
 #
 mp$mp1$gui$mpLabel "currMP"
 mp$mp1$mp$hcr$targHRHerring .2
-mp$mp1$mp$hcr$fixCutoffHerring 18.8
+mp$mp1$mp$hcr$herringCutoffVal 18.8
+mp$mp1$mp$hcr$herringCutoffType "absolute"
 #
 ## Management Procedure 2: FC18.8_HR0.1
 #
 mp$mp2$gui$mpLabel "FC18.8_HR0.1"
 mp$mp2$mp$hcr$targHRHerring .1
-mp$mp2$mp$hcr$fixCutoffHerring 18.8
+mp$mp2$mp$hcr$herringCutoffVal 18.8
+mp$mp2$mp$hcr$herringCutoffType "absolute"
 #
 ## Management Procedure 3: FC37.6_HR0.1
 #
 mp$mp3$gui$mpLabel "FC37.6_HR0.1"
 mp$mp3$mp$hcr$targHRHerring .1
-mp$mp3$mp$hcr$fixCutoffHerring 37.6
+mp$mp3$mp$hcr$herringCutoffVal 37.6
+mp$mp3$mp$hcr$herringCutoffType "absolute"
 #
 ## Management Procedure 4: FC37.6_HR0.2
 #
 mp$mp4$gui$mpLabel "FC37.6_HR0.2"
 mp$mp4$mp$hcr$targHRHerring .2
-mp$mp4$mp$hcr$fixCutoffHerring 37.6
+mp$mp4$mp$hcr$herringCutoffVal 37.6
+mp$mp4$mp$hcr$herringCutoffType "absolute"
 #
-## Management Procedure 5: PerfectInfo currMP
+## MP 5: RC.25B0_HR.2
 #
-mp$mp5$gui$mpLabel "PerfectInfo_currMP"
+mp$mp5$gui$mpLabel "RC.25B0_HR0.2"
 mp$mp5$mp$hcr$targHRHerring .2
-mp$mp5$mp$hcr$fixCutoffHerring 18.8
+mp$mp5$mp$hcr$herringCutoffVal .25
+mp$mp5$mp$hcr$herringCutoffType "relative"
 #
-## Management Procedure 6: PerfectInfo FC18.8 HR0.1
+## MP 6: RC.25B0_HR.1
 #
-mp$mp6$gui$mpLabel "PerfectInfo_FC18.8_HR0.1"
+mp$mp6$gui$mpLabel "RC.25B0_HR0.1"
 mp$mp6$mp$hcr$targHRHerring .1
-mp$mp6$mp$hcr$fixCutoffHerring 18.8
+mp$mp6$mp$hcr$herringCutoffVal .25
+mp$mp6$mp$hcr$herringCutoffType "relative"
 #
-## Management Procedure 7: PerfectInfo FC37.6_HR0.1
+## MP 7: RC.5B0_HR.2
 #
-mp$mp7$gui$mpLabel "PerfectInfo_FC37.6_HR0.1"
-mp$mp7$mp$hcr$targHRHerring .1
-mp$mp7$mp$hcr$fixCutoffHerring 37.6
+mp$mp7$gui$mpLabel "RC.5B0_HR0.2"
+mp$mp7$mp$hcr$targHRHerring .2
+mp$mp7$mp$hcr$herringCutoffVal .5
+mp$mp7$mp$hcr$herringCutoffType "relative"
 #
-## Management Procedure 8: PerfectInfo FC37.6_HR0.2
+## MP 8: RC.5B0_HR.1
 #
-mp$mp8$gui$mpLabel "PerfectInfo_FC37.6_HR0.2"
-mp$mp8$mp$hcr$targHRHerring .2
-mp$mp8$mp$hcr$fixCutoffHerring 37.6
+mp$mp8$gui$mpLabel "RC.5B0_HR0.1"
+mp$mp8$mp$hcr$targHRHerring .1
+mp$mp8$mp$hcr$herringCutoffVal .5
+mp$mp8$mp$hcr$herringCutoffType "relative"
 #
-## Management Procedure 9: NoFish
+## Management Procedure 9: PerfectInfo currMP
 #
-mp$mp9$gui$mpLabel "NoFish"
+mp$mp9$gui$mpLabel "PerfectInfo_currMP"
+mp$mp9$mp$hcr$targHRHerring .2
+mp$mp9$mp$hcr$herringCutoffVal 18.8
+mp$mp9$mp$hcr$herringCutoffType "absolute"
+#
+## Management Procedure 10: PerfectInfo FC18.8 HR0.1
+#
+mp$mp10$gui$mpLabel "PerfectInfo_FC18.8_HR0.1"
+mp$mp10$mp$hcr$targHRHerring .1
+mp$mp10$mp$hcr$herringCutoffVal 18.8
+mp$mp10$mp$hcr$herringCutoffType "absolute"
+#
+## Management Procedure 11: PerfectInfo FC37.6_HR0.1
+#
+mp$mp11$gui$mpLabel "PerfectInfo_FC37.6_HR0.1"
+mp$mp11$mp$hcr$targHRHerring .1
+mp$mp11$mp$hcr$herringCutoffVal 37.6
+mp$mp11$mp$hcr$herringCutoffType "absolute"
+#
+## Management Procedure 12: PerfectInfo FC37.6_HR0.2
+#
+mp$mp12$gui$mpLabel "PerfectInfo_FC37.6_HR0.2"
+mp$mp12$mp$hcr$targHRHerring .2
+mp$mp12$mp$hcr$herringCutoffVal 37.6
+mp$mp12$mp$hcr$herringCutoffType "absolute"
+#
+## MP 13: PerfectInfo_RC.25B0_HR.2
+#
+mp$mp13$gui$mpLabel "PerfectInfo_RC.25B0_HR0.2"
+mp$mp13$mp$hcr$targHRHerring .2
+mp$mp13$mp$hcr$herringCutoffVal .25
+mp$mp13$mp$hcr$herringCutoffType "relative"
+#
+## MP 6: PerfectInfo_RC.25B0_HR.1
+#
+mp$mp14$gui$mpLabel "PerfectInfo_RC.25B0_HR0.1"
+mp$mp14$mp$hcr$targHRHerring .1
+mp$mp14$mp$hcr$herringCutoffVal .25
+mp$mp14$mp$hcr$herringCutoffType "relative"
+#
+## MP 7: PerfectInfo_RC.5B0_HR.2
+#
+mp$mp15$gui$mpLabel "PerfectInfo_RC.5B0_HR0.2"
+mp$mp15$mp$hcr$targHRHerring .2
+mp$mp15$mp$hcr$herringCutoffVal .5
+mp$mp15$mp$hcr$herringCutoffType "relative"
+#
+## MP 8: PerfectInfo_RC.5B0_HR.1
+#
+mp$mp16$gui$mpLabel "PerfectInfo_RC.5B0_HR0.1"
+mp$mp16$mp$hcr$targHRHerring .1
+mp$mp16$mp$hcr$herringCutoffVal .5
+mp$mp16$mp$hcr$herringCutoffType "relative"
+#
+## Management Procedure 17: NoFish
+#
+mp$mp17$gui$mpLabel "NoFish"
 #
 # File Ends <not run>.

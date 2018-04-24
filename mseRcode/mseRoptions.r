@@ -385,8 +385,8 @@
 .DeptBLIM <- .3
 .DeptBUPPER <- 0.525
 #.DeptLAB  <- "Female spawning biomass (000s t)" # Using biomass for Atl Hal
-.DeptLAB  <- "SSB (pre-fishing)" 
-if( .SBt_Perf ) .DeptLAB <- "SSB (post-fishing)"
+.DeptLAB  <- "SSB (post-fishing)" 
+if( .FBt_Perf ) .DeptLAB <- "SSB (pre-fishing)"
 .DeptUNIT <- "" 
 #
 # Settings for .Gear 

@@ -1,8 +1,8 @@
 
 # Task and Issue List:
-
 # (1) Cannot use legalC and Ct (sum Ctg) interchangeably - they are different.
 #     SPC feeds legalC into SP, but then calculates lastCatch from Ctg. Very
+
 #     similar but should pick one or the other - or explain it in the code.
 
 # (2) Need to check deterministic (almost) behavior of procedures.
@@ -733,16 +733,9 @@ ageLenOpMod <- function( objRef, t )
     baranovTime <<- t
     #if(t>17) browser()
 
-    if( t < tMP )
-    {
-      solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
-                                      C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
-                                      nIter = ctlList$opMod$baranovIter )      
-    } else {
-      solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
-                                      C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
-                                      nIter = ctlList$opMod$baranovIter )
-    }
+    solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=M,
+                                    C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
+                                    nIter = ctlList$opMod$baranovIter )
 
     solveF[ solveF > 10 ] <- 10
     if( any( solveF < 0 ) )
@@ -1961,26 +1954,24 @@ iscamWrite <- function ( obj )
   
   # convert remRate to U
 
-  remRate <- 1 - exp( - remRate )
+  remRate <- obj$targHR
 
   # Safeguards to limit F in case assessment failed in a particular year
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- 1 - exp( - obj$maxF) # Maximum allowable F in case estimation fails.
-
-  if(!is.null(obj$fixCutoffHerring)) lowerBound <- obj$fixCutoffHerring
-  if(!is.null(obj$targHRHerring)) remRate <- obj$targHRHerring
+  
 
   if( legalBiomass < lowerBound ) 
     adjF <- 0.
   if( legalBiomass >= lowerBound )
-    adjF <- min( (legalBiomass-lowerBound)/legalBiomass, remRate)
+    adjF <- remRate
   
   # If the assessment failed, limit F to maxF
   if( fail==TRUE & adjF > maxF )
     adjF <- maxF
 
   # Final catch limit treating adjF as a harvest rate
-  catchLim <- adjF*legalBiomass
+  catchLim <- min( adjF*legalBiomass, legalBiomass - lowerBound )
 
 
   result                <-list()
@@ -2934,6 +2925,7 @@ iscamWrite <- function ( obj )
   # ageLenOpMod() function, which will require the HCR.
   tMP <- obj$ctlList$opMod$tMP
   nT  <- obj$ctlList$opMod$nT
+  B0  <- obj$ctlList$opMod$B0
 
   # Loop over time periods - essentially follow .updatePop(),
   # but ignore all the messy MPs
@@ -2947,24 +2939,26 @@ iscamWrite <- function ( obj )
 
     if( obj$ctlList$gui$mpLabel == "NoFish" ) next
 
-    # 1. Pull out population right now
+    # 1. Pull out biomass post M next year (this is fihsing with
+    # perfect info)
     Bt    <- obj$om$FBt[t+1]
+
+    # browser()
 
     # 2. Calculate catch for next time step based on 
     # mpLabel
     # Base assumption of 0
-    remRate <- 0
+    targetHarv <- 0
     # If PerfectInfo, calculate based on spawning biomass
     if(  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
     {
       targetHR    <- obj$ctlList$mp$hcr$targHRHerring
-      cutoff      <- obj$ctlList$mp$hcr$fixCutoffHerring
+      cutoff      <- obj$ctlList$mp$hcr$herringCutoffVal
+      cutoffType  <- obj$ctlList$mp$hcr$herringCutoffType
+      if( cutoffType == "relative" ) cutoff <- cutoff*B0
       if( Bt > cutoff )
-        remRate     <- min( (Bt - cutoff)/Bt, targetHR)
+        targetHarv <- min( targetHR * Bt, Bt - cutoff )
     }
-    # Compute removals, scale by allocation
-    targetHarv <- remRate * Bt
-
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
 
     # Save catch in om, adding in test fishery
@@ -3858,7 +3852,7 @@ iscamWrite <- function ( obj )
       mp$hcr$Bref[t] <- mp$assess$mpdPars$ssbFmsy[ idxCtlPts[tRow] ]
 
     if ( statusBase == "statusBaseB0" )
-      mp$hcr$Bref[t] <- mp$assess$mpdPars$B0[ idxCtlPts[tRow] ]
+      mp$hcr$Bref[t] <- mp$assess$mpdPars$SSB0[ idxCtlPts[tRow] ]
   }     # ENDIF statusSource != statusSrceEquil
   
   # REFERENCE REMOVAL RATE from the operating model.
@@ -3925,8 +3919,17 @@ iscamWrite <- function ( obj )
   }  # ENDIF remRefSource != "rrSrceEquil"
  
   # Update lower and upper HCR control points.
-  mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$lowerBoundMult
-  mp$hcr$upperBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$upperBoundMult  
+  if( ctlList$mp$hcr$herringCutoffType == "absolute" )
+  { 
+    targHR <- mp$hcr$targHRHerring
+    mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
+    mp$hcr$upperBound[t] <- ctlList$mp$hcr$herringCutoffVal / (1 - targHR)
+  }
+  if( ctlList$mp$hcr$herringCutoffType == "relative") 
+  {
+    mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
+    mp$hcr$upperBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal / (1 - targHR)
+  }
                   
   # HCRs based on Empirical methods
   if ( (ctlList$mp$assess$methodId == .MOVAVG) ) 
@@ -3936,7 +3939,7 @@ iscamWrite <- function ( obj )
       rule$assessMethod <- ctlList$mp$assess$methodId
       rule$t            <- t
       rule$biomass      <- stockAssessment$biomass
-      rule$maxF         <- log(1/(1-ctlList$mp$assess$iscam$targHR))
+      rule$maxF         <- log(1/(1-ctlList$mp$hcr$targHRHerring))
       rule$catchFloor   <- ctlList$mp$hcr$catchFloor
       rule$assessFailed <- FALSE
 
@@ -3951,10 +3954,10 @@ iscamWrite <- function ( obj )
       rule$assessMethod     <- ctlList$mp$assess$methodId
       rule$t                <- t
       rule$biomass          <- stockAssessment$mpdPars$projExpBio
-      rule$maxF             <- log(1/(1-ctlList$mp$assess$iscam$targHR))
-      rule$catchFloor       <- ctlList$mp$hcr$catchFloor
-      rule$targHRHerring    <- ctlList$mp$hcr$targHRHerring
-      rule$fixCutoffHerring <- ctlList$mp$hcr$fixCutoffHerring
+      rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
+      rule$targHR           <- ctlList$mp$hcr$targHRHerring
+      rule$cutoff           <- ctlList$mp$hcr$herringCutoffVal
+      rule$cutoffType       <- ctlList$mp$hcr$herringCutoffType
       rule$assessFailed     <- FALSE
 
       # Calculate catch limit

@@ -94,7 +94,7 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .USRHerring   <- .525
 .TRPHerring   <- .75
 
-.FBt_Perf <- TRUE
+.FBt_Perf <- FALSE
 
 # Flag to produce Mt envelopes in Perf under legal HR
 .USEMt <- TRUE

@@ -56,7 +56,7 @@
   nResults    <- nSim * length( period$Period )
   headerNames <- c( "SimFolder" ,"Scenario","Procedure","Period","t1","t2")
   statNames   <- c( "medAvgDep","Q1AvgDep","Q2AvgDep",
-                    "medFinalDep","Q1finalDep","Q2finalDep",
+                    "medFinalDep","Q1FinalDep","Q2FinalDep",
                     "medLowDep","Q1LowDep","Q2LowDep",
                     "medAAV", "Q1AAV","Q2AAV",
                     "medAvgCatch","Q1AvgCatch","Q2AvgCatch",
@@ -163,8 +163,7 @@
       if ( validSim )
       {
         # Get the variables to be summarized, these are nReps by nT matrices.
-        Bt   <- blob$om$Bt[ ,c(2:ncol(blob$om$Bt)) ]
-        SBt  <- blob$om$Bt[ ,c(2:ncol(blob$om$SBt)) ]
+        Bt   <- blob$om$SBt[ ,c(2:ncol(blob$om$Bt)) ]
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
@@ -185,8 +184,8 @@
       {
         tmp <- .calcStatsFinalDep( Dept[,tdx], quantVals )
         result[ iRow, "medFinalDep" ] <- tmp$medFinalDep
-        result[ iRow, "Q1finalDep" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2finalDep" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1FinalDep" ]  <- tmp$qVals[2]
+        result[ iRow, "Q2FinalDep" ]  <- tmp$qVals[4]
       }
 
       #--- Low depletion for period                                         ---#
@@ -466,7 +465,7 @@
     medAAV <- median( AAV )
     # Compute the quantiles of the distribution.
     # Use the quantiles specified in the interface (qLower, qUpper).
-    qVals <- quantile( AAV, probs=probs )
+    qVals <- quantile( AAV, probs=probs, na.rm = T )
   }
   else
   {
@@ -495,7 +494,7 @@
   # Compute the median of the average catch values.
   medAvgCatch <- median( avgCatch )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgCatch, probs=probs )
+  qVals <- quantile( avgCatch, probs=probs, na.rm = T )
   val <- list( medAvgCatch=medAvgCatch, qVals=qVals )
   val
 }
@@ -516,7 +515,7 @@
   # Compute the median of the average catch values.
   medAvgDiscard <- median( avgDiscard )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgDiscard, probs=probs )
+  qVals <- quantile( avgDiscard, probs=probs, na.rm = T )
   val <- list( medAvgDiscard=medAvgDiscard, qVals=qVals )
   val
 }
@@ -533,11 +532,11 @@
 .calcStatsDepletion <- function( Dept, probs=c(0.05,0.1,0.5,0.9,0.95) )
 {
   # Average depletion by replicate (avgDept is vector len=ncol(Dept)).
-  avgDep <- apply( Dept,1,mean )
+  avgDep <- apply( Dept,1,mean, na.rm = T )
   # Compute the median of the average depletion values.
   medAvgDep <- median( avgDep )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgDep, probs=probs )
+  qVals <- quantile( avgDep, probs=probs, na.rm = T )
   val <- list( medAvgDep=medAvgDep, qVals=qVals )
   val
 }
@@ -559,9 +558,9 @@
   # is the last column (t2) in the matrix - the final depletion for the period.
   finalDep <- Dept[ ,ncol(Dept) ]
   # Compute the median of the final depletion values, final year of period over reps.
-  medFinalDep <- median( finalDep )
+  medFinalDep <- median( finalDep, na.rm  = T )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( finalDep, probs=probs )
+  qVals <- quantile( finalDep, probs=probs, na.rm = T )
   val <- list( medFinalDep=medFinalDep, qVals=qVals )
   val
 }
@@ -582,7 +581,7 @@
   # Compute the median of the low depletion values for the period over reps.
   medHighCat <- median( highCat )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( highCat, probs=probs )
+  qVals <- quantile( highCat, probs=probs, na.rm = T )
   val <- list( medHighCat=medHighCat, qVals=qVals )
   val
 }
@@ -603,7 +602,7 @@
   # Compute the median of the low depletion values for the period over reps.
   medLowCat <- median( lowCat )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( lowCat, probs=probs )
+  qVals <- quantile( lowCat, probs=probs, na.rm = T )
   val <- list( medLowCat=medLowCat, qVals=qVals )
   val
 }
@@ -644,11 +643,11 @@
 {
   # Extract the low depletion values from the replicate.
   # This apply operation returns a vector of length=nRep.
-  lowDep <- apply( Dept,1,min )
+  lowDep <- apply( Dept,1,min, na.rm = T )
   # Compute the median of the low depletion values for the period over reps.
   medLowDep <- median( lowDep )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( lowDep, probs=probs )
+  qVals <- quantile( lowDep, probs=probs, na.rm = T )
   val <- list( medLowDep=medLowDep, qVals=qVals )
   val
 }
@@ -753,7 +752,7 @@
   # browser()
 
   # Compute the mean proportion of years GT refPt.
-  result <- quantile( pVal, probs )
+  result <- quantile( pVal, probs, na.rm = T )
   result
 }
 
@@ -823,7 +822,7 @@
   {
     # (3) Calculate the depletion at objYear and objProb.
     depVals <- Dept[ ,objYear ]    
-    objDep <- quantile( depVals,probs=(1.0-objProb) )
+    objDep <- quantile( depVals,probs=(1.0-objProb), na.rm = T )
     
     cat( "\nMSG (.calcStatsTarget) Depletion >=",objDep," at year",objYear,
          "with",objProb,"probability.\n" )
@@ -901,7 +900,7 @@
   probAtTargetYear <- sum( targetVals >= target ) / nrow(Xt)
 
   # (3) Calculate the target at targetYear and targetProb.
-  targetAtYearProb <- quantile( targetVals,probs=(1.0-targetProb) )
+  targetAtYearProb <- quantile( targetVals,probs=(1.0-targetProb), na.rm = T )
 
   # Return a list result.
   result <- list( yearAtTargetProb=yearAtTargetProb, probAtTargetYear=probAtTargetYear,

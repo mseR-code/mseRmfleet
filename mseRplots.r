@@ -1893,10 +1893,7 @@
 
   Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
 
-  if( !is.null(obj$om$FBt) ) 
-    Bt <- obj$om$FBt[ iRep,(2:ncol(obj$om$FBt)) ]
-  else 
-    Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ] * exp(-Mt)
+  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$FBt)) ]
   
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
 
@@ -5023,8 +5020,8 @@
 .plotTulipCatch <- function( obj, traces=NULL, qProbs=c(0.05,0.1,0.5,0.9,0.95),
                              xLim=NULL, yLim=NULL, annotate=TRUE, refPts=TRUE,
                              allQuants=TRUE,
-                         gfx=list( annotate=pfAnnotate, doLegend=pfLegend, grids=pfGrid,
-                                 showProj=pfProj, xLim=xLim, yLim=yLim, useYears=FALSE ),... )
+                         gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
+                                 showProj=TRUE, xLim=xLim, yLim=yLim, useYears=TRUE ),... )
 {
   
   opMod <- obj$ctlList$opMod  
@@ -5042,8 +5039,8 @@
   tVec  <- c(1:ncol(Ct))
 
   # Specify axes for plot
-  xLim <- gfx$xLim
-  yLim <- gfx$ylim
+  if(is.null(xLim)) xLim <- gfx$xLim
+  if(is.null(yLim)) yLim <- gfx$yLim
   
   peakCatchYear <- apply(X=Ct[,tMP:nT],MARGIN=1,FUN=function(x){which.max(x)})
 
@@ -5126,15 +5123,12 @@
 
   }
   # Add median 2016 TAC
-  medTAC2016 <- medCt[tMP]
-  TACyr      <- .INITYEAR + tMP - 1
-  panLab( x=.5, y=.9, txt=paste("Median TAC-",TACyr,": ",round(medTAC2016, digits=3),sep="") )
 
   usr <- par( "usr" )
 
   if ( !is.null(MSY) && refPts )
   {
-    urs <- par( "usr" )
+    usr <- par( "usr" )
     points( c(usr[1],usr[2]), c(MSY,MSY), xpd=T, bg=.MSYBG, col=.MSYCOL, cex=.MSYCEX, pch=.MSYPCH )
   }
   
@@ -5150,6 +5144,8 @@
   box()
   return( invisible() )
 }     # END function .plotTulipCatch
+
+
 
 
 # .plotTulipDis (tulip simulation envelope for catch)
@@ -11459,6 +11455,146 @@
 }     # .plotMpHCR
 
 
+# .plotHerringHCR (Plot the HCR as per the Herring HCR)
+# Purpose:      Plot the harvest control rule (true) and applied.
+# Parameters:   obj - a blob.
+# Returns:      NULL (invisibly).
+# Source:       S.D.N. Johnsons
+.plotHerringHCR <- function( obj, iRep, gfx = list( annotate=FALSE, doLegend=TRUE,
+                                                    xLim=NULL, yLim=NULL ) )
+{
+  # Get ctlList and OM B0
+  ctlList <- obj$ctlList
+  B0      <- ctlList$opMod$B0
+  omBtarg <- .75 * ctlList$opMod$B0
+  targHR  <- ctlList$mp$hcr$targHRHerring
+  Umsy    <- ctlList$refPts$Umsy
+
+  # Pull nT and tMP
+  nT      <- ctlList$opMod$nT
+  tMP     <- ctlList$opMod$tMP
+
+  # HCR control point multipliers. - need to leverage these for the 
+  # plots without Perfect Info
+
+  if( ctlList$mp$hcr$herringCutoffType == "absolute" )
+    trueLowerBound <- ctlList$mp$hcr$herringCutoffVal
+  else trueLowerBound <- ctlList$mp$hcr$herringCutoffVal * B0
+  
+  trueUpperBound <-  trueLowerBound / (1 - targHR)
+
+  # We need the following quantities.
+  # Estimate of Bmsy for each year (Bref)
+  # Estimate of UlegHR for each year (Fref)
+  # Adjusted removal rate for each year (precautionaryFt)
+  idx <- c(tMP:nT)     # Get the projection period, history has no MP.
+  
+
+  Bref  <- obj$mp$hcr$Bref[ iRep,c(2:ncol(obj$mp$hcr$Bref)) ]
+  Bref <- Bref[idx]
+  Fref  <- obj$mp$hcr$Fref[ iRep,c(2:ncol(obj$mp$hcr$Fref)) ]
+  Fref <- Fref[idx]
+
+  Uref <- 1 - exp(-Fref)
+
+  spawnHR <- obj$om$spawnHR[ iRep, 1 + idx ]
+
+  # Get annual estimates of SSB from the management procedure.
+  mpdPars    <- obj$mp$assess$mpdPars
+  projExpBio <- mpdPars[ mpdPars$iRep==iRep, "projExpBio" ]
+  if( is.null(projExpBio) ) projExpBio <- obj$om$FBt[iRep, 1 + idx]
+
+  # Get annual estimates of lower and upper control points from the management procedure. 
+  lowerBound <- obj$mp$hcr$lowerBound[ iRep,c(2:ncol(obj$mp$hcr$lowerBound)) ]
+  lowerBound <- lowerBound[idx]
+  upperBound <- obj$mp$hcr$upperBound[ iRep,c(2:ncol(obj$mp$hcr$upperBound)) ]
+  upperBound <- upperBound[idx]
+
+
+  # Get the x-axis as max of true and estimated.
+  xLim <- gfx$xLim
+  if ( is.null(xLim) )
+    xLim <- c(0,max(Bref,B0,na.rm=TRUE))
+
+  yLim <- gfx$yLim
+  if ( is.null(yLim) )
+    yLim <- c(0,1.2 * targHR)
+
+  plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
+
+  # Get the plot region user coordinate limits.
+  usr <- par( "usr" )
+
+
+  # Indicate the "true" control points based on true Bref, Fref.
+  if ( gfx$annotate )
+  {
+    abline( v=trueLowerBound, col=.HCRLBCOL, lty=.HCRLBLTY,  lwd=.HCRLBLWD )
+    abline( v=trueUpperBound, col=.HCRUBCOL, lty=.HCRUBLTY,  lwd=.HCRUBLWD )
+    abline( v=omBtarg,        col=.BmsyCOL,  lty=.BmsyLTY,   lwd=.BmsyLWD )
+    
+    # abline( h=Umsy,    col=.UmsyCOL, lty=.UmsyLTY, lwd=.UmsyLWD )
+
+  }
+  
+  # Lay down heat colors for HCRs applied by management procedure.
+  colVec <- rev( heat.colors( n=length(Bref) ) )
+  if( all(!is.na(lowerBound)) & all(!is.na(upperBound)) )
+  {
+    for ( i in 1:length(colVec) )
+    {
+      segments( 0,                   0, lowerBound[i],       0, col="gray", lwd=1 )
+      x <- seq( lowerBound[i], upperBound[i], length = 100 )
+      y <- x
+      for( xidx in 1:length(x))
+        y[xidx] <- min( targHR, (x[xidx] - lowerBound[i])/x[xidx])
+      lines(x,y, col = "gray", lwd = 1)
+      # segments( lowerBound[i],       0, upperBound[i], Fref[i], col="gray", lwd=1 )
+      segments( upperBound[i], Uref[i],        usr[2], Uref[i], col="gray", lwd=1 )
+    }
+  }
+  
+  points( projExpBio, spawnHR, bg=colVec, cex=1.2, pch=21 )
+  
+  # Plot the "True" harvest control rule.
+  segments(    0,      0,  trueLowerBound,     0, lty=1, lwd=3 )
+  # Plot fixed escapement rule
+  x <- seq(trueLowerBound, trueUpperBound, length = 100)
+  y <- x
+  for( xidx in 1:length(x))
+    y[xidx] <- min( targHR, (x[xidx] - trueLowerBound)/x[xidx] )
+  lines(x,y, lty = 1, lwd = 3)
+  segments( trueUpperBound, targHR, usr[2],  targHR, lty=1, lwd=3 )  
+
+  axis( side=1, cex.axis=.CEXAXIS )
+  axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
+  axis( side=4, cex.axis=.CEXAXIS, labels=FALSE )
+  box()
+
+  mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Estimated Stock Status (000s t)" )
+  mtext( side=2, line=.OUTLINE, cex=.CEXLAB2, outer=TRUE, "Effective Harvest Rate" )
+
+  if ( gfx$doLegend  )
+  {
+    if( ctlList$mp$hcr$herringCutoffType == "absolute" )
+      legCutoff <- paste( trueLowerBound, " kt", sep = "" )
+    else legCutoff <- paste( 100 * ctlList$mp$hcr$herringCutoffVal, "%", sep = "")
+    specs <- obj$mp$hcr$specs
+    # Display what type of rule this puppy actually thinks it is.
+    panLegend( 0.4, 0.5,
+      legTxt=c( paste("Rule: ",ctlList$mp$hcr$hcrType),
+                paste("Cutoff: ", legCutoff),
+                paste("Rem Ref Base: ",ctlList$mp$hcr$remRefBase),
+                paste("Rem Ref Source: ",ctlList$mp$hcr$remRefSource),
+                paste("Status Base: ",ctlList$mp$hcr$statusBase),
+                paste("Status Source: ",ctlList$mp$hcr$statusSource),
+                paste("Umsy: ",round(Umsy,digits=3))) )
+  }
+  
+  return( invisible() )
+}     # END function .plotPmodHCR                                                      
+
+
 # .plotPmodHCR (Plot the harvest control rule as per MP)
 # Purpose:      Plot the harvest control rule (true) and applied.
 # Parameters:   obj - a blob.
@@ -13258,13 +13394,26 @@ plotRefPts <- function( obj )
 .plotTulipDepletion <- function( obj, traces=NULL, qProbs=c(0.05,0.1,0.5,0.9,0.95),
                                  xLim=NULL, yLim=NULL, annotate=TRUE, refPts=TRUE,
                                  allQuants=FALSE,
-                         gfx=list( annotate=pfAnnotate, doLegend=pfLegend, grids=pfGrid,
-                                 showProj=pfProj, xLim=xLim, yLim=yLim, useYears=FALSE ),... )                                 
+                         gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
+                                 showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ),... )                                 
 {
   # Get the spawning biomass and number of replicates.
-  Bt    <- obj$om$SBt[ ,c(2:ncol(obj$om$Bt)) ]
+  Bt    <- obj$om$SBt[ , c(2:ncol(obj$om$SBt)) ]
+  Mt    <- obj$om$Mt[ , c(2:ncol(obj$om$Mt)) ]
+  
   if( .FBt_Perf )
-    Bt   <- obj$om$FBt[ ,c(2:ncol(obj$om$SBt))]
+  {
+    if(!is.null(obj$om$FBt))
+      Bt    <- obj$om$FBt[ ,c(2:ncol(obj$om$SBt))]
+    else {
+      Bt    <- obj$om$Bt[ , c(2:ncol(obj$om$Bt)) ]
+      Bt    <- Bt * exp(-Mt)
+    } 
+      
+  }
+
+  Mbar <- mean(Mt[1,1:67]) 
+
   nReps <- nrow( Bt )
 
   opMod  <- obj$ctlList$opMod
@@ -13292,8 +13441,8 @@ plotRefPts <- function( obj )
 
 
   # Specify axis limits for plotting
-  xLim <- gfx$xLim
-  yLim <- gfx$yLim
+  if( is.null(xLim) ) xLim <- gfx$xLim
+  if( is.null(yLim) ) yLim <- gfx$yLim
   
   # Set the x-axis limits.
   if ( is.null(xLim) )
@@ -13380,15 +13529,15 @@ plotRefPts <- function( obj )
     depTRP <- .TRPHerring
 
     abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
-    abline( h = depUSR, lty = 2, col = "orange", lwd = 2 )
     abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
 
-    panLegend(  x = .4, y =.8, bty = "n",
-                legTxt = c( expression(.3*B[0]),
-                            expression(.525*B[0]),
-                            expression(.75*B[0])),
-                lty = 2, lwd = 2,
-                col = c("red","orange","darkgreen")  )
+    if( gfx$doLegend )
+      panLegend(  x = .4, y =.8, bty = "n",
+                  legTxt = c( expression(.3*B[0]),
+                              expression(.525*B[0]),
+                              expression(.75*B[0])),
+                  lty = 2, lwd = 2,
+                  col = c("red","orange","darkgreen")  )
 
   } else {
     abline( h=depMSY, lty="dashed", col="black")
@@ -13435,14 +13584,16 @@ plotRefPts <- function( obj )
 .plotTulipDepCat <- function( obj, allQuants=TRUE, annotate=FALSE,
                               yLimC=NULL, yLimD=NULL,... )
 {
-  .plotTulipDepletion( obj, xLim=.TULXLIM, yLim=.TULYLIMD,... )
+
+  .plotTulipDepletion( obj, xLim=NULL, yLim=yLimD, ... )
+  panLab(x = 0.4, y = .9, txt = obj$ctlList$gui$mpLabel )
   mfg <- par( "mfg" )
   if ( mfg[2]==1 )
-    mtext( side=2, line=2.5, cex=.TULCEX, "Depletion" )
-  .plotTulipCatch( obj, xLim=.TULXLIM,... )
+    mtext( side=2, line=2.5, cex=1, "Depletion" )
+  .plotTulipCatch( obj, xLim=NULL, yLim = yLimC, ... )
   mfg <- par( "mfg" )  
-  if ( mfg[2]==2 )
-    mtext( side=2, line=2.5, cex=.TULCEX, "Catch (t)" )  
+  if( mfg[2]==1 ) 
+    mtext( side=2, line=2.5, cex=1, "Catch (kt)" )  
 }     # .plotTulipDepCat.
 
 # .plotTulipF        (tulip simulation envelope for fishing mortality)
