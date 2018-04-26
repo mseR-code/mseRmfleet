@@ -1931,9 +1931,14 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
+
+
   cutoff <- obj$ctlList$mp$hcr$herringCutoffVal
-  if( obj$ctlList$mp$hcr$herringCutoffType == "relative")
+  if(is.null(cutoff) ) 
+    cutoff <- obj$ctlList$mp$hcr$fixCutoffHerring
+  else if( obj$ctlList$mp$hcr$herringCutoffType == "relative")
     cutoff <- cutoff * B0
+  
   abline( h=cutoff, lty=.BmsyLTY, lwd=.BmsyLWD )
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
@@ -5075,20 +5080,24 @@
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
 
   mfg <- par( "mfg" )
-  xSeq <- seq( 0,nT,5 )
+  xSeq <- seq( xLim[1],xLim[2],by = 5 )
+  years <- seq(.INITYEAR,by = 1, length = nT)
 
   # X-axis (bottom): panel is in the last row.
-  if ( mfg[1]==mfg[3] )
-    .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
-  else axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
-   # .addXaxis( xLim, initYear=.INITYEAR, side=3, years=FALSE )
+  if( gfx$useYears ) 
+    labs <- years[xSeq]
+  else 
+    labs <- xSeq
+  
+  axis(side = 1, at = xSeq, labels = labs, cex.axis=.CEXAXIS2 )
+  
 
   # X-axis (top): panel is in the first row.
   if ( mfg[1]==1 )
-    .addXaxis( xLim, initYear=.INITYEAR, side=3, years=gfx$useYears )
-    #axis( side=3, at=xSeq, cex.axis=.CEXAXIS2 )
-#  else
-#    axis( side=3, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
+    axis(side = 3, at = xSeq, labels = labs, cex.axis=.CEXAXIS2 )
+  else
+    axis( side=3, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
+
 
   yTicks <- round(seq(from=0,to=yLim[2],length=5),2)
   axis( side=2, cex.axis=.CEXAXIS2, las=.YAXISLAS, at=yTicks, ... )
@@ -13474,22 +13483,23 @@ plotRefPts <- function( obj )
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
 
   mfg <- par( "mfg" )
-  xSeq <- seq( 0,nT,5 )
+  xSeq <- seq( xLim[1],xLim[2],by = 5 )
+  years <- seq(.INITYEAR,by = 1, length = nT)
 
   # X-axis (bottom): panel is in the last row.
-  if ( mfg[1]==mfg[3] )
-    #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
-    .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
-  else
-    axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
-   # .addXaxis( xLim, initYear=.INITYEAR, side=3, years=FALSE )
+  if( gfx$useYears ) 
+    labs <- years[xSeq]
+  else 
+    labs <- xSeq
+  
+  axis(side = 1, at = xSeq, labels = labs, cex.axis=.CEXAXIS2 )
+  
 
   # X-axis (top): panel is in the first row.
   if ( mfg[1]==1 )
-    .addXaxis( xLim, initYear=.INITYEAR, side=3, years=gfx$useYears )
-    #axis( side=3, at=xSeq, cex.axis=.CEXAXIS2 )
-#  else
-#    axis( side=3, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
+    axis(side = 3, at = xSeq, labels = labs, cex.axis=.CEXAXIS2 )
+  else
+    axis( side=3, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
 
   # Y-axis (left).
   yTicks <- round(seq(from=0,to=yLim[2],length=6),2)
@@ -13545,12 +13555,11 @@ plotRefPts <- function( obj )
     abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
 
     if( gfx$doLegend )
-      panLegend(  x = .4, y =.8, bty = "n",
+      panLegend(  x = .2, y =.5, bty = "n",
                   legTxt = c( expression(.3*B[0]),
-                              expression(.525*B[0]),
                               expression(.75*B[0])),
                   lty = 2, lwd = 2,
-                  col = c("red","orange","darkgreen")  )
+                  col = c("red","darkgreen")  )
 
   } else {
     abline( h=depMSY, lty="dashed", col="black")
@@ -13595,14 +13604,15 @@ plotRefPts <- function( obj )
 }     # END function .plotTulipDepletion
 
 .plotTulipDepCat <- function( obj, allQuants=TRUE, annotate=FALSE,
-                              yLimC=NULL, yLimD=NULL,... )
+                              yLimC=NULL, yLimD=NULL,
+                              DepLab = "Depletion", ... )
 {
 
   .plotTulipDepletion( obj, xLim=NULL, yLim=yLimD, ... )
   panLab(x = 0.4, y = .9, txt = obj$ctlList$gui$mpLabel )
   mfg <- par( "mfg" )
   if ( mfg[2]==1 )
-    mtext( side=2, line=2.5, cex=1, "Depletion" )
+    mtext( side=2, line=2.5, cex=1, DepLab )
   .plotTulipCatch( obj, xLim=NULL, yLim = yLimC, ... )
   mfg <- par( "mfg" )  
   if( mfg[2]==1 ) 

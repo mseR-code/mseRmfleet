@@ -267,21 +267,21 @@
 
       if ( validSim )
       {
-
-        tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=guiInfo$pfLimitMultBmsy, refProb=0.95 )
+        # Updated for Herring .3B0 LRP (DFO) and .75B0 TRP (NCN Goal 1)
+        tmp <- .calcStatsRefPoints( Bt[,tdx], target=B0, targMult=.3, refProb=0.95 )
         result[ iRow,"pGTlrp" ] <- tmp
-        tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=1, refProb=0.5 )
+        tmp <- .calcStatsRefPoints( Bt[,tdx], target=B0, targMult=.75, refProb=0.5 )
         result[ iRow,"pGTtarg" ] <- tmp
       }
 
       # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
       if( validSim )
       {  
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:nT], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.75B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:nT], target = B0, targMult = .3, refProb = 1, probs = quantVals )
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .3, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.3B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.3B0" ] <- tmp[5]
@@ -363,13 +363,13 @@
 
       if ( validSim )
       {
-        tmp <- .calcStatsTrend( Bt, t1=t1, delta=10 )
+        tmp <- .calcStatsTrend( Bt, t1=t1, delta = t2 - t1 )
 
         SSB    <- as.numeric( Bt[,unique(tmp$t1) ] )
-        target <- blob$ctlList$refPts$ssbFmsy
+        target <- B0
 
         tmp$pDecline <- .calcStatsAccDecline( SSB, target, lowProb=0.05,
-                          hiProb=0.5, multLrp=.4, multUsr=.8  )
+                          hiProb=0.5, multLrp=.3, multUsr=.75  )
 
         result[ iRow, "t1Trend" ] <- t1
         result[ iRow, "trendPeriod" ] <- 10
@@ -381,7 +381,8 @@
         result[ iRow, "trendDec" ]    <- nDec
         result[ iRow, "obsPdecline" ] <- pObs
 
-        result[ iRow, "pDecline" ]    <- mean( tmp$pDecline )
+        result[ iRow, "pDecline" ]    <- median( tmp$pDecline )
+
       }
 
       #--- Convenience - Depletion and Catch at t1 for each period.         ---#
@@ -731,7 +732,7 @@
   pVal <- val / ncol( Bt )
 
   # Compute the mean proportion of years GT refPt.
-  result <- mean( pVal )
+  result <- median( pVal )
   result
 }
 
