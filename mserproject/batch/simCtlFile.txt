@@ -142,7 +142,7 @@ mp$hcr$Stable2b 0.5
 mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
-mp$hcr$statusSource "statusSrceEquil"
+mp$hcr$statusSource "statusSrceEst"
 mp$hcr$herringCutoffType "relative"
 mp$hcr$herringCutoffVal .25
 mp$hcr$targHRHerring .2
