@@ -71,7 +71,8 @@
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
-                    "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0")
+                    "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
+                    "medPropClosure","Q1PropClosure","Q2PropClosure")
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -184,8 +185,8 @@
       {
         tmp <- .calcStatsFinalDep( Dept[,tdx], quantVals )
         result[ iRow, "medFinalDep" ] <- tmp$medFinalDep
-        result[ iRow, "Q1FinalDep" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2FinalDep" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1FinalDep" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2FinalDep" ]  <- tmp$qVals[5]
       }
 
       #--- Low depletion for period                                         ---#
@@ -202,8 +203,8 @@
       {
         tmp <- .calcStatsCatch( Ct[,tdx], quantVals )
         result[ iRow, "medAvgCatch" ] <- tmp$medAvgCatch
-        result[ iRow, "Q1AvgCatch" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgCatch" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1AvgCatch" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2AvgCatch" ]  <- tmp$qVals[5]
       }
 
       #--- Low catch for period                                             ---#
@@ -241,8 +242,8 @@
       {
         tmp <- .calcStatsAAV( Ct, tdx, quantVals )
         result[ iRow,"medAAV" ] <- tmp$medAAV
-        result[ iRow,"Q1AAV" ]  <- tmp$qVals[2]
-        result[ iRow,"Q2AAV" ]  <- tmp$qVals[4]
+        result[ iRow,"Q1AAV" ]  <- tmp$qVals[1]
+        result[ iRow,"Q2AAV" ]  <- tmp$qVals[5]
       }
 
       #--- Zone Objectives Statistics                                       ---#
@@ -345,6 +346,19 @@
         result[ iRow,"pObj1" ] <- tmpObj1$avgPtarget
         result[ iRow,"pObj3" ] <- tmpObj3$avgPtarget
         result[ iRow,"pHealthy" ] <- tmpHealthy$avgPtarget
+      }
+
+      if( validSim )
+      {
+        # Hijack calcPropFloor() to calculate proportion
+        # of years below a .5kt TAC, representing
+        # lost fishing opportunities.
+        tmp <- .calcPropFloor( Ct[,tdx], floor = .5 )
+        tmp <- quantile( 1-tmp, probs = quantVals )
+        result[iRow,"medPropClosure"] <- tmp[3]
+        result[iRow,"Q1PropClosure"] <- tmp[1]
+        result[iRow,"Q2PropClosure"] <- tmp[5]
+
       }
 
       #--- Policy Statistics                                                ---#
