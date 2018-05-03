@@ -13,6 +13,19 @@ source("../../mseRplots.R")
 source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
 
+MPs1 <- c(  "NoFish",
+            "currMP",
+            "PerfectInfo_currMP" )
+
+MPs2 <- c(  "NoFish",
+            "currMP",
+            "FC18.8_HR0.1",
+            "RC.5B0_HR0.2",
+            "RC.5B0_HR0.1",
+            "RC.25B0_HR0.1")
+
+MPs <- MPs2
+
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
           showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )
 
@@ -37,33 +50,38 @@ long  <- c(87,92)
 
 # Read in info files, sort by  scenarios
 info.df <- lapply( X = sims, FUN = readInfoFile )
-info.df <- do.call( "rbind", info.df )
+info.df <- do.call( "rbind", info.df ) %>%
+            arrange(scenarioLabel,mpLabel)
 
 scenarios <- unique( info.df$scenarioLabel )
-MPs       <- unique( info.df$mpLabel )
+# MPs       <- unique( info.df$mpLabel )
 
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
+
 
 for( scenIdx in 1:length(scenarios) )
 {
   scen <- scenarios[scenIdx]
 
-  depCatchPlot    <- paste(scen, "DepCatch.pdf", sep = "" )
-  depCatch_noFish <- paste(scen, "depCatch_noFish.pdf", sep = "" )
+  depCatchPlot    <- paste(scen, "bestMPs_DepCatch.pdf", sep = "" )
+  depCatch_noFish <- paste(depCatchPlot,"_noFish.pdf", sep = "" )
 
-  noFishID <- info.df[  which(info.df$mpLabel == "NoFish" & info.df$scenarioLabel == scen),
+  noFishID <- info.df[  which(info.df$mpLabel == "NoFish" & info.df$scenarioLabel == scen)[1],
                         "simLabel"]
   noFishPath  <- file.path("..",noFishID,paste(noFishID, ".RData", sep = "") )
 
-  load(noFishPath)
-  noFishBlob <- blob
+  if(!is.na(noFishID))
+  {
+    load(noFishPath)
+    noFishBlob <- blob
+  }
 
   mpList <- vector( mode = "list", length = length(MPs) - 1 )
   mpListIdx <- 1
 
-  pdf( file = depCatchPlot, width = 18, height = 6 )
-  par( mfcol = c(2,9), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+  pdf( file = depCatchPlot, width = length(MPs)*2, height = 6 )
+  par( mfcol = c(2,length(MPs)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
 
   for( mpIdx in 1:length(MPs) )
   {
@@ -72,7 +90,9 @@ for( scenIdx in 1:length(scenarios) )
                     filter( scenarioLabel == scen,
                             mpLabel == mp )
 
-    simID     <- info.df.sub$simLabel
+    simID     <- info.df.sub[1,]$simLabel
+    if(is.na(simID)) next
+
     simPath  <- file.path("..",simID,paste(simID, ".RData", sep = "") )
     load(simPath)
 
@@ -98,13 +118,16 @@ for( scenIdx in 1:length(scenarios) )
 
   dev.off()
 
-  pdf( file = depCatch_noFish, width = 18, height = 6 )
-  par( mfcol = c(2,8), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+  if(is.na(noFishID)) next
+  pdf( file = depCatch_noFish, width = (length(MPs)-1)*2, height = 6 )
+  par( mfcol = c(2,length(MPs)-1), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
 
   for( idx in 1:length(mpList) )
   {
     if(idx == 1) gfx$doLegend <- TRUE
     else gfx$doLegend <- FALSE
+
+    if( is.null(mpList[[idx]]) ) next
 
     .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
                       refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]) )

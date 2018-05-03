@@ -936,7 +936,11 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
                                     statsTable = stats,
                                     midLine = NULL,
                                     xLim = NULL,
-                                    mpLabs = TRUE )
+                                    mpLabs = TRUE,
+                                    MPorder = MPs,
+                                    hzLine = NA,
+                                    highLightIdx = hlIdx,
+                                    highLightCol = "red" )
 {
   if(quantiles)
   {
@@ -957,7 +961,12 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
   subStats <- subStats[,c("Procedure",colNames)]
 
-  MPs <- unique(statsTable$Procedure)
+  # browser()
+
+  if(is.null (MPs))
+    MPs <- unique(statsTable$Procedure)
+  else MPs <- MPorder
+
 
   if(is.null(xLim)) xLim <- plotRange
 
@@ -970,14 +979,17 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
       mpStat <- subStats %>%
                 filter( Procedure == MPs[mpIdx] )
       if(nrow(mpStat) != 1 ) browser()
+      if(mpIdx %in% highLightIdx ) colour <- highLightCol
+      else colour <- "grey30"
       if( quantiles )
         segments( x0 = mpStat[,colNames[2]], x1 = mpStat[, colNames[3]],
-                  y0 = mpIdx, y1 = mpIdx, lwd = 3, col = "grey30" )
-      points( x = mpStat[, colNames[1]], y = mpIdx, pch = 16, cex = 1.6  )
+                  y0 = length(MPs) - mpIdx + 1, y1 = length(MPs) - mpIdx + 1, lwd = 3, col = colour )
+      points( x = mpStat[, colNames[1]], y = length(MPs) - mpIdx + 1, pch = 16, cex = 1.6, col = colour  )
+      abline( h = hzLine, lty = 5, col = "darkgreen" )
     }
     if(mpLabs)
-      axis( side = 2, labels = MPs, at = 1:length(MPs), las = 1, cex = .8 )
-    else axis( side = 2, labels = NA, at = 1:length(MPs) )
+      axis( side = 2, labels = MPs, at = length(MPs):1, las = 1, cex = .8 )
+    else axis( side = 2, labels = NA, at = length(MPs):1 )
 
 }
 

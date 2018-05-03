@@ -305,14 +305,14 @@ guiPerf <- function()
         # Initialize storage objects.
         if ( i==1 )
         {
-          parTable <- data.frame( parameter=character(nrow(ctlPars)),
-                        matrix( "", nrow=nrow(ctlPars),ncol=nSims ) )
+          parTable <- data.frame( parameter=character(nrow(ctlPars) + 5),
+                        matrix( "", nrow=nrow(ctlPars) + 5,ncol=nSims ) )
 
           names( parTable ) <- c( "parameter",paste( "Sim",c(1:nSims),sep="" ) )
-          parTable$parameter <- ctlPars[ ,"parameter" ]
+          parTable$parameter[1:nrow(ctlPars)] <- ctlPars[ ,"parameter" ]
         }
-  
-        parTable[ , i+1 ] <- blob$ctlPars[ ,"value" ]
+
+        parTable[ 1:nrow(ctlPars), i+1 ] <- blob$ctlPars[ ,"value" ]
 
         gc()
       }

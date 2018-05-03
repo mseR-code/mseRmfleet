@@ -15,12 +15,14 @@ doBatchRun <- function( batchFolderName )
   # Set WD to the batch directory and assign the correct
   # control file to the global environment
   setwd(batchFolderName)
+
+  batchCtlFile <- file.path( batchFolderName, "simCtlFile.txt" )
   # source mseR
   source("mser.r")
 
   # runMSE with the batch file
   # add random delay to offset simFolder names
-  runMSE()
+  runMSE( ctlFile = batchCtlFile, saveBlob = TRUE )
 }
 
 

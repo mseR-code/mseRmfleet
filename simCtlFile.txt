@@ -1,8 +1,8 @@
-# mseRguiSim GUI parameters written Tue Apr 10 12:13:56 2018 
+# simCtlBat28.txt: mseR parameter file written Mon Apr 30 15:09:33 2018.
 parameter value
-gui$mpLabel "PerfectInfo_currMP"
-gui$nReps 3
-gui$scenarioLabel "WCVI"
+gui$mpLabel "NoFish"
+gui$nReps 100
+gui$scenarioLabel "WCVI_Mbar10"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -143,8 +143,8 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$herringCutoffType "absolute"
-mp$hcr$herringCutoffVal 18.8
+mp$hcr$herringCutoffType "relative"
+mp$hcr$herringCutoffVal .25
 mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
@@ -158,12 +158,12 @@ opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158
-opMod$baranovIter 10
-opMod$baranovSteps c(0.8,0.7,0.8,0.4,0.4)
+opMod$baranovIter 5
+opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
-opMod$kYearsMbar NULL
+opMod$kYearsMbar 10
 opMod$endM 0.583934
 opMod$endMphase NULL
 opMod$futureOption 3

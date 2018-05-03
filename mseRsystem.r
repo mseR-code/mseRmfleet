@@ -230,7 +230,7 @@
 # Parameters:     none. input from guiSim via *.par file
 # Returns:        none. saves blob to *.RData workspace
 # Source:         S.P. Cox
-runMSE <- function(  saveBlob=TRUE )
+runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
 {
 
   require( tools )
@@ -238,16 +238,8 @@ runMSE <- function(  saveBlob=TRUE )
   # No validity checking of .CTLFILE variables is done if runMSE is called
   # directly from the console.  In contrast, guiSim() calls via RUN button will
   # enforce checking of valid parmete3rs. prior to calling runMSE.
-
-  # Read and load the MP control parameters into a list.
-  if ( !exists( ".CTLFILE" ) )
-  {
-    .CTLFILE <- file.path( getwd(),"simCtlFile.txt" )
-    assign( ".CTLFILE",.CTLFILE,pos=1 )
-    cat( "\nMSG (runMSE) No simulation control file set, using ",.CTLFILE,"\n" )
-  }
   
-  ctlPars <- .readParFile( .CTLFILE )
+  ctlPars <- .readParFile( ctlFile )
   ctlList <- .createList( ctlPars )
   cat( "\nMSG (runMSE) Parameter list created.\n" )
  
@@ -294,7 +286,7 @@ runMSE <- function(  saveBlob=TRUE )
     .saveBlob( blobFilePath, blob  )
 
   # Copy the simulation control file into the folder.
-  file.copy( .CTLFILE, file.path( .PRJFLD, simFolder, basename(.CTLFILE) ) )
+  file.copy( ctlFile, file.path( .PRJFLD, simFolder, basename(ctlFile) ) )
 
   # Copy the TPL file into the folder.
   if ( ctlList$mp$assess$methodId==.CAAMOD )

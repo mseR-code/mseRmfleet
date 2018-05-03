@@ -161,6 +161,9 @@
       # Get the time index values that span this period.
       tdx <- c( period$Year1[j]:period$Year2[j] )
 
+      if(period$Period == period$Period[2])
+        tdx <- tMP:nT
+
       if ( validSim )
       {
         # Get the variables to be summarized, these are nReps by nT matrices.
@@ -176,8 +179,8 @@
       {
         tmp <- .calcStatsDepletion( Dept[,tdx], quantVals )
         result[ iRow, "medAvgDep" ] <- tmp$medAvgDep
-        result[ iRow, "Q1AvgDep" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgDep" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1AvgDep" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2AvgDep" ]  <- tmp$qVals[5]
       }
 
       #--- Final depletion for period                                       ---#
@@ -277,8 +280,8 @@
 
       # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
       if( validSim )
-      {  
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+      { 
+        tmp <- .calcQuantsRefPoints( Bt[,tdx[2]], target = B0, targMult = .75, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.75B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
