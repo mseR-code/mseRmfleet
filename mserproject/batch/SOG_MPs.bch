@@ -105,9 +105,9 @@ mp$mp11$mp$hcr$rule "linear"
 mp$mp11$mp$hcr$lowerBoundMult .3
 mp$mp11$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 12: MP3_HR.1
+## Management Procedure 12: PerfectInfo_MP3_HR.1
 #
-mp$mp12$gui$mpLabel "MP3_HR.1"
+mp$mp12$gui$mpLabel "PerfectInfo MP3_HR.1"
 mp$mp12$mp$hcr$targHRHerring .1
 mp$mp12$mp$hcr$rule "linear"
 mp$mp12$mp$hcr$lowerBoundMult .3
