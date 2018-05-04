@@ -2,26 +2,26 @@
 #
 parameter value
 #
-# Scenario 1: WCVI_PulseM_1.5x16
+# Scenario 1: SOG_PulseM_1.5x16
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
+scenario$scenario1$gui$scenarioLabel "SOG_PulseM_1.5x16"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
 #
-# Scenario 2: WCVI_Mbar10
+# Scenario 2: SOG_Mbar10
 #
 scenario$scenario2$opMod$kYearsMbar 10
 scenario$scenario2$gui$nReps 100
-scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
+scenario$scenario2$gui$scenarioLabel "SOG_Mbar10"
 #
 #
 ## Management Procedure 1: MP1_HR.2
 #
 mp$mp1$gui$mpLabel "MP1_HR.2"
 mp$mp1$mp$hcr$targHRHerring .2
-mp$mp1$mp$hcr$herringCutoffVal 18.8
+mp$mp1$mp$hcr$herringCutoffVal 21.2
 mp$mp1$mp$hcr$herringCutoffType "absolute"
 mp$mp1$mp$hcr$rule "herring"
 #
@@ -29,7 +29,7 @@ mp$mp1$mp$hcr$rule "herring"
 #
 mp$mp2$gui$mpLabel "MP1_HR.1"
 mp$mp2$mp$hcr$targHRHerring .1
-mp$mp2$mp$hcr$herringCutoffVal 18.8
+mp$mp2$mp$hcr$herringCutoffVal 21.2
 mp$mp2$mp$hcr$herringCutoffType "absolute"
 mp$mp2$mp$hcr$rule "herring"
 #
@@ -69,7 +69,7 @@ mp$mp6$mp$hcr$upperBoundMult .6
 #
 mp$mp7$gui$mpLabel "PerfectInfo_MP1_HR.2"
 mp$mp7$mp$hcr$targHRHerring .2
-mp$mp7$mp$hcr$herringCutoffVal 18.8
+mp$mp7$mp$hcr$herringCutoffVal 21.2
 mp$mp7$mp$hcr$herringCutoffType "absolute"
 #
 ## Management Procedure 8: NoFish

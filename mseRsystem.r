@@ -1932,18 +1932,7 @@ iscamWrite <- function ( obj )
     adjF <- maxF
 
   # Final catch limit
-  if( obj$assessMethod == .PERFECT )
-    catchLim <- adjF*legalBiomass*(1.-exp(-obj$M-adjF))/(adjF + obj$M )
-  else
-    catchLim <- adjF*legalBiomass
-
-  # Now check for catchFloor.
-  if ( catchFloor >= 0 )
-  {
-    catchLim <- max( c(catchFloor, catchLim) )
-    #cat( "\nMSG (.calcLegaLHarvRule) Catch floor of ", catchFloor," and catchLim = ",
-    #     catchLim, "\n" )
-  }
+  catchLim <- adjF*legalBiomass
 
   result                <-list()
   result$precautionaryF <- adjF
@@ -4006,13 +3995,23 @@ iscamWrite <- function ( obj )
   # Update lower and upper HCR control points.
   targHR <- ctlList$mp$hcr$targHRHerring
   mp$hcr$remRate[t]  <- ctlList$mp$hcr$targHRHerring
-  
-  if( ctlList$mp$hcr$herringCutoffType == "absolute" )
-    mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
-  if( ctlList$mp$hcr$herringCutoffType == "relative") 
-    mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
 
-  mp$hcr$upperBound[t] <- mp$hcr$lowerBound[t] / (1 - targHR)
+  if(ctlList$mp$hcr$rule == "herring")
+  {
+    if( ctlList$mp$hcr$herringCutoffType == "absolute" )
+      mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
+    if( ctlList$mp$hcr$herringCutoffType == "relative") 
+      mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
+
+    mp$hcr$upperBound[t] <- mp$hcr$lowerBound[t] / (1 - targHR)  
+  }
+  if( ctlList$mp$hcr$rule == "linear")
+  {
+    mp$hcr$lowerBound[t] <- ctlList$mp$hcr$lowerBoundMult * mp$hcr$Bref[t]
+    mp$hcr$upperBound[t] <- ctlList$mp$hcr$upperBoundMult * mp$hcr$Bref[t]
+  }
+
+  
                   
   # HCRs based on Empirical methods
   if ( (ctlList$mp$assess$methodId == .MOVAVG) ) 
@@ -4044,8 +4043,10 @@ iscamWrite <- function ( obj )
   }
   else
   {
-      # Build harvest control rule object, need to check that legalBiomass input.
-      # Most recent survey spawning biomass estimate (i.e.,from t-1)
+    # Build harvest control rule object, need to check that legalBiomass input.
+    # Most recent survey spawning biomass estimate (i.e.,from t-1)
+    if(ctlList$mp$hcr$rule == "herring")
+    {
       rule                  <- mp$hcr
       rule$assessMethod     <- ctlList$mp$assess$methodId
       rule$t                <- t
@@ -4057,7 +4058,22 @@ iscamWrite <- function ( obj )
       rule$assessFailed     <- FALSE
 
       # Calculate catch limit
-      targetHarv   <- .calcHarvRuleHerringDFOMP( rule )    
+      targetHarv   <- .calcHarvRuleHerringDFOMP( rule )      
+    }
+    if(ctlList$mp$hcr$rule == "linear")
+    {
+      rule                  <- mp$hcr
+      rule$assessMethod     <- ctlList$mp$assess$methodId
+      rule$t                <- t
+      rule$biomass          <- stockAssessment$mpdPars$projExpBio
+      rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
+      rule$targHR           <- ctlList$mp$hcr$targHRHerring
+      rule$assessFailed     <- FALSE
+
+      # Calculate catch limit
+      targetHarv   <- .calcLegalHarvRule( rule )        
+    }
+      
   }
 
   # Apply % limit on TAC change as independent floor and ceiling, as long

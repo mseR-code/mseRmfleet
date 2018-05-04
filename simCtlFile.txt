@@ -1,8 +1,8 @@
 # simCtlBat28.txt: mseR parameter file written Mon Apr 30 15:09:33 2018.
 parameter value
 gui$mpLabel "NoFish"
-gui$nReps 100
-gui$scenarioLabel "WCVI_Mbar10"
+gui$nReps 1
+gui$scenarioLabel "SOG_Setup"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -116,7 +116,7 @@ mp$hcr$Inc3b 0.95
 mp$hcr$inputF 0.223
 mp$hcr$phaseFtime NULL
 mp$hcr$lambda1 0.
-mp$hcr$lowerBoundMult 0.25
+mp$hcr$lowerBoundMult 0.3
 mp$hcr$lowerQuota 0
 mp$hcr$lowerTrendPct 0.1
 mp$hcr$maxDeltaTACc NULL
@@ -134,6 +134,7 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase "rrBaseFinput"
 mp$hcr$remRefSource "rrSrceEst"
+mp$hcr$rule "linear"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05
@@ -148,7 +149,7 @@ mp$hcr$herringCutoffVal .25
 mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
-mp$hcr$upperBoundMult 0.3125
+mp$hcr$upperBoundMult 0.6
 mp$hcr$upperQuota 1.5
 mp$hcr$upperTrendPct 0.9
 mp$hcr$useDLL FALSE

@@ -1,205 +1,225 @@
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-H2
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-dev.off()
-dev.off()
-dev.off()
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-?label
-?text
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-rho1 <- atan2(c(d,H1))
-?atan2
-rho1 <- atan2(d,H1)
-rho1
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-rho1
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/Plots/makeBuoyLineDiagram.R")
-source("/Users/sdnjohnson/Work/Consulting/FASSeafoods/DFOViolation/Data/makeDriftDistributions.R")
-head(violationEventsOSCAR)
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>#
-# makeDriftDistributions.R#
-# #
-# Author: Samuel Johnson#
-# #
-# This script creates drift distributions for closed area report sets#
-# using two different assumptions.#
-# #
-# 1. Current provided by the OSCAR data set is correct#
-# 2. Currents provided by Dr Masson are correct#
-# #
-# Created Apr 26, 2018#
-# #
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>#
-#
-source("msertools.R")#
-# Load packages#
-library( dplyr )#
-library( stringr )#
-library( raster )#
-library( sp )#
-library( rgdal )#
-library( rgeos )#
-library( geosphere )#
-library( ggmap )#
-library( maptools )#
-library( rgdal )#
-library( PBSmapping ) #
-library( RColorBrewer )#
-library( plotrix )#
-library( grid )#
-library( viridis )#
-library( autoimage )#
-library( SDMTools )#
-library( fifer )#
-#
-crsAEA <- "+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"#
-lonLatCRS <- "+proj=longlat +ellps=WGS84 +no_defs"#
-eezBdry.NOAA <- shapefile(x = "./Shapefiles/cropped/NOAAeez/eez_BCAK.shp")#
-eezBdry.NOAA.AEA <- spTransform( eezBdry.NOAA, CRSobj = crsAEA )#
-# create a function for dplyring these massive sets#
-pullFirst <- function( x ) x[1]#
-pullLast <- function( x ) x[length(x)]#
-#
-# First, load data, calculate the width of the drift bands for each set#
-violationEventsOSCAR <- read.csv( "violation_BuoyLines_OSCAR.csv", header =T,#
-                                  stringsAsFactors = FALSE  )#
-#
-# Convert LL to AEA for easier plotting#
-violationEvents.LL <- violationEventsOSCAR[,c("lon","lat")]#
-violationEvents.sp <- SpatialPoints(coords = violationEvents.LL, proj4string = CRS(lonLatCRS) )#
-violationEvents.AEA <- as.data.frame(spTransform( x = violationEvents.sp, CRSobj = crsAEA ))#
-#
-violationEventsOSCAR$x <- violationEvents.AEA[,1]#
-violationEventsOSCAR$y <- violationEvents.AEA[,2]#
-#
-# Get full range of violation#
-xRange.viol <- range(violationEventsOSCAR$x)#
-yRange.viol <- range(violationEventsOSCAR$y)#
-violationSetsOSCAR <- violationEventsOSCAR %>%#
-                      filter( type == "Set" ) %>%#
-                      group_by( eventID ) %>%#
-                      summarise(  lat.start = pullFirst(lat),#
-                                  lon.start = pullFirst(lon),#
-                                  x.start = pullFirst(x),#
-                                  y.start = pullFirst(y),#
-                                  lat.end = pullLast(lat),#
-                                  lon.end = pullLast(lon),#
-                                  x.end = pullLast(x),#
-                                  y.end = pullLast(y),#
-                                  depth = mean(depth),#
-                                  r = mean(r),#
-                                  r.var = mean(r.var),#
-                                  Theta = mean(Theta),#
-                                  Theta.var = mean(Theta.var),#
-                                  currHeading = mean(currHeading),#
-                                  minRad.start = pullFirst(minHzDist),#
-                                  maxRad.start = pullFirst(maxHzDist),#
-                                  minRad.end = pullLast(minHzDist),#
-                                  maxRad.end = pullLast(maxHzDist),) %>%#
-                      ungroup() %>%#
-                      mutate( sinkTime = depth / 0.385,#
-                              meanDriftDist = r * sinkTime,#
-                              upperDriftDist = (r + 1.96*sqrt(r.var))*sinkTime,#
-                              lowerDriftDist = (r - 1.96*sqrt(r.var))*sinkTime  )
-head(violationSetsOSCAR)
-head(violationSetsOSCAR[,c("minRad.start","maxRad.start","minRad.end","maxRad.end")])
-range(violationSetsOSCAR[,c("minRad.start","maxRad.start","minRad.end","maxRad.end")])
-source("mser.r")
-guiView()
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+source("control.R")
+runSimEst()
+dat
+dat$It
+dat$I_ost
+dat$Cobs_st
+par
+par$omega
+Q
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+source("control.R")
+runSimEst()
+fit
+Q
+source("control.R")
+source("control.R")
+runSimEst()
+obj$report()$broodAdj
+runSimEst()
+Q
+runSimEst()
+obj$report()$omega_st
+obj$fn()
+Q
+source("control.R")
+runSimEst()
+obj$fn()
+Q
+source("control.R")
+runSimEst()
+obj$gr()
+obj$fn()
+c
+fit
+sdreport(obj)
+source("control.R")
+Q
+runSimEst()
+fit
+c
+fit
+c
+runSimEst()
+c
+fit
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+runSimEst()
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+runSimEst()
+fit
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+source("control.R")
+runSimEst()
+fit
+Q
+runSimEst()
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+broodAdj
+zetat
+c
+broodAdj
+zetat
+t
+nT
+c
+c
+c
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+obj$report()
+obj$report()$broodAdj
+obj$report()$omega_st
+obj$report()$kage_s
+obj$report()$omega_st
+obj$report()$R_st
+obj$report()$B_st
+obj$report()$Cobs_st
+obj$report()$Chat_st
+obj$report()$B0_s
+obj$report()$R0_s
+Q
+source("control.R")
+source("control.R")
+runSimEsT()
+runSimEst()
+obj$report()
+dat
+dat$Cobs-St
+dat$Cobs
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+om$Ct
+om$Bt
+om$zetat
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+obj$Bt
+om$Bt
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+runSimEst()
+obj$fn()
+c
+obj$fn()
+obj$gr()
+obj$report()
+Q
+runSimEst()
+c
+runSimEst()
+c
+obj$fn()
+obj$gr)
+obj$gr()
+Q
+runSimEst()
+c
+obj$gr()
+obj$fn()
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+obj$report()
+obj$report$qhat
+obj$report$lnqhat
+obj$report()$lnqhat
+obj$report()$qhat
+obj$report()$lnqhat
+obj$report()$qbar
+obj$report()$I_ost
+obj$report()$B_st
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+obj$report()
+obj$report()$B_st
+obj$fn()
+obj$gr()
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+runSimEst()
+c
+runSimEst()
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+runSimEst()
+obj$fn()
+obj$gr()
+obj$report()
+obj$report()$broodAdj
+obj$report()$broodAdj$omega_st
+obj$report()$omega_st
+obj$report()$sigma2_s
+Q
+source("control.R")
+runSimEst()
+obj$fn()
+obj$report()
+obj$report()$omega_st
+c
+runSimEst()
+obj$fn()
+obj$gr()
+obj$report()
+c
+plotBCfit(sim=2)
+plotBCfit(sim=3)
+plotBCfit(sim=4)
+runSimEst()
+c
+runSimEst()
+obj$gr()
+obj$fn()
+c
+runSimEst()
+obj$fn()
+c
+runSimEst()
+fit
+sdreport(obj)
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
+Q
+runSimEst()
+obj$fn()
+c
+source("/Users/sdnjohnson/Work/code/models/stockAssessment/multiSpecies/hierDelay/simulation.R")
