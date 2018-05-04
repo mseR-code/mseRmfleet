@@ -71,9 +71,50 @@ mp$mp7$gui$mpLabel "PerfectInfo_MP1_HR.2"
 mp$mp7$mp$hcr$targHRHerring .2
 mp$mp7$mp$hcr$herringCutoffVal 21.2
 mp$mp7$mp$hcr$herringCutoffType "absolute"
+mp$mp7$mp$hcr$rule "herring"
 #
-## Management Procedure 8: NoFish
+## Management Procedure 8: PerfectInfo_MP1_HR.1
 #
-mp$mp8$gui$mpLabel "NoFish"
+mp$mp8$gui$mpLabel "PerfectInfo_MP1_HR.1"
+mp$mp8$mp$hcr$targHRHerring .1
+mp$mp8$mp$hcr$herringCutoffVal 21.2
+mp$mp8$mp$hcr$herringCutoffType "absolute"
+mp$mp8$mp$hcr$rule "herring"
+#
+## Management Procedure 9: PerfectInfo_MP2_HR.2
+#
+mp$mp9$gui$mpLabel "PerfectInfo_MP2_HR.2"
+mp$mp9$mp$hcr$targHRHerring .2
+mp$mp9$mp$hcr$herringCutoffVal .5
+mp$mp9$mp$hcr$herringCutoffType "relative"
+mp$mp9$mp$hcr$rule "herring"
+#
+## Management Procedure 10: PerfectInfo_MP2_HR.1
+#
+mp$mp10$gui$mpLabel "PerfectInfo_MP2_HR.1"
+mp$mp10$mp$hcr$targHRHerring .1
+mp$mp10$mp$hcr$herringCutoffVal .5
+mp$mp10$mp$hcr$herringCutoffType "relative"
+mp$mp10$mp$hcr$rule "herring"
+#
+## Management Procedure 11: PerfectInfo_MP3_HR.2
+#
+mp$mp11$gui$mpLabel "PerfectInfo_MP3_HR.2"
+mp$mp11$mp$hcr$targHRHerring .2
+mp$mp11$mp$hcr$rule "linear"
+mp$mp11$mp$hcr$lowerBoundMult .3
+mp$mp11$mp$hcr$upperBoundMult .6
+#
+## Management Procedure 12: MP3_HR.1
+#
+mp$mp12$gui$mpLabel "MP3_HR.1"
+mp$mp12$mp$hcr$targHRHerring .1
+mp$mp12$mp$hcr$rule "linear"
+mp$mp12$mp$hcr$lowerBoundMult .3
+mp$mp12$mp$hcr$upperBoundMult .6
+#
+## Management Procedure 13: NoFish
+#
+mp$mp13$gui$mpLabel "NoFish"
 #
 # File Ends <not run>.
