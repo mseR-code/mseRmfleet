@@ -757,6 +757,8 @@
 {
   refPt <- targMult * target
 
+  if(class(Bt) == "numeric" ) Bt <- matrix( Bt, ncol = 1)
+
   # Find all years in period where Bt > refPt.
   tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
   tmp[ Bt >= refPt ] <- 1

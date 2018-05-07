@@ -1,8 +1,8 @@
-# simCtlBat28.txt: mseR parameter file written Mon Apr 30 15:09:33 2018.
+# mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "NoFish"
-gui$nReps 1
-gui$scenarioLabel "SOG_Setup"
+gui$mpLabel "currMP_cap5kt"
+gui$nReps 3
+gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -65,7 +65,7 @@ mp$assess$iscam$mDevNodes 12
 mp$assess$iscam$minAge 2
 mp$assess$iscam$cutoff 0.25
 mp$assess$iscam$targHR 0.2
-mp$assess$iscam$fixCutoff 21.2
+mp$assess$iscam$fixCutoff 18.8
 mp$assess$iscam$selxRenorm 2
 mp$assess$iscam$priors$meanInitM -0.79
 mp$assess$iscam$priors$sdInitM 0.4
@@ -134,7 +134,6 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase "rrBaseFinput"
 mp$hcr$remRefSource "rrSrceEst"
-mp$hcr$rule "linear"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05
@@ -144,8 +143,9 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$herringCutoffType "relative"
-mp$hcr$herringCutoffVal .25
+mp$hcr$rule "herring"
+mp$hcr$herringCutoffType "absolute"
+mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
@@ -158,14 +158,14 @@ mp$hcr$useSnow TRUE
 opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
-opMod$B0 130.239
+opMod$B0 45.6158
 opMod$baranovIter 5
 opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
-opMod$kYearsMbar 10
-opMod$endM 0.454854
+opMod$kYearsMbar NULL
+opMod$endM 0.583934
 opMod$endMphase NULL
 opMod$futureOption 3
 opMod$repFile read.rep('mserproject/history/iscamWCVI2017.rep')
@@ -184,10 +184,10 @@ opMod$initMaxF 1
 opMod$initScale 0.1
 opMod$L1 c(10.29)
 opMod$selAge TRUE
-opMod$L50Cg1 c(2.66622,2.91102,4.67541,2.055,2.055)
+opMod$L50Cg1 c(2.63186,2.98889,4.79863,2.055,2.055)
 opMod$L50Cg2 c(40,40,40,48.40,89.99)
 opMod$L50Dg c(5,5,5,5,5)
-opMod$L95Cg1 c(3.549228,3.902951,5.862269,2.202222,2.202222)
+opMod$L95Cg1 c(3.299762,3.927607,6.167282,2.202222,2.202222)
 opMod$L95Cg2 c(50,50,50,40,40)
 opMod$L95Dg c(1,1,1,1,1)
 opMod$Linf c(27)

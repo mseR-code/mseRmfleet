@@ -1975,7 +1975,8 @@ iscamWrite <- function ( obj )
     adjF <- maxF
 
   # Final catch limit treating adjF as a harvest rate
-  catchLim <- min( adjF*legalBiomass, legalBiomass - lowerBound )
+  catchLim <- min( adjF*legalBiomass, max(legalBiomass - lowerBound,0) )
+
 
 
   result                <-list()
@@ -3033,6 +3034,9 @@ iscamWrite <- function ( obj )
       if( Bt > cutoff )
         targetHarv <- min( targetHR * Bt, Bt - cutoff )
     }
+    if( !is.null(obj$ctlList$mp$hcr$catchCeiling) ) 
+      targetHarv <- min(obj$ctlList$mp$hcr$catchCeiling, targetHarv)
+
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
 
     # Save catch in om, adding in test fishery
@@ -4045,7 +4049,7 @@ iscamWrite <- function ( obj )
   {
     # Build harvest control rule object, need to check that legalBiomass input.
     # Most recent survey spawning biomass estimate (i.e.,from t-1)
-    if(ctlList$mp$hcr$rule == "herring")
+    if( ctlList$mp$hcr$rule == "herring")
     {
       rule                  <- mp$hcr
       rule$assessMethod     <- ctlList$mp$assess$methodId
@@ -4128,6 +4132,11 @@ iscamWrite <- function ( obj )
   }
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
+
+  browser()
+
+  if(tmpTAC < 0) tmpTAC <- 0
+
   targetHarv$catchLimit <- tmpTAC      
       
   # Changing philosophy of what was .DEADFLAG.  The current

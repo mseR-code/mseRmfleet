@@ -13,18 +13,21 @@ source("../../mseRplots.R")
 source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
 
-MPs1 <- c(  "NoFish",
-            "currMP",
-            "PerfectInfo_currMP" )
+MPs <- c( "NoFish",
+          "MP1_HR.2",
+          "MP1_HR.1",
+          "MP2_HR.2",
+          "MP2_HR.1",
+          "MP3_HR.2",
+          "MP3_HR.1",
+          "PerfectInfo_MP1_HR.2",
+          "PerfectInfo_MP1_HR.1",
+          "PerfectInfo_MP2_HR.2",
+          "PerfectInfo_MP2_HR.1",
+          "PerfectInfo_MP3_HR.2",
+          "PerfectInfo_MP3_HR.1")
 
-MPs2 <- c(  "NoFish",
-            "currMP",
-            "FC18.8_HR0.1",
-            "RC.5B0_HR0.2",
-            "RC.5B0_HR0.1",
-            "RC.25B0_HR0.1")
-
-MPs <- MPs2
+# MPs <- MPs2
 
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
           showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )

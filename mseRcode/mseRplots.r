@@ -12644,7 +12644,7 @@ plotRefPts <- function( obj )
   legalHRFmsy    <- obj$refPtList$legalHRFmsy
   
   # Operating model quantities.
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$FBt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- obj$om$Dt[ iRep,(2:ncol(obj$om$Dt)) ]
     
@@ -12718,13 +12718,13 @@ plotRefPts <- function( obj )
   if ( gfx$doLegend )
   {
     panLegend( 0.5,0.95, cex=0.8,
-               legTxt=c( "SSB","ProjExpBio","Bmsy","Bref","UB","LB" ),
-               col=c( .BtCOL,.BexpCOL,.BmsyCOL,"black","black","black"),
-               pt.bg=c(NA,NA,NA,"black","white","lightblue" ),
-               pt.cex=c(NA,NA,NA,1.2,1.2,1.2),
-               lty=c(.BtLTY, 1, .BmsyLTY, NA, NA, NA),
-               pch=c(NA,NA,NA,21,21,21),
-               lwd=c(.BtLWD, 2, .BmsyLWD, NA,NA,NA), bg="white" )
+               legTxt=c( "Exp SSB","ProjExp SSB","B0","UB","LB" ),
+               col=c( .BtCOL,.BexpCOL,"black","black","black"),
+               pt.bg=c(NA,NA,"black","white","lightblue" ),
+               pt.cex=c(NA,NA,1.2,1.2,1.2),
+               lty=c(.BtLTY, 1, NA, NA, NA),
+               pch=c(NA,NA,21,21,21),
+               lwd=c(.BtLWD, 2,NA,NA,NA), bg="white" )
   }
 
   # Removal rate view.
@@ -13439,10 +13439,10 @@ plotRefPts <- function( obj )
   nReps <- nrow( Bt )
 
   opMod  <- obj$ctlList$opMod
-  tmp    <- calcRefPoints( as.ref(opMod) )
-  tmpRefPts <- deref( tmp )
+  # tmp    <- calcRefPoints( as.ref(opMod) )
+  # tmpRefPts <- deref( tmp )
 
-  obj$ctlList$refPts <- tmpRefPts
+  # obj$ctlList$refPts <- tmpRefPts
 
   # Extract B0 and Bmsy for depletion calculations.
   B0     <- obj$ctlList$opMod$B0

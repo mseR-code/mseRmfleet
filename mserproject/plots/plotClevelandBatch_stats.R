@@ -15,22 +15,21 @@ source("plotBioFunctions.R")
 
 
 MPs <- c( "NoFish",
-          "currMP",
-          "FC18.8_HR0.1",
-          "RC.5B0_HR0.2",
-          "RC.5B0_HR0.1",
-          "RC.25B0_HR0.2",
-          "RC.25B0_HR0.1",
-          "ccRule",
-          "PerfectInfo_currMP",
-          "PerfectInfo_FC18.8_HR0.1",
-          "PerfectInfo_RC.5B0_HR0.2",
-          "PerfectInfo_RC.5B0_HR0.1",
-          "PerfectInfo_RC.25B0_HR0.2",
-          "PerfectInfo_RC.25B0_HR0.1")
+          "MP1_HR.2",
+          "MP1_HR.1",
+          "MP2_HR.2",
+          "MP2_HR.1",
+          "MP3_HR.2",
+          "MP3_HR.1",
+          "PerfectInfo_MP1_HR.2",
+          "PerfectInfo_MP1_HR.1",
+          "PerfectInfo_MP2_HR.2",
+          "PerfectInfo_MP2_HR.1",
+          "PerfectInfo_MP3_HR.2",
+          "PerfectInfo_MP3_HR.1")
 
-whatWeLike <- c(3,4,5,7)
-hlIdx <- whatWeLike
+# whatWeLike <- c(3,4,5,7)
+hlIdx <- NULL
 
 
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,

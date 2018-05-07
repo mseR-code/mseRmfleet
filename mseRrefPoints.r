@@ -611,6 +611,8 @@ calcRefPoints <- function( opModList )
     equil$sublegal <- recruits*tmp$yprSubLeg
     equil$fg       <- obj$fg
     equil$legalHR  <- equil$landed/equil$legb
+
+  if(!is.finite(equil$sublegb)) browser()
     
   return( as.ref(equil) )
 }
@@ -648,7 +650,7 @@ calcRefPoints <- function( opModList )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
 
-  optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+  optF <- optim( par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
   for( i in 1:length(f) )
@@ -670,6 +672,7 @@ calcRefPoints <- function( opModList )
     sublegal[i]  <- tmp$sublegal
     legalHR[i]   <- tmp$legal/tmp$legb
     
+
     if( tmp$sublegb > 0. )
       sublegalHR[i] <- tmp$sublegal/tmp$sublegb
     else
