@@ -301,6 +301,16 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
                  file.path( .PRJFLD, simFolder, "refptsca.tpl" ) )
   }
 
+  # Copy the TPL file into the folder.
+  if ( ctlList$mp$assess$methodId==.ISCAMRW )
+  {
+    if( .ISCAMFLAG ) tplFile <- "iscam_ageM_rw.tpl"
+
+    file.copy( file.path( getwd(), tplFile ),
+               file.path( .PRJFLD, simFolder, tplFile ) )
+  }
+
+
   if ( ctlList$mp$assess$methodId==.DDMOD )
   {
     file.copy( file.path( getwd(), "assessdd.tpl" ),
@@ -1302,7 +1312,7 @@ assessModISCAM <- function( caObj )
   #
   nT <- caObj$nT
   t <- caObj$t
-  exeName <- "iscam_ageM"
+  exeName <- caObj$exeName
   
   mcOut <- NA
   
@@ -1577,6 +1587,11 @@ callProcedureISCAM <- function( obj, t )
 
   caObj$nMCMC     <- obj$ctlList$mp$hcr$nMCMC
   caObj$nThin     <- obj$ctlList$mp$hcr$nThin
+
+  if( obj$ctlList$mp$assess$methodId == .CAAMOD )
+    caObj$exeName <- "iscam_ageM"
+  if( obj$ctlList$mp$assess$methodId == .ISCAMRW )
+    caObj$exeName <- "iscam_ageM_rw"
 
   # -- Call assessment model, which will do its own file read/write
   result <- assessModISCAM( caObj )
@@ -2394,7 +2409,7 @@ iscamWrite <- function ( obj )
     mp$assess$runStatus <- data.frame( matrix( NA, nrow=nT-tMP+1, ncol=3 ) )
   }
   
-  if ( ctlObj$mp$assess$methodId == .CAAMOD )
+  if ( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
   {
     mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
 	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
@@ -2544,7 +2559,7 @@ iscamWrite <- function ( obj )
 	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
 	}	
 	
-	if( ctlObj$mp$assess$methodId == .CAAMOD )
+	if( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
 	{
 	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
 	}
@@ -2668,7 +2683,7 @@ iscamWrite <- function ( obj )
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )
   }
 	
-  if ( ctlList$mp$assess$methodId == .CAAMOD )
+  if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW  )
   {
     # This is for blob - needs to be 1 more column than createMP version for iRep.
 	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
@@ -2776,7 +2791,7 @@ iscamWrite <- function ( obj )
 	    obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=25 ) )
   	}
   	
-	  if ( ctlList$mp$assess$methodId == .CAAMOD )
+	  if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
     {
       obj$mp$assess$mpdPars <- data.frame( matrix(NA,nrow=(nT-tMP+1), ncol=25 ) )
       obj$mp$assess$Rt      <- matrix( NA, nrow=(nT-tMP+1), ncol=(nT+1) )
@@ -3028,11 +3043,28 @@ iscamWrite <- function ( obj )
     if(  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
     {
       targetHR    <- obj$ctlList$mp$hcr$targHRHerring
-      cutoff      <- obj$ctlList$mp$hcr$herringCutoffVal
-      cutoffType  <- obj$ctlList$mp$hcr$herringCutoffType
-      if( cutoffType == "relative" ) cutoff <- cutoff*B0
-      if( Bt > cutoff )
-        targetHarv <- min( targetHR * Bt, Bt - cutoff )
+      if( obj$ctlList$mp$hcr$rule == "herring" )
+      {
+        cutoff      <- obj$ctlList$mp$hcr$herringCutoffVal
+        cutoffType  <- obj$ctlList$mp$hcr$herringCutoffType
+        if( cutoffType == "relative" ) cutoff <- cutoff*B0
+        if( Bt > cutoff )
+        { 
+            targetHarv <- min( targetHR * Bt, Bt - cutoff )
+        }
+      }
+      if( obj$ctlList$mp$hcr$rule == "linear" )
+      {
+        lowerBound <- obj$ctlList$mp$hcr$lowerBoundMult * B0
+        upperBound <- obj$ctlList$mp$hcr$upperBoundMult * B0
+        if( Bt > lowerBound )
+        {
+          if( Bt <= upperBound )
+            targetHarv <- targetHR * (Bt - lowerBound)/(upperBound - lowerBound) * targetHR
+          if( Bt > upperBound )
+            targetHarv <- targetHR * Bt
+        }
+      }
     }
     if( !is.null(obj$ctlList$mp$hcr$catchCeiling) ) 
       targetHarv <- min(obj$ctlList$mp$hcr$catchCeiling, targetHarv)
@@ -3831,7 +3863,7 @@ iscamWrite <- function ( obj )
     
   }     # ENDIF methodId=.PMOD
 
-  if ( ctlList$mp$assess$methodId == .CAAMOD )
+  if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW )
   {
     # Take the shortcut provided by the newer version of mseR,
     # will need grooming to work with multiple fleets
@@ -4132,8 +4164,6 @@ iscamWrite <- function ( obj )
   }
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
-
-  browser()
 
   if(tmpTAC < 0) tmpTAC <- 0
 

@@ -79,8 +79,8 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .KALMAN  <- 2           # Kalman filter.
 .PMOD    <- 3           # Surplus production model.
 .DDMOD   <- 4           # Delay-Difference model.
-.CAAMOD  <- 5           # Catch-At-Age model.
-.VPA     <- 6           # Virtual Population Analysis.
+.CAAMOD  <- 5           # ISCAM CAA model
+.ISCAMRW <- 6           # ISCAM CAA with RW on Mt
 .PERFECT <- 7           # Perfect information.
 
 # Flag to indicate a fishery collapse
@@ -91,7 +91,7 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 
 # Herring related objective depletion values
 .BlimHerring  <- .3
-.USRHerring   <- .525
+.USRHerring   <- .6
 .TRPHerring   <- .75
 
 .FBt_Perf <- FALSE
@@ -117,7 +117,9 @@ if( .ISCAMFLAG )
 {
   cat( "ISCAM option selected, CAA MPs will use ISCAM AM\n")
   .METHODLAB[5] <- "ISCAM"
+  .METHODLAB[6] <- "ISCAM_RW"
   .METHODLAB[1] <- "Data"
+
 }
                  
 # Global Options from 2010.

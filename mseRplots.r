@@ -1692,12 +1692,13 @@
 {
   Bmsy <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
   
   # Extract Ft for the 3 commercial gears.
   Ft <- obj$om$Ftg[ iRep,(1:ncol(obj$om$Ft)),c(1:3) ]
+  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt))]
 
   nT  <- length( Bt )
   tMP <- obj$ctlList$opMod$tMP
@@ -1706,6 +1707,12 @@
   yLim1 <- gfx$yLim1
   yLim2 <- gfx$yLim2
   yLim3 <- gfx$yLim3
+
+  # Plot LRP and USR
+  B0  <- obj$ctlList$opMod$B0
+  LRP <- .BlimHerring
+  TRP <- .TRPHerring
+  
 
   # X-axis limits.
   if ( gfx$showProj )
@@ -1727,7 +1734,12 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=obj$refPtList$ssbFmsy, lty=.BmsyLTY )
+  abline( h=c(LRP*B0, TRP*B0), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+          col = c(.LrpCOL, .TrpCOL) )
+  panLegend(  x = 0.8, y = 0.9,
+              legTxt = c("LRP", "TRP"), 
+              lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+              col = c(.LrpCOL, .TrpCOL))
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
   
@@ -1744,33 +1756,25 @@
   lines( c(1:nT), Ct, col=.CtCOL, lty=.CtLTY, lwd=.CtLWD )
   points( c(1:nT), Ct, bg=.CtBG, cex=.CtCEX, col=.CtCOL, pch=.CtPCH )
 
-  lines( c(1:nT), Dt, col=.DtCOL, lty=.DtLTY, lwd=.DtLWD )
-  points( c(1:nT), Dt, bg=.DtBG, cex=.DtCEX, col=.DtCOL, pch=.DtPCH )
+  # lines( c(1:nT), Dt, col=.DtCOL, lty=.DtLTY, lwd=.DtLWD )
+  # points( c(1:nT), Dt, bg=.DtBG, cex=.DtCEX, col=.DtCOL, pch=.DtPCH )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
-  abline( h=obj$refPtList$yieldFmsy, lty=.MSYLTY )
+  # abline( h=obj$refPtList$yieldFmsy, lty=.MSYLTY )
 
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
   axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
   box()
   mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Catch" )
   
-  if ( gfx$doLegend )
-  {
-    panLegend( 0.7,0.95, legTxt=c("Retained","Released"), bg="white", cex=1.2,
-               pt.bg=c(.CtCOL,.DtCOL), lty=c(.CtLTY,.DtLTY), lwd=c(.CtLWD,.DtLWD),
-               pt.cex=c( .CtCEX,.DtCEX ), pch=c( .CtPCH,.DtPCH ) )
-  }
-
   # Panel 3: Plot fishing mortality by gear.
 
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
+  lines( x = 1:nT, y = Mt, col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
   for ( g in 1:ncol(Ft) )
     lines( c(1:nT), Ft[,g], col=.FtgCOL[g], lty=.FtgLTY[g], lwd=.FtgLWD[g] )
     
-  abline( h=obj$refPtList$ssbFmsy, lty=.FmsyLTY )
-  abline( h=obj$refPtList$Fcra,    lty=.FcraLTY )
-
+  
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
   .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
@@ -1779,11 +1783,14 @@
   
   if ( gfx$doLegend )
   {
-    panLegend( 0.8,0.9, legTxt=obj$ctlList$opMod$gNames[1:3], cex=1.2,
-      col=.FtgCOL[1:3], lty=.FtgLTY[1:3], lwd=.FtgLWD[1:3] )
+    panLegend(  0.8,0.9, bty = "n",
+                legTxt=c(expression(M[t]),obj$ctlList$opMod$gNames[1:3]), cex=1.2,
+                col=c(.MtCOL,.FtgCOL[1:3]), 
+                lty=c(.MtLTY, .FtgLTY[1:3]), 
+                lwd=c(.MtLWD, .FtgLWD[1:3]) )
   }
   
-  mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Fishing Mortality" )
+  mtext( side=2, line=.INLINE2, cex=.CEXLAB2, "Mortality" )
   
   mtext( side=1, line=.OUTLINE, cex=.CEXAXIS2, outer=TRUE, "Year" )  
 }     # END function .plotBtCtFt
@@ -1809,17 +1816,23 @@
   yLim2 <- gfx$yLim2
   yLim3 <- gfx$yLim3
 
+  # Plot LRP and USR
+  B0  <- obj$ctlList$opMod$B0
+  LRP <- .BlimHerring
+  TRP <- .TRPHerring
+  
+
   # X-axis limits.
   if ( gfx$showProj )
-    xLim <- c( tMP - 1,nT )
+    xLim <- range(c( tMP - 1,nT ))
   else
     if ( is.null(xLim) )
-      xLim <- c( 0,nT )
+      xLim <- range(c( 0,nT ))
 
   # Y-axis limits.
   if ( is.null(yLim1) )
     yLim1 <- range( c(0,Bt),na.rm=TRUE )
-  
+
   if ( is.null(yLim2) )
     yLim2 <- range( c(0,Ct) )
   
@@ -1829,7 +1842,12 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=obj$ctlList$mp$hcr$fixCutoffHerring, lty=.BmsyLTY, lwd=.BmsyLWD )
+  abline( h=c(LRP*B0, TRP*B0), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+          col = c(.LrpCOL, .TrpCOL) )
+  panLegend(  x = 0.8, y = 0.9,
+              legTxt = c("LRP", "TRP"), 
+              lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+              col = c(.LrpCOL, .TrpCOL))
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -1857,13 +1875,6 @@
   axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
   box()
   mtext( side=2, line=.INLINE3, cex=.CEXLAB2, "Catch biomass" )
-  
-  if ( gfx$doLegend )
-  {
-    panLegend( 0.7,0.95, legTxt=c("Retained","Released"), bg="white", cex=1.2,
-               pt.bg=c(.CtCOL,.DtCOL), lty=c(.CtLTY,.DtLTY), lwd=c(.CtLWD,.DtLWD),
-               pt.cex=c( .CtCEX, .DtCEX ), pch=c(.CtPCH,.DtPCH) )
-  }
 
   # Panel 3: Plot recruits.
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
@@ -1909,37 +1920,38 @@
   yLim2 <- gfx$yLim2
   yLim3 <- gfx$yLim3
 
+  # Plot LRP and USR
+  B0  <- obj$ctlList$opMod$B0
+  LRP <- .BlimHerring
+  TRP <- .TRPHerring
+  
+
   # X-axis limits.
   if ( gfx$showProj )
-    xLim <- c( tMP - 1,nT )
+    xLim <- range(c( tMP - 1,nT ))
   else
     if ( is.null(xLim) )
-      xLim <- c( 0,nT )
+      xLim <- range(c( 0,nT ))
 
   # Y-axis limits.
   if ( is.null(yLim1) )
     yLim1 <- range( c(0,Bt),na.rm=TRUE )
 
   if ( is.null(yLim2) )
-    yLim2 <- c(0,1)
+    yLim2 <- range( c(0,1) )
   
   if ( is.null(yLim3) )
     yLim3 <- range( c(0,Rt) )
 
-  if( any(!is.finite(yLim2) ) ) yLim2 <- range(c(0,legalHR))
-
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-
-
-  cutoff <- obj$ctlList$mp$hcr$herringCutoffVal
-  if(is.null(cutoff) ) 
-    cutoff <- obj$ctlList$mp$hcr$fixCutoffHerring
-  else if( obj$ctlList$mp$hcr$herringCutoffType == "relative")
-    cutoff <- cutoff * B0
-  
-  abline( h=cutoff, lty=.BmsyLTY, lwd=.BmsyLWD )
+  abline( h=c(LRP*B0, TRP*B0), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+          col = c(.LrpCOL, .TrpCOL) )
+  panLegend(  x = 0.8, y = 0.9,
+              legTxt = c("LRP", "TRP"), 
+              lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+              col = c(.LrpCOL, .TrpCOL))
   
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
@@ -3196,8 +3208,10 @@
 
   # True spawning biomass and true fishing mortality
   idx   <- tMP:nT  
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ][idx]
+  Bt <- obj$om$FBt[ iRep,(2:ncol(obj$om$Bt)) ][idx]
   Ft <- obj$om$Ft[ iRep,(2:ncol(obj$om$Ft)) ][idx]
+
+  browser()
 
   xLim <- gfx$xLim
   yLim <- gfx$yLim
@@ -11499,11 +11513,20 @@
   # HCR control point multipliers. - need to leverage these for the 
   # plots without Perfect Info
 
-  if( ctlList$mp$hcr$herringCutoffType == "absolute" )
-    trueLowerBound <- ctlList$mp$hcr$herringCutoffVal
-  else trueLowerBound <- ctlList$mp$hcr$herringCutoffVal * B0
+  if( ctlList$mp$hcr$rule == "herring" )
+  {
+    if( ctlList$mp$hcr$herringCutoffType == "absolute" )
+      trueLowerBound <- ctlList$mp$hcr$herringCutoffVal
+    else trueLowerBound <- ctlList$mp$hcr$herringCutoffVal * B0
+    
+    trueUpperBound <-  trueLowerBound / (1 - targHR)  
+  }
+  if( ctlList$mp$hcr$rule == "linear" )
+  {
+    trueLowerBound <- ctlList$mp$hcr$lowerBoundMult * B0
+    trueUpperBound <- ctlList$mp$hcr$upperBoundMult * B0
+  }
   
-  trueUpperBound <-  trueLowerBound / (1 - targHR)
 
   # We need the following quantities.
   # Estimate of Bmsy for each year (Bref)
@@ -11517,7 +11540,7 @@
   Fref  <- obj$mp$hcr$Fref[ iRep,c(2:ncol(obj$mp$hcr$Fref)) ]
   Fref <- Fref[idx]
 
-  Uref <- 1 - exp(-Fref)
+  Uref <- targHR
 
   spawnHR <- obj$om$spawnHR[ iRep, 1 + idx ]
 
@@ -11566,12 +11589,17 @@
     for ( i in 1:length(colVec) )
     {
       segments( 0,                   0, lowerBound[i],       0, col="gray", lwd=1 )
-      x <- seq( lowerBound[i], upperBound[i], length = 100 )
-      y <- x
-      for( xidx in 1:length(x))
-        y[xidx] <- min( targHR, (x[xidx] - lowerBound[i])/x[xidx])
-      lines(x,y, col = "gray", lwd = 1)
-      # segments( lowerBound[i],       0, upperBound[i], Fref[i], col="gray", lwd=1 )
+      if( ctlList$mp$hcr$rule == "herring" )
+      {
+        x <- seq( lowerBound[i], upperBound[i], length = 100 )
+        y <- x
+        for( xidx in 1:length(x))
+          y[xidx] <- min( targHR, (x[xidx] - lowerBound[i])/x[xidx])
+        lines(x,y, col = "gray", lwd = 1)  
+      }
+      if( ctlList$mp$hcr$rule == "linear" )
+        segments( x0 = lowerBound[i],  y0 = 0, x1 =  upperBound[i], y1 =   Uref[i], col="gray", lwd=1 )
+      
       segments( upperBound[i], Uref[i],        usr[2], Uref[i], col="gray", lwd=1 )
     }
   }
@@ -11581,11 +11609,17 @@
   # Plot the "True" harvest control rule.
   segments(    0,      0,  trueLowerBound,     0, lty=1, lwd=3 )
   # Plot fixed escapement rule
-  x <- seq(trueLowerBound, trueUpperBound, length = 100)
-  y <- x
-  for( xidx in 1:length(x))
-    y[xidx] <- min( targHR, (x[xidx] - trueLowerBound)/x[xidx] )
-  lines(x,y, lty = 1, lwd = 3)
+  if( ctlList$mp$hcr$rule == "herring" )
+  {
+    x <- seq(trueLowerBound, trueUpperBound, length = 100)
+    y <- x
+    for( xidx in 1:length(x))
+      y[xidx] <- min( targHR, (x[xidx] - trueLowerBound)/x[xidx] )
+    lines(x,y, lty = 1, lwd = 3)  
+  }
+  if(ctlList$mp$hcr$rule == "linear" )
+    segments( x0 = trueLowerBound, x1 = trueUpperBound, y0 = 0, y1 = targHR, lwd = 3 )
+  
   segments( trueUpperBound, targHR, usr[2],  targHR, lty=1, lwd=3 )  
 
   axis( side=1, cex.axis=.CEXAXIS )
@@ -11772,7 +11806,7 @@
   xLim <- gfx$xLim
   yLim <- gfx$yLim
 
-  if ( gfx$showProj )
+  if ( !gfx$showProj )
   {
     idx <- c( 1:nT )
 

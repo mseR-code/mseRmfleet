@@ -1,5 +1,58 @@
 # Functions for plotting OM outputs
 
+plotMinEscapementHCR <- function( cutoff = .5, refHR = .2,
+                                  refB = 45.6158, cutoffType = "relative",
+                                  yLim = c(0,.3),
+                                  xLab = "Stock Status (Bt/B0)",
+                                  yLab = "Target Harvest Rate (Ct/Bt)" )
+{
+  if( cutoffType == "absolute" ) 
+    minE <- cutoff
+  if( cutoffType == "relative" )
+    minE <- cutoff * refB
+
+  if(is.null(yLim))
+    yLim <- c(0,1.5*refHR)
+
+  rampTop <- minE / (1 - refHR)
+
+  curveX <- seq( minE, refB, length = 1000)
+  curveY <- curveX
+  for( x in 1:length(curveX) ) 
+    curveY[x] <- min( (refHR * curveX[x])/curveX[x],(curveX[x]-minE)/curveX[x])
+
+  plot( x = c(0,refB), y = yLim, type = "n", xlab = "", ylab = "", las = 1 )
+    lines( curveX, curveY, lwd  = 3 )
+    segments( x0 =0, x1 = minE, y0 = 0, lwd = 3 )
+    abline( v = c(minE, rampTop), lwd = .8, lty = 2)
+    abline( h = refHR, lwd = .8, lty = 3 )
+    mtext( side = 1, text = xLab, line = 2 )
+    mtext( side = 2, text = yLab, line = 3 )
+
+}
+
+plotHockeyStickHCR <- function( LRP = .3, USR = .6,
+                                refHR = .2,
+                                refB = 45.6158,
+                                yLim = c(0,.3),
+                                xLab = expression(paste("Stock Status (",B[t]/B[0],")",sep = "")),
+                                yLab = "Target Harvest Rate (Ct/Bt)" )
+{
+  if(is.null(yLim))
+    yLim <- c(0,1.5*refHR)
+
+
+  plot( x = c(0,refB), y = yLim, type = "n", xlab = "", ylab = "", las = 1 )
+    segments( x0 =0, x1 = LRP * refB, y0 = 0, lwd = 3 )
+    segments( x0 =LRP*refB, x1 = USR*refB, y0 = 0, y1 = refHR, lwd = 3 )
+    segments( x0 =USR*refB, x1 = refB, y0 = refHR, y1 = refHR, lwd = 3 )
+    abline( v = c(USR*refB, LRP * refB), lwd = .8, lty = 2)
+    abline( h = refHR, lty = 3, lwd = .8)
+    mtext( side = 1, text = xLab, line = 2 )
+    mtext( side = 2, text = yLab, line = 3 )
+
+}
+
 # Acceptable probability of decline ramp, which interpolates
 # between a 5% prob at the LRP (.3) and a 25% prob at the NCN
 # TRP (.75)

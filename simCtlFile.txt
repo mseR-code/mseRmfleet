@@ -43,7 +43,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 5
+mp$assess$methodId 6
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"

@@ -812,7 +812,7 @@ if( .FBt_Perf ) .DeptLAB <- "SSB (pre-fishing)"
 # Settings for .Lrp 
 #
 .LrpBG <- "pink" 
-.LrpCOL <- "black" 
+.LrpCOL <- "red" 
 .LrpFG <- "black" 
 .LrpLTY <- 3 
 .LrpLWD <- 2 
@@ -836,7 +836,7 @@ if( .FBt_Perf ) .DeptLAB <- "SSB (pre-fishing)"
 # Settings for .Trp 
 #
 .TrpBG <- "green" 
-.TrpCOL <- "black" 
+.TrpCOL <- "darkgreen" 
 .TrpFG <- "black" 
 .TrpLTY <- 3 
 .TrpLWD <- 2 
