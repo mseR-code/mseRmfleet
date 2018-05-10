@@ -15,29 +15,39 @@ source("../../mseRrefPoints.R")
 
 MPs <- c( "NoFish",
           "minE18.8_HR.2",
-          "minE18.8_HR.1",
           "minE18.8_HR.2_cap5",
+          "minE18.8_HR.1",
           "minE18.8_HR.1_cap5",
           "minE.5B0_HR.2",
-          "minE.5B0_HR.1",
           "minE.5B0_HR.2_cap5",
+          "minE.5B0_HR.1",
           "minE.5B0_HR.1_cap5",
           "HS30-60_HR.2",
-          "HS30-60_HR.1",
           "HS30-60_HR.2_cap5",
+          "HS30-60_HR.1",
           "HS30-60_HR.1_cap5",
           "PerfectInfo_minE18.8_HR.2",
-          "PerfectInfo_minE18.8_HR.1",
           "PerfectInfo_minE18.8_HR.2_cap5",
+          "PerfectInfo_minE18.8_HR.1",
           "PerfectInfo_minE18.8_HR.1_cap5",
           "PerfectInfo_minE.5B0_HR.2",
-          "PerfectInfo_minE.5B0_HR.1",
           "PerfectInfo_minE.5B0_HR.2_cap5",
+          "PerfectInfo_minE.5B0_HR.1",
           "PerfectInfo_minE.5B0_HR.1_cap5",
           "PerfectInfo_HS30-60_HR.2",
-          "PerfectInfo_HS30-60_HR.1",
           "PerfectInfo_HS30-60_HR.2_cap5",
-          "PerfectInfo_HS30-60_HR.1_cap5")
+          "PerfectInfo_HS30-60_HR.1",
+          "PerfectInfo_HS30-60_HR.1_cap5" )
+
+currMPs <- c( "NoFish",
+              "minE18.8_HR.2",
+              "PerfectInfo_minE18.8_HR.2",
+              "minE18.8_HR.2_cap5",
+              "PerfectInfo_minE18.8_HR.2_cap5" )
+
+whatWeLikeIdx <- c(3,4,6,7)
+
+whatWeLike<- MPs[whatWeLikeIdx]
 
 # MPs <- MPs2
 
@@ -74,85 +84,12 @@ scenList <- unique( info.df$scenarioLabel )
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
-# plotDepCatchMultiPanels <- function( MPnames = MPs, plotNameRoot = "DepCatch",
-#                                       scenarios = scenList )
-# {
+# now plot the depCatch multi panels we want
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
+                          scenarios = scenList, df = info.df)
 
-# }
+plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
+                          scenarios = scenList, df = info.df)
 
-for( scenIdx in 1:length(scenarios) )
-{
-  scen <- scenarios[scenIdx]
-
-  depCatchPlot    <- paste(scen, "bestMPs_DepCatch.pdf", sep = "" )
-  depCatch_noFish <- paste(depCatchPlot,"_noFish.pdf", sep = "" )
-
-  noFishID <- info.df[  which(info.df$mpLabel == "NoFish" & info.df$scenarioLabel == scen)[1],
-                        "simLabel"]
-  noFishPath  <- file.path("..",noFishID,paste(noFishID, ".RData", sep = "") )
-
-  if(!is.na(noFishID))
-  {
-    load(noFishPath)
-    noFishBlob <- blob
-  }
-
-  mpList <- vector( mode = "list", length = length(MPs) - 1 )
-  mpListIdx <- 1
-
-  pdf( file = depCatchPlot, width = length(MPs)*2, height = 6 )
-  par( mfcol = c(2,length(MPs)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
-
-  for( mpIdx in 1:length(MPs) )
-  {
-    mp <- MPs[mpIdx]
-    info.df.sub <-  info.df %>%
-                    filter( scenarioLabel == scen,
-                            mpLabel == mp )
-
-    simID     <- info.df.sub[1,]$simLabel
-    if(is.na(simID)) next
-
-    simPath  <- file.path("..",simID,paste(simID, ".RData", sep = "") )
-    load(simPath)
-
-    if(mpIdx == 1) gfx$doLegend <- TRUE
-    else gfx$doLegend <- FALSE
-
-    .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
-                      refPts = FALSE )
-
-    # Now rescale blob$Bt if
-    if( mp != "NoFish" )
-    {
-      blob$om$SBt <- blob$om$SBt / noFishBlob$om$SBt
-      blob$ctlList$opMod$B0 <- 1
-
-      mpList[[mpListIdx]] <- blob
-      names(mpList)[mpListIdx] <- mp
-      mpListIdx <- mpListIdx + 1
-    }
-  }
-
-  mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
-
-  dev.off()
-
-  if(is.na(noFishID)) next
-  pdf( file = depCatch_noFish, width = (length(MPs)-1)*2, height = 6 )
-  par( mfcol = c(2,length(MPs)-1), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
-
-  for( idx in 1:length(mpList) )
-  {
-    if(idx == 1) gfx$doLegend <- TRUE
-    else gfx$doLegend <- FALSE
-
-    if( is.null(mpList[[idx]]) ) next
-
-    .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
-                      refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]) )
-  }
-  dev.off()
-}
-
-
+plotDepCatchMultiPanels(  MPnames = whatWeLike, plotNameRoot = "bestMPs",
+                          scenarios = scenList, df = info.df)

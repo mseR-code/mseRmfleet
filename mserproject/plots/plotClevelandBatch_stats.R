@@ -14,33 +14,33 @@ source("../../mseRstats.R")
 source("plotBioFunctions.R")
 
 
-MPs <- c( "NoFish",
-          "minE18.8_HR.2",
-          "minE18.8_HR.1",
-          "minE18.8_HR.2_cap5",
-          "minE18.8_HR.1_cap5",
-          "minE.5B0_HR.2",
-          "minE.5B0_HR.1",
-          "minE.5B0_HR.2_cap5",
-          "minE.5B0_HR.1_cap5",
-          "HS30-60_HR.2",
-          "HS30-60_HR.1",
-          "HS30-60_HR.2_cap5",
-          "HS30-60_HR.1_cap5",
-          "PerfectInfo_minE18.8_HR.2",
-          "PerfectInfo_minE18.8_HR.1",
-          "PerfectInfo_minE18.8_HR.2_cap5",
-          "PerfectInfo_minE18.8_HR.1_cap5",
-          "PerfectInfo_minE.5B0_HR.2",
-          "PerfectInfo_minE.5B0_HR.1",
-          "PerfectInfo_minE.5B0_HR.2_cap5",
-          "PerfectInfo_minE.5B0_HR.1_cap5",
-          "PerfectInfo_HS30-60_HR.2",
-          "PerfectInfo_HS30-60_HR.1",
-          "PerfectInfo_HS30-60_HR.2_cap5",
-          "PerfectInfo_HS30-60_HR.1_cap5")
+MPnames <- c( "NoFish",
+              "minE18.8_HR.2",
+              "minE18.8_HR.2_cap5",
+              "minE18.8_HR.1",
+              "minE18.8_HR.1_cap5",
+              "minE.5B0_HR.2",
+              "minE.5B0_HR.2_cap5",
+              "minE.5B0_HR.1",
+              "minE.5B0_HR.1_cap5",
+              "HS30-60_HR.2",
+              "HS30-60_HR.2_cap5",
+              "HS30-60_HR.1",
+              "HS30-60_HR.1_cap5" )
+              # "PerfectInfo_minE18.8_HR.2",
+              # "PerfectInfo_minE18.8_HR.1",
+              # "PerfectInfo_minE18.8_HR.2_cap5",
+              # "PerfectInfo_minE18.8_HR.1_cap5",
+              # "PerfectInfo_minE.5B0_HR.2",
+              # "PerfectInfo_minE.5B0_HR.1",
+              # "PerfectInfo_minE.5B0_HR.2_cap5",
+              # "PerfectInfo_minE.5B0_HR.1_cap5",
+              # "PerfectInfo_HS30-60_HR.2",
+              # "PerfectInfo_HS30-60_HR.1",
+              # "PerfectInfo_HS30-60_HR.2_cap5",
+              # "PerfectInfo_HS30-60_HR.1_cap5")
 
-# whatWeLike <- c(3,4,5,7)
+whatWeLike <- c(3,4,5,7)
 hlIdx <- NULL
 
 
@@ -66,140 +66,39 @@ short <- c(68,79)
 med   <- c(80,91)
 # long  <- c(86,92)
 
-stats <-  read.csv(  "../statistics/mseRstatistics_perfTable1.csv", header = T,
-                    stringsAsFactors = FALSE ) %>%
-          mutate( deltaPdecline = pDecline - obsPdecline )
+statTable <-  read.csv(  "../statistics/mseRstatistics_perfTable1.csv", header = T,
+                          stringsAsFactors = FALSE ) %>%
+                mutate( deltaPdecline = pDecline - obsPdecline )
 
 
-scenarios <- unique( stats$Scenario )
+scenarios <- unique( statTable$Scenario )
 # MPs       <- unique( stats$Procedure )
 
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
-Periods <- c("Short","Med")
+timePeriods <- c("Short","Med")
 perLabel <- c("3 Generations", "4 Generations")
+
 
 
 for( scenIdx in 1:length(scenarios) )
 {
-  scen <- scenarios[scenIdx]
+    plotClevelands( scen = scenarios[scenIdx], 
+                    Periods = timePeriods,
+                    periodLabels = perLabel,
+                    MPs = MPnames,
+                    hlIdx = NULL,
+                    fileName = "Cleveland",
+                    stats = statTable )
 
-  clevelandPlots  <- paste(scen, "Cleveland_HL.pdf", sep = "" )
-
-  pdf( file = clevelandPlots, width = 12, height = 8 )
-  
-  # First, plot short time period depletion plots
-  par( mfrow = c(length(Periods),4), mar = c(1,1,1,1), oma = c(3,12,4,3) )
-  
-  # Final Depletion
-  for( pIdx in 1:2 )
-  {
-    period <- Periods[pIdx]
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "AvgDep",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = .3,
-                            mpLabs = T,
-                            MPorder = MPs,
-                            hzLine = 6.5 )
-    
-    if( pIdx == 2 )
-      mtext( side = 1, text = "Average Depletion", line = 2 )
-
-    # Avg Catch
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "AvgCatch",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = NA,
-                            mpLabs = F,
-                            hzLine = 6.5 )
-    if( pIdx == 2)
-      mtext( side = 1, text = "Average Catch (kt)", line = 2 )
-
-    # AAV
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "AAV",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = NA,
-                            mpLabs = F,
-                            hzLine = 6.5 )
-    if( pIdx == 2)
-      mtext( side = 1, text = "Average Annual Variation (%)", line = 2 )
-
-    # Prop years closed
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "PropClosure",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = NA,
-                            mpLabs = F,
-                            hzLine = 6.5 )
-    if( pIdx == 2)
-      mtext( side = 1, text = "Prob TAC < 500t (%)", line = 2 )
-
-    mtext( side = 4, text = perLabel[pIdx], line = 2)
-  }
-
-  mtext( side = 3, outer = T, text = scen )
-
-  dev.off()
-
-  pdf( file = paste(scen, "objectivePerfCleveland_HL.pdf"), width = 12, height = 8 )
-  # First, plot short time period depletion plots
-  par( mfrow = c(length(Periods),3), mar = c(2,1,2,1), oma = c(3,12,4,3) )
-
-  for( pIdx in 1:length(Periods) )
-  {
-
-    period <- Periods[pIdx]
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "ProbGt.3B0",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = c(.9,.95),
-                            xLim = c(0,1),
-                            mpLabs = T,
-                            hzLine = 6.5 )
-    if( pIdx == 2 )
-      mtext( side = 1, text = expression(paste("P( ", B[t] > .3*B[0], " )") ), line = 3 )
-
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "deltaPdecline",
-                            quantiles = FALSE,
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = c(0),
-                            xLim = c(-1,1),
-                            mpLabs = F,
-                            hzLine = 6.5 )
-    
-    if( pIdx == 2 )
-      mtext( side = 1, text = "Objective 2 Performance", line = 3)  
-
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "ProbGt.75B0",
-                            timePeriod = period,
-                            statsTable = stats,
-                            midLine = c(.5,.75),
-                            xLim = c(0,1),
-                            mpLabs = F,
-                            hzLine = 6.5 )
-    if( pIdx == 2 )
-      mtext( side = 1, text = expression(paste("P( ", B[t] > .75*B[0], " )") ), line = 3 )
-
-    mtext( side = 4, text = perLabel[pIdx], line = 2 )
-  }
-
-  
-
-
-  mtext( side = 3, outer = T, text = scen, cex = 2, line = 2 )
-
-  dev.off()
+    plotClevelands( scen = scenarios[scenIdx], 
+                    Periods = timePeriods,
+                    periodLabels = perLabel,
+                    MPs = MPnames,
+                    hlIdx = whatWeLike,
+                    fileName = "ClevelandHL",
+                    stats = statTable )
 }
 
 

@@ -981,10 +981,131 @@ plotPFMAProp_RW <- function(  simNum = 1, info = info.df,
 
 }
 
+plotClevelands <- function( scen = scenarios[1], 
+                            Periods = timePeriods,
+                            periodLabels = perLabel,
+                            MPs = MPnames,
+                            hlIdx = NULL,
+                            fileName = "Cleveland",
+                            stats = statTable,
+                            hzLine = NA )
+{
+  plotFileName <- paste( scen, fileName, ".pdf", sep = "" )
+
+  pdf( file = plotFileName, width = 12, height = 8 )
+  
+  # First, plot short time period depletion plots
+  par( mfrow = c(1,4), mar = c(1,1,1,1), oma = c(3,12,4,3) )
+  
+  # Final Depletion
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "AvgDep",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = .3,
+                            mpLabs = T,
+                            MPorder = MPs,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = "Average Depletion", line = 2 )
+
+    # Avg Catch
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "AvgCatch",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = NA,
+                            MPorder = MPs,
+                            mpLabs = F,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = "Average Catch (kt)", line = 2 )
+
+    # AAV
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "AAV",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = NA,
+                            MPorder = MPs,
+                            mpLabs = F,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = "Average Annual Variation (%)", line = 2 )
+
+    # Prop years closed
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "PropClosure",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            MPorder = MPs,
+                            midLine = NA,
+                            mpLabs = F,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = "Prob TAC < 500t (%)", line = 2 )
+
+  mtext( side = 3, outer = T, text = scen )
+
+  dev.off()
+
+  objPerfFileName <- paste(scen, fileName, "objectivePerf.pdf", sep = "")
+
+  pdf( file = objPerfFileName, width = 12, height = 8 )
+  
+  # First, plot short time period depletion plots
+  par( mfrow = c(1,2), mar = c(2,1,2,1), oma = c(3,12,4,3) )
+
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "ProbGt.3B0",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = c(.9,.95),
+                            xLim = c(0,1),
+                            MPorder = MPs,
+                            mpLabs = T,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = expression(paste("P( ", B[t] > .3*B[0], " )") ), line = 3 )
+
+    # plotScenarioClevelands( scenarioName = scen, 
+    #                         statName = "deltaPdecline",
+    #                         quantiles = FALSE,
+    #                         timePeriods = Periods,
+    #                         statsTable = stats,
+    #                         midLine = c(0),
+    #                         xLim = c(-1,1),
+    #                         mpLabs = F,
+    #                         hzLine = hzLine,
+    #                         highLightIdx = hlIdx )
+    
+    # mtext( side = 1, text = "Objective 2 Performance", line = 3)  
+
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = "ProbGt.75B0",
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = c(.5,.75),
+                            xLim = c(0,1),
+                            MPorder = MPs,
+                            mpLabs = F,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 1, text = expression(paste("P( ", B[t] > .75*B[0], " )") ), line = 3 )
+
+  
+
+
+  mtext( side = 3, outer = T, text = scen, cex = 2, line = 2 )
+
+  dev.off()
+}
+
 # Cleveland plots from the perfTables
 plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10", 
                                     statName = "FinalDep",
-                                    timePeriod = "Short",
+                                    timePeriods = c("Short","Med"),
+                                    periodLabels = c("3 Gen", "4 Gen"),
                                     quantiles = TRUE,
                                     statsTable = stats,
                                     midLine = NULL,
@@ -1006,13 +1127,11 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
   subStats <- statsTable %>%
                 dplyr::filter( Scenario == scenarioName )
 
-  # browser()
-
   plotRange <- range(subStats[,colNames])
 
-  subStats <- subStats %>% filter( Period == timePeriod)
+  subStats <- subStats %>% filter( Period %in% timePeriods)
 
-  subStats <- subStats[,c("Procedure",colNames)]
+  subStats <- subStats[,c("Procedure","Period",colNames)]
 
   # browser()
 
@@ -1020,6 +1139,7 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
     MPs <- unique(statsTable$Procedure)
   else MPs <- MPorder
 
+  periodJitter <- -1 * seq(from = -.1, to = .1, length = length(timePeriods) )
 
   if(is.null(xLim)) xLim <- plotRange
 
@@ -1029,16 +1149,22 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
     abline( v = midLine, lty = 2, lwd = .8 )
     for( mpIdx in 1:length(MPs) )
     {
-      mpStat <- subStats %>%
-                filter( Procedure == MPs[mpIdx] )
-      if(nrow(mpStat) != 1 ) browser()
-      if(mpIdx %in% highLightIdx ) colour <- highLightCol
-      else colour <- "grey30"
-      if( quantiles )
-        segments( x0 = mpStat[,colNames[2]], x1 = mpStat[, colNames[3]],
-                  y0 = length(MPs) - mpIdx + 1, y1 = length(MPs) - mpIdx + 1, lwd = 3, col = colour )
-      points( x = mpStat[, colNames[1]], y = length(MPs) - mpIdx + 1, pch = 16, cex = 1.6, col = colour  )
-      abline( h = hzLine, lty = 5, col = "darkgreen" )
+      for( perIdx in 1:length(timePeriods) )
+      {
+        timePeriod <- timePeriods[perIdx]
+        mpStat <- subStats %>%
+                  filter( Procedure == MPs[mpIdx],
+                          Period == timePeriod )
+        if(nrow(mpStat) != 1 ) browser()
+        if(mpIdx %in% highLightIdx ) colour <- highLightCol
+        else colour <- "grey30"
+        if( quantiles )
+          segments( x0 = mpStat[,colNames[2]], x1 = mpStat[, colNames[3]],
+                    y0 = length(MPs) - mpIdx + 1 + periodJitter[perIdx], 
+                    y1 = length(MPs) - mpIdx + 1 + periodJitter[perIdx], lwd = 3, col = colour, lty = perIdx )
+        points( x = mpStat[, colNames[1]], y = length(MPs) - mpIdx + 1 + periodJitter[perIdx], pch = 15 + perIdx, cex = 1.6, col = colour  )
+        abline( h = hzLine, lty = 5, col = "darkgreen" )
+      }
     }
     if(mpLabs)
       axis( side = 2, labels = MPs, at = length(MPs):1, las = 1, cex = .8 )
@@ -1046,5 +1172,85 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
+plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
+                                      scenarios = scenList, df = info.df )
+{
+
+  for( scenIdx in 1:length(scenarios) )
+  {
+    scen <- scenarios[scenIdx]
+
+    depCatchPlot    <- paste(scen, plotNameRoot, ".pdf", sep = "" )
+    depCatch_noFish <- paste(scen,plotNameRoot,"_noFish.pdf", sep = "" )
+
+    noFishID <- df[  which(df$mpLabel == "NoFish" & df$scenarioLabel == scen)[1],
+                          "simLabel"]
+    noFishPath  <- file.path("..",noFishID,paste(noFishID, ".RData", sep = "") )
+
+    if(!is.na(noFishID))
+    {
+      load(noFishPath)
+      noFishBlob <- blob
+    }
+
+    mpList <- vector( mode = "list", length = length(MPnames) - 1 )
+    mpListIdx <- 1
+
+    pdf( file = depCatchPlot, width = length(MPnames)*2, height = 6 )
+    par( mfcol = c(2,length(MPnames)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+
+    for( mpIdx in 1:length(MPnames) )
+    {
+      mp <- MPnames[mpIdx]
+      df.sub <-   df %>%
+                  filter( scenarioLabel == scen,
+                          mpLabel == mp )
+
+      simID     <- df.sub[1,]$simLabel
+      if(is.na(simID)) next
+
+      simPath  <- file.path("..",simID,paste(simID, ".RData", sep = "") )
+      load(simPath)
+
+      if(mpIdx == 1) gfx$doLegend <- TRUE
+      else gfx$doLegend <- FALSE
+
+      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+                        refPts = FALSE )
+
+      # Now rescale blob$Bt if
+      if( mp != "NoFish" )
+      {
+        blob$om$SBt <- blob$om$SBt / noFishBlob$om$SBt
+        blob$ctlList$opMod$B0 <- 1
+
+        mpList[[mpListIdx]] <- blob
+        names(mpList)[mpListIdx] <- mp
+        mpListIdx <- mpListIdx + 1
+      }
+    }
+
+    mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
+
+    dev.off()
+
+    if(is.na(noFishID)) next
+    if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
+    pdf( file = depCatch_noFish, width = (length(noFishScaleMPs))*2, height = 6 )
+    par( mfcol = c(2,length(noFishScaleMPs)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+
+    for( idx in 1:length(mpList) )
+    {
+      if(idx == 1) gfx$doLegend <- TRUE
+      else gfx$doLegend <- FALSE
+
+      if( is.null(mpList[[idx]]) ) next
+
+      .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+                        refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]) )
+    }
+    dev.off()
+  }
+}
 
 
