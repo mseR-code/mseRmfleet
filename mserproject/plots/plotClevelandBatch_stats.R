@@ -15,18 +15,30 @@ source("plotBioFunctions.R")
 
 
 MPs <- c( "NoFish",
-          "MP1_HR.2",
-          "MP1_HR.1",
-          "MP2_HR.2",
-          "MP2_HR.1",
-          "MP3_HR.2",
-          "MP3_HR.1",
-          "PerfectInfo_MP1_HR.2",
-          "PerfectInfo_MP1_HR.1",
-          "PerfectInfo_MP2_HR.2",
-          "PerfectInfo_MP2_HR.1",
-          "PerfectInfo_MP3_HR.2",
-          "PerfectInfo_MP3_HR.1")
+          "minE18.8_HR.2",
+          "minE18.8_HR.1",
+          "minE18.8_HR.2_cap5",
+          "minE18.8_HR.1_cap5",
+          "minE.5B0_HR.2",
+          "minE.5B0_HR.1",
+          "minE.5B0_HR.2_cap5",
+          "minE.5B0_HR.1_cap5",
+          "HS30-60_HR.2",
+          "HS30-60_HR.1",
+          "HS30-60_HR.2_cap5",
+          "HS30-60_HR.1_cap5",
+          "PerfectInfo_minE18.8_HR.2",
+          "PerfectInfo_minE18.8_HR.1",
+          "PerfectInfo_minE18.8_HR.2_cap5",
+          "PerfectInfo_minE18.8_HR.1_cap5",
+          "PerfectInfo_minE.5B0_HR.2",
+          "PerfectInfo_minE.5B0_HR.1",
+          "PerfectInfo_minE.5B0_HR.2_cap5",
+          "PerfectInfo_minE.5B0_HR.1_cap5",
+          "PerfectInfo_HS30-60_HR.2",
+          "PerfectInfo_HS30-60_HR.1",
+          "PerfectInfo_HS30-60_HR.2_cap5",
+          "PerfectInfo_HS30-60_HR.1_cap5")
 
 # whatWeLike <- c(3,4,5,7)
 hlIdx <- NULL
@@ -66,7 +78,7 @@ yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
 Periods <- c("Short","Med")
-perLabel <- c("2 Generations", "4 Generations")
+perLabel <- c("3 Generations", "4 Generations")
 
 
 for( scenIdx in 1:length(scenarios) )

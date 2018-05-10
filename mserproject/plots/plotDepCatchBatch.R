@@ -14,18 +14,30 @@ source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
 
 MPs <- c( "NoFish",
-          "MP1_HR.2",
-          "MP1_HR.1",
-          "MP2_HR.2",
-          "MP2_HR.1",
-          "MP3_HR.2",
-          "MP3_HR.1",
-          "PerfectInfo_MP1_HR.2",
-          "PerfectInfo_MP1_HR.1",
-          "PerfectInfo_MP2_HR.2",
-          "PerfectInfo_MP2_HR.1",
-          "PerfectInfo_MP3_HR.2",
-          "PerfectInfo_MP3_HR.1")
+          "minE18.8_HR.2",
+          "minE18.8_HR.1",
+          "minE18.8_HR.2_cap5",
+          "minE18.8_HR.1_cap5",
+          "minE.5B0_HR.2",
+          "minE.5B0_HR.1",
+          "minE.5B0_HR.2_cap5",
+          "minE.5B0_HR.1_cap5",
+          "HS30-60_HR.2",
+          "HS30-60_HR.1",
+          "HS30-60_HR.2_cap5",
+          "HS30-60_HR.1_cap5",
+          "PerfectInfo_minE18.8_HR.2",
+          "PerfectInfo_minE18.8_HR.1",
+          "PerfectInfo_minE18.8_HR.2_cap5",
+          "PerfectInfo_minE18.8_HR.1_cap5",
+          "PerfectInfo_minE.5B0_HR.2",
+          "PerfectInfo_minE.5B0_HR.1",
+          "PerfectInfo_minE.5B0_HR.2_cap5",
+          "PerfectInfo_minE.5B0_HR.1_cap5",
+          "PerfectInfo_HS30-60_HR.2",
+          "PerfectInfo_HS30-60_HR.1",
+          "PerfectInfo_HS30-60_HR.2_cap5",
+          "PerfectInfo_HS30-60_HR.1_cap5")
 
 # MPs <- MPs2
 
@@ -56,12 +68,17 @@ info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df ) %>%
             arrange(scenarioLabel,mpLabel)
 
-scenarios <- unique( info.df$scenarioLabel )
+scenList <- unique( info.df$scenarioLabel )
 # MPs       <- unique( info.df$mpLabel )
 
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
+# plotDepCatchMultiPanels <- function( MPnames = MPs, plotNameRoot = "DepCatch",
+#                                       scenarios = scenList )
+# {
+
+# }
 
 for( scenIdx in 1:length(scenarios) )
 {

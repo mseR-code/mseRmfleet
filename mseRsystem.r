@@ -4117,53 +4117,57 @@ iscamWrite <- function ( obj )
   tmpTAC0     <- targetHarv$catchLimit
   # initialize floor and ceiling to current TAC 
   tacFloor    <- tmpTAC0
-  tacCeiling  <- tmpTAC0
+  tacCeiling  <- ctlList$mp$hcr$catchCeiling
 
-  # do the floor?
-  if( is.null(ctlList$mp$hcr$maxDeltaTACf) )
-  {
-    # no limit on TAC change
-    targetHarv$catchLimit <- tmpTAC0
-  }
-  else
-  {
-    # if maxDeltaTACf==0, then use constant TAC
-    if( ctlList$mp$hcr$maxDeltaTACf==0 )
-    {
-      targetHarv$catchLimit <- ctlList$mp$hcr$consTAC      
-    }
-    if(ctlList$mp$hcr$maxDeltaTACf > 0 )
-    {
-      deltaTACf   <- ctlList$mp$hcr$maxDeltaTACf      
-      tacFloor   <- lastCatch*(1.-deltaTACf)
-    }
-  }
-  # do the ceiling
-  if( is.null(ctlList$mp$hcr$maxDeltaTACc) )
-  {
-    # no limit on TAC change
-    targetHarv$catchLimit <- tmpTAC0
-  }
-  else
-  {
-    # if maxDeltaTACc==0, then use constant TAC
-    if( ctlList$mp$hcr$maxDeltaTACc==0 )
-    {
-      targetHarv$catchLimit <- ctlList$mp$hcr$consTAC      
-    }
-    if(ctlList$mp$hcr$maxDeltaTACc > 0 )
-    {
-      if( ctlList$mp$hcr$deltaTACcType == "absolute" )
-        tacCeiling   <- ctlList$mp$hcr$catchCeiling
-      else
-      {
-        deltaTACc   <- ctlList$mp$hcr$maxDeltaTACc      
-        tacCeiling <- lastCatch*(1.+deltaTACc)
-      }
-    }
-  }
+  # # do the floor?
+  # if( is.null(ctlList$mp$hcr$maxDeltaTACf) )
+  # {
+  #   # no limit on TAC change
+  #   targetHarv$catchLimit <- tmpTAC0
+  # }
+  # else
+  # {
+  #   # if maxDeltaTACf==0, then use constant TAC
+  #   if( ctlList$mp$hcr$maxDeltaTACf==0 )
+  #   {
+  #     targetHarv$catchLimit <- ctlList$mp$hcr$consTAC      
+  #   }
+  #   if(ctlList$mp$hcr$maxDeltaTACf > 0 )
+  #   {
+  #     deltaTACf   <- ctlList$mp$hcr$maxDeltaTACf      
+  #     tacFloor   <- lastCatch*(1.-deltaTACf)
+  #   }
+  # }
+  # # do the ceiling
+  # if( is.null(ctlList$mp$hcr$maxDeltaTACc) )
+  # {
+  #   # no limit on TAC change
+  #   targetHarv$catchLimit <- tmpTAC0
+  # }
+  # else
+  # {
+  #   # if maxDeltaTACc==0, then use constant TAC
+  #   if( ctlList$mp$hcr$maxDeltaTACc==0 )
+  #   {
+  #     targetHarv$catchLimit <- ctlList$mp$hcr$consTAC      
+  #   }
+  #   if(ctlList$mp$hcr$maxDeltaTACc > 0 )
+  #   {
+  #     if( ctlList$mp$hcr$deltaTACcType == "absolute" )
+  #       tacCeiling   <- ctlList$mp$hcr$catchCeiling
+  #     else
+  #     {
+  #       deltaTACc   <- ctlList$mp$hcr$maxDeltaTACc      
+  #       tacCeiling <- lastCatch*(1.+deltaTACc)
+  #     }
+  #   }
+  # }
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
+
+
+  browser()
+
 
   if(tmpTAC < 0) tmpTAC <- 0
 
