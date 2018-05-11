@@ -40,7 +40,7 @@ MPnames <- c( "NoFish",
               # "PerfectInfo_HS30-60_HR.2_cap5",
               # "PerfectInfo_HS30-60_HR.1_cap5")
 
-whatWeLike <- c(3,4,5,7)
+whatWeLike <- c(3:5,6:9,11:13)
 hlIdx <- NULL
 
 
@@ -102,3 +102,42 @@ for( scenIdx in 1:length(scenarios) )
 }
 
 
+
+plotComparativeScenarioObjs( fileName = "Objective1_LRP", statName = "ProbGt.3B0",
+                              xlabel = expression(paste("P( ", B[t] > .3*B[0], " )") ) )
+
+plotComparativeScenarioObjs( fileName = "Objective1_LRP_HL", statName = "ProbGt.3B0",
+                              xlabel = expression(paste("P( ", B[t] > .3*B[0], " )") ),
+                              hlIdx = whatWeLike )
+
+plotComparativeScenarioObjs( fileName = "Objective2_USR", statName = "ProbGt.6B0",
+                              xlabel = expression(paste("P( ", B[t] > .6*B[0], " )") ),
+                              midLine = .5, Periods = c("Short") )
+
+plotComparativeScenarioObjs( fileName = "Objective2_USR_HL", statName = "ProbGt.6B0",
+                              xlabel = expression(paste("P( ", B[t] > .6*B[0], " )") ),
+                              hlIdx = whatWeLike, midLine = .5, Periods = c("Short") )
+
+plotComparativeScenarioObjs( fileName = "NCNGoal1_USR", statName = "ProbGt.75B0",
+                              xlabel = expression(paste("P( ", B[t] > .75*B[0], " )") ),
+                              midLine = .75, Periods = c("Short","Med")  )
+
+plotComparativeScenarioObjs( fileName = "NCNGoal1_USR_HL", statName = "ProbGt.75B0",
+                              xlabel = expression(paste("P( ", B[t] > .75*B[0], " )") ),
+                              hlIdx = whatWeLike, midLine = .75, Periods = c("Short","Med") )
+
+plotComparativeScenarioObjs( fileName = "NCNGoal2", statName = "ProbNCNGoal2",
+                              xlabel = expression(paste("P( ", B[t] > .75*B[0], " )") ),
+                              midLine = .75, Periods = c("Short")  )
+
+plotComparativeScenarioObjs( fileName = "NCNGoal2_HL", statName = "ProbNCNGoal2",
+                              xlabel = expression(paste("P( ", B[t] > .75*B[0], " )") ),
+                              hlIdx = whatWeLike, midLine = .75, Periods = c("Short") )
+
+plotComparativeScenarioObjs( fileName = "Objective2_USR_B0", statName = "ProbGtB0",
+                              xlabel = expression(paste("P( ", B[t] > B[0], " )") ),
+                              midLine = .5, Periods = c("Short") )
+
+plotComparativeScenarioObjs( fileName = "Objective2_USR_B0_HL", statName = "ProbGtB0",
+                              xlabel = expression(paste("P( ", B[t] > B[0], " )") ),
+                              hlIdx = whatWeLike, midLine = .5, Periods = c("Short") )

@@ -72,6 +72,8 @@
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
+                    "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
+                    "medProbGtB0","Q1ProbGtB0","Q2ProbGtB0",
                     "medPropClosure","Q1PropClosure","Q2PropClosure")
 
   colNames    <- c( headerNames, statNames )
@@ -278,13 +280,36 @@
         result[ iRow,"pGTtarg" ] <- tmp
       }
 
-      # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
+      # --- MSE objective statistics, hard coded by SDNJ May 10, 2018
       if( validSim )
       { 
-        tmp <- .calcQuantsRefPoints( Bt[,tdx[2]], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.75B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
+
+        # MedProb NCN Goal 2
+        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
+        result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
+        result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
+
+        # We should add the other USR candidates here
+        # .6B0
+        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.6B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
+        # B0
+        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtB0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtB0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtB0" ] <- tmp[5]
+
+        # average biomass over productive period
+        
+        # Limit reference point
         tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .3, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.3B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]

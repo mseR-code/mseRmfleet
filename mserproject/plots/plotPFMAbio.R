@@ -2,6 +2,7 @@
 # and some cleveland plots
 
 require(RColorBrewer)
+library(DirichletReg)
 
 # Leverages some mseR functions
 source("../../mseRtools.R")

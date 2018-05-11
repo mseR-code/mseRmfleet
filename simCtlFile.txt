@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "currMP_cap5kt"
+gui$mpLabel "PerfectInfo_HS30-60_cap5kt"
 gui$nReps 3
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
@@ -143,7 +143,7 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$rule "herring"
+mp$hcr$rule "linear"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2

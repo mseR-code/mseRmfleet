@@ -45,9 +45,13 @@ currMPs <- c( "NoFish",
               "minE18.8_HR.2_cap5",
               "PerfectInfo_minE18.8_HR.2_cap5" )
 
-whatWeLikeIdx <- c(3,4,6,7)
+whatWeLike_minE18.8 <- 3:5
+whatWeLike_minE.5B0 <- 6:9
+whatWeLike_.HS30.60 <- 11:13
 
-whatWeLike<- MPs[whatWeLikeIdx]
+base3HCRs <- c(2,6,10)
+
+
 
 # MPs <- MPs2
 
@@ -91,5 +95,18 @@ plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = whatWeLike, plotNameRoot = "bestMPs",
+plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
+                          plotNameRoot = "minE18.8_bestMPs",
+                          scenarios = scenList, df = info.df)
+
+plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
+                          plotNameRoot = "minE.5B0_bestMPs",
+                          scenarios = scenList, df = info.df)
+
+plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
+                          plotNameRoot = "HS30-60_bestMPs",
+                          scenarios = scenList, df = info.df)
+
+plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
+                          plotNameRoot = "baseHCRs",
                           scenarios = scenList, df = info.df)

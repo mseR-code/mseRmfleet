@@ -3758,7 +3758,7 @@
   tMP  <- obj$ctlList$opMod$tMP
 
   # Operating model.
-  Bt   <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt   <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
   
   # Multi-gear model, there is no exploitable biomass that is easy - use legal.
   Bleg      <- obj$om$legalB[ iRep,(2:ncol(obj$om$legalB)) ]
@@ -12174,7 +12174,9 @@ plotRefPts <- function( obj )
   ctlList  <- obj$ctlList
   useIndex <- eval( parse( text=ctlList$mp$data$useIndex ) )
 
-  omBt       <- obj$om$Bt
+  B0         <- ctlList$opMod$B0
+
+  omBt       <- obj$om$SBt
   omBt       <- omBt[ iRep, (2:ncol(omBt)) ]
   retroExpBt <- obj$mp$assess$retroExpBt
   retroExpBt <- retroExpBt[ retroExpBt[,"iRep"]==iRep, ]
@@ -12227,7 +12229,7 @@ plotRefPts <- function( obj )
       points( c(1:nT), ItgScaled[,i], cex=.CEXSYM2, col="black", bg=.GearCOL[i], pch=.GearPCH[i] )
 
       abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
-      abline( h=equilBmsy, col=.BmsyCOL, lwd=.BmsyLWD, lty=.BmsyLTY )
+      # abline( h=equilBmsy, col=.BmsyCOL, lwd=.BmsyLWD, lty=.BmsyLTY )
 
       panLab( 0.8, 0.9, cex=.CEXANNO2, obj$ctlList$opMod$gNames[i] )  
       
@@ -12269,7 +12271,7 @@ plotRefPts <- function( obj )
     }
   
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
-    abline( h=equilBmsy, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )  
+    abline( h=0.3*B0, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )  
   
     if ( gfx$useYears )
     {

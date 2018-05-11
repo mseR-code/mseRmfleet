@@ -7,21 +7,21 @@ plotMinEscapementHCR <- function( cutoff = .5, refHR = .2,
                                   yLab = "Target Harvest Rate (Ct/Bt)" )
 {
   if( cutoffType == "absolute" ) 
-    minE <- cutoff
+    minE <- cutoff/refB
   if( cutoffType == "relative" )
-    minE <- cutoff * refB
+    minE <- cutoff
 
   if(is.null(yLim))
     yLim <- c(0,1.5*refHR)
 
   rampTop <- minE / (1 - refHR)
 
-  curveX <- seq( minE, refB, length = 1000)
+  curveX <- seq( minE, 1, length = 1000)
   curveY <- curveX
   for( x in 1:length(curveX) ) 
     curveY[x] <- min( (refHR * curveX[x])/curveX[x],(curveX[x]-minE)/curveX[x])
 
-  plot( x = c(0,refB), y = yLim, type = "n", xlab = "", ylab = "", las = 1 )
+  plot( x = c(0,1), y = yLim, type = "n", xlab = "", ylab = "", las = 1 )
     lines( curveX, curveY, lwd  = 3 )
     segments( x0 =0, x1 = minE, y0 = 0, lwd = 3 )
     abline( v = c(minE, rampTop), lwd = .8, lty = 2)
@@ -43,9 +43,9 @@ plotHockeyStickHCR <- function( LRP = .3, USR = .6,
 
 
   plot( x = c(0,refB), y = yLim, type = "n", xlab = "", ylab = "", las = 1 )
-    segments( x0 =0, x1 = LRP * refB, y0 = 0, lwd = 3 )
-    segments( x0 =LRP*refB, x1 = USR*refB, y0 = 0, y1 = refHR, lwd = 3 )
-    segments( x0 =USR*refB, x1 = refB, y0 = refHR, y1 = refHR, lwd = 3 )
+    segments( x0 = 0, x1 = LRP * refB, y0 = 0, lwd = 3 )
+    segments( x0 = LRP*refB, x1 = USR*refB, y0 = 0, y1 = refHR, lwd = 3 )
+    segments( x0 = USR*refB, x1 = refB, y0 = refHR, y1 = refHR, lwd = 3 )
     abline( v = c(USR*refB, LRP * refB), lwd = .8, lty = 2)
     abline( h = refHR, lty = 3, lwd = .8)
     mtext( side = 1, text = xLab, line = 2 )
@@ -165,7 +165,7 @@ plotFishingOppTradeoff <- function( simNum = 1,
 
 
 
-# Function to plot projected biomass for the OM over the PFMA sub-areas. 
+# Function to plot projected biomass for the OM over the statArea sub-areas. 
 # Proportions used for apportionment in the history are simply the proportion
 # of spawn index in each PFMA, and projections use a random
 # walk in the log-proportions.
@@ -192,9 +192,9 @@ plotPFMABt_RW <- function(  simNum = 1, rep = 1, info = info.df,
 
   # Convert history into a matrix (3xnt)
   areaSI <- matrix(NA, nrow = 3, ncol = nT)
-  rownames(areaSI) <- c("PFMA23","PFMA24","PFMA25")
+  rownames(areaSI) <- c("statArea23","statArea24","statArea25")
   areaSIprops <- matrix(NA, nrow = 3, ncol = nT)
-  rownames(areaSIprops) <- c("PFMA23","PFMA24","PFMA25")
+  rownames(areaSIprops) <- c("statArea23","statArea24","statArea25")
 
   areaSI[1,1:nrow(statAreaSIprops)] <- statAreaSIprops$SI23
   areaSI[2,1:nrow(statAreaSIprops)] <- statAreaSIprops$SI24
@@ -245,22 +245,22 @@ plotPFMABt_RW <- function(  simNum = 1, rep = 1, info = info.df,
     panLab( x = 0.9, y = 0.8, txt = "WCVI")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea23 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 23")
     
   mtext( side = 1, outer = T, line = 2, adj = .7,
           text = paste(scenLabel, ":",mpLabel, sep = "" ),
@@ -281,7 +281,7 @@ plotPFMABt_RW <- function(  simNum = 1, rep = 1, info = info.df,
 
 }
 
-# Function to plot projected biomass for the OM over the PFMA sub-areas. 
+# Function to plot projected biomass for the OM over the statArea sub-areas. 
 # Proportions used for apportionment in the history are taken from
 # a Dirichlet regression of observed proportions on the biomass.
 # Each year of the projection, the alpha values for that biomass
@@ -311,9 +311,9 @@ plotPFMABt_DR <- function(  simNum = 1, rep = 1, info = info.df,
 
   # Convert history into a matrix (3xnt)
   areaSI <- matrix(NA, nrow = 3, ncol = nT)
-  rownames(areaSI) <- c("PFMA23","PFMA24","PFMA25")
+  rownames(areaSI) <- c("statArea23","statArea24","statArea25")
   areaSIprops <- matrix(NA, nrow = 3, ncol = nT)
-  rownames(areaSIprops) <- c("PFMA23","PFMA24","PFMA25")
+  rownames(areaSIprops) <- c("statArea23","statArea24","statArea25")
 
   # Load history
   statAreaSIprops <- read.csv("../history/statAreaSI_props.csv")
@@ -366,22 +366,22 @@ plotPFMABt_DR <- function(  simNum = 1, rep = 1, info = info.df,
     panLab( x = 0.9, y = 0.8, txt = "WCVI")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
   plot( x = range(yrs), y = range(areaSBt, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea23 Biomass (kt)", type = "n", las = 1 )
     lines( x = yrs, y = areaSBt[1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 23")
 
   titleText <- paste( "Apportioned by ", DR, " Dirichlet Regression", sep = "")
 
@@ -432,12 +432,12 @@ plotPFMABtEnv_DR <- function( simNum = 1, info = info.df,
   # Convert history into a matrix (3xnt)
   areaSI <- array(NA, dim = c(nReps,3,nT),
                       dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                        c("PFMA23","PFMA24","PFMA25"),
+                                        c("statArea23","statArea24","statArea25"),
                                         paste("t",1:nT, sep = "") ) )
 
   areaSIprops <- array( NA, dim = c(nReps,3,nT),
                             dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                              c("PFMA23","PFMA24","PFMA25"),
+                                              c("statArea23","statArea24","statArea25"),
                                               paste("t",1:nT,sep = "") ) )
 
   areaSBt <- areaSIprops
@@ -516,31 +516,31 @@ plotPFMABtEnv_DR <- function( simNum = 1, info = info.df,
     panLab( x = 0.9, y = 0.8, txt = "WCVI")
 
   plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,3,], rev(areaSBt_quantiles[3,3,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,2,], rev(areaSBt_quantiles[3,2,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
     plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea23 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,1,], rev(areaSBt_quantiles[3,1,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 23")
 
   titleText <- paste( "Apportioned by ", DR, " Dirichlet Regression", sep = "")
 
@@ -587,12 +587,12 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
   # Convert history into a matrix (3xnt)
   areaSI <- array(NA, dim = c(nReps,3,nT),
                       dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                        c("PFMA23","PFMA24","PFMA25"),
+                                        c("statArea23","statArea24","statArea25"),
                                         paste("t",1:nT, sep = "") ) )
 
   areaSIprops <- array( NA, dim = c(nReps,3,nT),
                             dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                              c("PFMA23","PFMA24","PFMA25"),
+                                              c("statArea23","statArea24","statArea25"),
                                               paste("t",1:nT,sep = "") ) )
 
   areaSBt <- areaSIprops
@@ -659,34 +659,34 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
 
   par(mfrow = c(3,1), mar = c(2,2,2,2), oma = c(3,3,3,1) )
   plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,3,], rev(areaSIprop_quantiles[3,3,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .25, lty = 3, lwd =1)
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,2,], rev(areaSIprop_quantiles[3,2,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .25, lty = 3, lwd =1)
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
     plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea23 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,1,], rev(areaSIprop_quantiles[3,1,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .25, lty = 3, lwd =1)
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 23")
 
   titleText <- paste( "Apportioned by ", DR, " Dirichlet Regression", sep = "")
 
@@ -697,7 +697,7 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
           col = "grey60" )
 
   mtext( side = 1, outer = T, text = "Year" )
-  mtext( side = 2, outer = T, text = "Proportion of WCVI biomass" )
+  mtext( side = 2, outer = T, text = "Proportion of WCVI biomass", line = 1.5 )
 
 
 }
@@ -727,12 +727,12 @@ plotPFMABtEnv_RW <- function( simNum = 1, info = info.df,
   # Convert history into a matrix (3xnt)
   areaSI <- array(NA, dim = c(nReps,3,nT),
                       dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                        c("PFMA23","PFMA24","PFMA25"),
+                                        c("statArea 23","statArea 24","statArea 25"),
                                         paste("t",1:nT, sep = "") ) )
 
   areaSIprops <- array( NA, dim = c(nReps,3,nT),
                             dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                              c("PFMA23","PFMA24","PFMA25"),
+                                              c("statArea 23","statArea 24","statArea 25"),
                                               paste("t",1:nT,sep = "") ) )
 
   areaSBt <- areaSIprops
@@ -815,31 +815,31 @@ plotPFMABtEnv_RW <- function( simNum = 1, info = info.df,
     panLab( x = 0.9, y = 0.8, txt = "WCVI")
 
   plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea 24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,3,], rev(areaSBt_quantiles[3,3,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea  25")
 
   plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea 24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,2,], rev(areaSBt_quantiles[3,2,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea  24")
 
     plot( x = range(yrs), y = range(areaSBt_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea 23 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSBt_quantiles[1,1,], rev(areaSBt_quantiles[3,1,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSBt_quantiles[2,1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea  23")
 
   titleText <- paste( "Apportioned by RW", sep = "")
 
@@ -878,12 +878,12 @@ plotPFMAProp_RW <- function(  simNum = 1, info = info.df,
   # Convert history into a matrix (3xnt)
   areaSI <- array(NA, dim = c(nReps,3,nT),
                       dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                        c("PFMA23","PFMA24","PFMA25"),
+                                        c("statArea23","statArea24","statArea25"),
                                         paste("t",1:nT, sep = "") ) )
 
   areaSIprops <- array( NA, dim = c(nReps,3,nT),
                             dimnames = list(  paste("rep",1:nReps, sep = ""),
-                                              c("PFMA23","PFMA24","PFMA25"),
+                                              c("statArea23","statArea24","statArea25"),
                                               paste("t",1:nT,sep = "") ) )
 
   areaSBt <- areaSIprops
@@ -938,34 +938,34 @@ plotPFMAProp_RW <- function(  simNum = 1, info = info.df,
   par(mfrow = c(3,1), mar = c(2,2,2,2), oma = c(3,3,3,1) )
 
   plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,3,], rev(areaSIprop_quantiles[3,3,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .2, lty = 3 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 25")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA24 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea24 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,2,], rev(areaSIprop_quantiles[3,2,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .2, lty = 3 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 24")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
     plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
-        xlab = "", ylab = "PFMA23 Biomass (kt)", type = "n", las = 1 )
+        xlab = "", ylab = "statArea23 Biomass (kt)", type = "n", las = 1 )
     polygon(  x = c(yrs,rev(yrs)),
               y = c(areaSIprop_quantiles[1,1,], rev(areaSIprop_quantiles[3,1,])),
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
     abline( h = .2, lty = 3 )
-    panLab( x = 0.9, y = 0.8, txt = "PFMA 23")
+    panLab( x = 0.9, y = 0.8, txt = "statArea 23")
 
   titleText <- paste( "Apportioned by RW", sep = "")
 
@@ -976,7 +976,7 @@ plotPFMAProp_RW <- function(  simNum = 1, info = info.df,
           col = "grey60" )
 
   mtext( side = 1, outer = T, text = "Year" )
-  mtext( side = 2, outer = T, text = "Proportion of WCVI biomass" )
+  mtext( side = 2, outer = T, text = "Proportion of WCVI biomass", line = 1.5 )
 
 
 }
@@ -1026,11 +1026,12 @@ plotClevelands <- function( scen = scenarios[1],
                             statName = "AAV",
                             timePeriods = Periods,
                             statsTable = stats,
-                            midLine = NA,
+                            midLine = 25,
                             MPorder = MPs,
                             mpLabs = F,
                             hzLine = hzLine,
-                            highLightIdx = hlIdx )
+                            highLightIdx = hlIdx,
+                            xLim = c(0,200) )
     mtext( side = 1, text = "Average Annual Variation (%)", line = 2 )
 
     # Prop years closed
@@ -1047,58 +1048,114 @@ plotClevelands <- function( scen = scenarios[1],
 
   mtext( side = 3, outer = T, text = scen )
 
+  panLegend( x = 0.1, y = 0.98,
+              legTxt = c("3 Gen", "4 Gen"),
+              lty = c(1,2),
+              lwd = 2,
+              pch = c(16,17),
+              cex = 1.2 )
+
   dev.off()
 
-  objPerfFileName <- paste(scen, fileName, "objectivePerf.pdf", sep = "")
+  # objPerfFileName <- paste(scen, fileName, "objectivePerf.pdf", sep = "")
 
-  pdf( file = objPerfFileName, width = 12, height = 8 )
+  # pdf( file = objPerfFileName, width = 12, height = 8 )
   
-  # First, plot short time period depletion plots
-  par( mfrow = c(1,2), mar = c(2,1,2,1), oma = c(3,12,4,3) )
+  # # First, plot short time period depletion plots
+  # par( mfrow = c(1,2), mar = c(2,1,2,1), oma = c(3,12,4,3) )
 
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "ProbGt.3B0",
-                            timePeriods = Periods,
-                            statsTable = stats,
-                            midLine = c(.9,.95),
-                            xLim = c(0,1),
-                            MPorder = MPs,
-                            mpLabs = T,
-                            hzLine = hzLine,
-                            highLightIdx = hlIdx )
-    mtext( side = 1, text = expression(paste("P( ", B[t] > .3*B[0], " )") ), line = 3 )
+  #   plotScenarioClevelands( scenarioName = scen, 
+  #                           statName = "ProbGt.3B0",
+  #                           timePeriods = Periods,
+  #                           statsTable = stats,
+  #                           midLine = c(.9,.95),
+  #                           xLim = c(0,1),
+  #                           MPorder = MPs,
+  #                           mpLabs = T,
+  #                           hzLine = hzLine,
+  #                           highLightIdx = hlIdx )
+  #   mtext( side = 1, text = expression(paste("P( ", B[t] > .3*B[0], " )") ), line = 3 )
 
-    # plotScenarioClevelands( scenarioName = scen, 
-    #                         statName = "deltaPdecline",
-    #                         quantiles = FALSE,
-    #                         timePeriods = Periods,
-    #                         statsTable = stats,
-    #                         midLine = c(0),
-    #                         xLim = c(-1,1),
-    #                         mpLabs = F,
-    #                         hzLine = hzLine,
-    #                         highLightIdx = hlIdx )
+  #   # plotScenarioClevelands( scenarioName = scen, 
+  #   #                         statName = "deltaPdecline",
+  #   #                         quantiles = FALSE,
+  #   #                         timePeriods = Periods,
+  #   #                         statsTable = stats,
+  #   #                         midLine = c(0),
+  #   #                         xLim = c(-1,1),
+  #   #                         mpLabs = F,
+  #   #                         hzLine = hzLine,
+  #   #                         highLightIdx = hlIdx )
     
-    # mtext( side = 1, text = "Objective 2 Performance", line = 3)  
+  #   # mtext( side = 1, text = "Objective 2 Performance", line = 3)  
 
-    plotScenarioClevelands( scenarioName = scen, 
-                            statName = "ProbGt.75B0",
-                            timePeriods = Periods,
-                            statsTable = stats,
-                            midLine = c(.5,.75),
-                            xLim = c(0,1),
-                            MPorder = MPs,
-                            mpLabs = F,
-                            hzLine = hzLine,
-                            highLightIdx = hlIdx )
-    mtext( side = 1, text = expression(paste("P( ", B[t] > .75*B[0], " )") ), line = 3 )
+  #   plotScenarioClevelands( scenarioName = scen, 
+  #                           statName = "ProbGt.75B0",
+  #                           timePeriods = Periods,
+  #                           statsTable = stats,
+  #                           midLine = c(.5,.75),
+  #                           xLim = c(0,1),
+  #                           MPorder = MPs,
+  #                           mpLabs = F,
+  #                           hzLine = hzLine,
+  #                           highLightIdx = hlIdx )
+  #   mtext( side = 1, text = expression(paste("P( ", B[t] > .75*B[0], " )") ), line = 3 )
 
   
 
 
-  mtext( side = 3, outer = T, text = scen, cex = 2, line = 2 )
+  # mtext( side = 3, outer = T, text = scen, cex = 2, line = 2 )
+
+  # dev.off()
+}
+
+plotComparativeScenarioObjs <- function(  scenList = scenarios[length(scenarios):1],
+                                          Periods = timePeriods,
+                                          periodLabels = perLabel,
+                                          MPs = MPnames,
+                                          hlIdx = NULL,
+                                          fileName = "obj1",
+                                          statName = "ProbGt.3B0",
+                                          midLine = .9,
+                                          xLim = c(0,1),
+                                          hzLine = NA,
+                                          stats = statTable,
+                                          xlabel = expression(paste("P( ", B[t] > .3*B[0], " )") ) )
+{
+  outputFile <- paste(fileName, ".pdf", sep = "" )
+
+
+  pdf( outputFile, height = 8, width = 6 * length(scenList) )
+
+  par( mfrow = c(1, length(scenList)), mar = c(3,3,3,3), oma = c(3,12,4,3) )
+
+  for( scenIdx in 1:length(scenList) )
+  {
+    scen <- scenList[scenIdx]
+    if( scenIdx == 1 ) MPLabBool <- T
+    else MPLabBool <- F
+
+    plotScenarioClevelands( scenarioName = scen, 
+                            statName = statName,
+                            timePeriods = Periods,
+                            statsTable = stats,
+                            midLine = midLine,
+                            xLim = xLim,
+                            MPorder = MPs,
+                            mpLabs = MPLabBool,
+                            hzLine = hzLine,
+                            highLightIdx = hlIdx )
+    mtext( side = 3, text = scen, cex = 1.3)
+
+    # if( scenIdx < length(scenList) ) plot(x = c(0,1), y = c(0,0.3), type = "n", axes = F, xlab = "", ylab = "")
+
+    
+  }
+
+  mtext( side = 1, outer = T, text = xlabel, line =2 )
 
   dev.off()
+
 }
 
 # Cleveland plots from the perfTables
@@ -1135,11 +1192,13 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
   # browser()
 
-  if(is.null (MPs))
+  if(is.null (MPorder))
     MPs <- unique(statsTable$Procedure)
   else MPs <- MPorder
 
-  periodJitter <- -1 * seq(from = -.1, to = .1, length = length(timePeriods) )
+  if(length(timePeriods) > 1 )
+    periodJitter <- -1 * seq(from = -.1, to = .1, length = length(timePeriods) )
+  else periodJitter = 0
 
   if(is.null(xLim)) xLim <- plotRange
 
@@ -1193,7 +1252,10 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       noFishBlob <- blob
     }
 
-    mpList <- vector( mode = "list", length = length(MPnames) - 1 )
+    if( "NoFish" %in% MPnames ) lenMPlist <- length(MPnames) - 1
+    else lenMPlist <- length(MPnames)
+
+    mpList <- vector( mode = "list", length = lenMPlist )
     mpListIdx <- 1
 
     pdf( file = depCatchPlot, width = length(MPnames)*2, height = 6 )
@@ -1236,8 +1298,8 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
     if(is.na(noFishID)) next
     if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
-    pdf( file = depCatch_noFish, width = (length(noFishScaleMPs))*2, height = 6 )
-    par( mfcol = c(2,length(noFishScaleMPs)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+    pdf( file = depCatch_noFish, width = (lenMPlist)*2, height = 6 )
+    par( mfcol = c(2,lenMPlist), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
 
     for( idx in 1:length(mpList) )
     {

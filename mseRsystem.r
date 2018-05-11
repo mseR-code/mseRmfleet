@@ -3060,7 +3060,7 @@ iscamWrite <- function ( obj )
         if( Bt > lowerBound )
         {
           if( Bt <= upperBound )
-            targetHarv <- targetHR * (Bt - lowerBound)/(upperBound - lowerBound) * targetHR
+            targetHarv <- targetHR * (Bt - lowerBound)/(upperBound - lowerBound) * Bt
           if( Bt > upperBound )
             targetHarv <- targetHR * Bt
         }
@@ -4164,9 +4164,6 @@ iscamWrite <- function ( obj )
   # }
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
-
-
-  browser()
 
 
   if(tmpTAC < 0) tmpTAC <- 0
