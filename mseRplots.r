@@ -5125,6 +5125,11 @@
     abline( h=seq(yLim[1], yLim[2], length=10),   col=.GRIDCOL, lty=.GRIDLTY, lwd=.GRIDLWD )
   }
 
+  if( .ISCAMFLAG )
+  {
+    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
+  }
+
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
   quants <- apply( Ct, 2, quantile, probs=qProbs )
@@ -13589,6 +13594,7 @@ plotRefPts <- function( obj )
 
     abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
     abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
+    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
 
     if( gfx$doLegend )
       panLegend(  x = .2, y =.5, bty = "n",

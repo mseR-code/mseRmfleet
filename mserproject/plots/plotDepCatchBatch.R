@@ -12,6 +12,7 @@ source("../../mseRoptions.R")
 source("../../mseRplots.R")
 source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
+source("plotBioFunctions.R")
 
 MPs <- c( "NoFish",
           "minE18.8_HR.2",
@@ -44,6 +45,9 @@ currMPs <- c( "NoFish",
               "PerfectInfo_minE18.8_HR.2",
               "minE18.8_HR.2_cap5",
               "PerfectInfo_minE18.8_HR.2_cap5" )
+
+bestMP <- c(  "NoFish",
+              "minE.5B0_HR.1_cap5")
 
 whatWeLike_minE18.8 <- 3:5
 whatWeLike_minE.5B0 <- 6:9
@@ -92,8 +96,14 @@ nT <- 92
 plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
                           scenarios = scenList, df = info.df)
 
+plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
+                          scenarios = scenList, df = info.df)
+
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
                           scenarios = scenList, df = info.df)
+
+# plotDepCatchMultiPanels(  MPnames = currMP_proxy, plotNameRoot = "currMP_proxy",
+#                           scenarios = scenList, df = info.df)
 
 plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
                           plotNameRoot = "minE18.8_bestMPs",

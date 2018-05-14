@@ -71,9 +71,12 @@
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
+                    "medProbGt.75B0end",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
+                    "medProbGt.6B0end",
                     "medProbGtB0","Q1ProbGtB0","Q2ProbGtB0",
+                    "medProbGtB0end",
                     "medPropClosure","Q1PropClosure","Q2PropClosure")
 
   colNames    <- c( headerNames, statNames )
@@ -82,6 +85,31 @@
 
   # Set the results to noSimVal
   result[ ,statNames ] <- noSimVal
+
+  # Create a list to hold the NoFish MP for each scenario
+  scenarios <- unique(trackData$scenario)
+  scenarios <- scenarios[ scenarios != "" ]
+  noFishBlobs <- vector(mode= "list", length = length(scenarios) )
+  names(noFishBlobs) <- scenarios
+
+  noFishTrack <-  trackData %>%
+                  filter( mp == "NoFish" )
+
+  for( scenIdx in 1:length(scenarios) )
+  {
+    scenarioName <- scenarios[scenIdx]
+    scenNoFishTrack <-  noFishTrack %>%
+                        filter( scenario == scenarioName )
+
+    simFile     <- scenNoFishTrack[ 1, "simFile" ]
+    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+
+    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+    load( file=simFilePath )
+    assign( "blob", blob, pos=1 )
+    noFishBlobs[[scenarioName]] <- blob
+  }
 
   # Initialize row counter.
   iRow    <- 0
@@ -156,15 +184,15 @@
       result[ iRow, "t1"     ]     <- period$Year1[j]
       result[ iRow, "t2"     ]     <- period$Year2[j]
 
+      # Pull scenario name to scale Bt by NoFish
+      scenarioName <- trackData[i,"scenario"]
+
       # Usefull for trend statistics.
       t1 <- result[ iRow, "t1" ]
       t2 <- result[ iRow, "t2" ]
 
       # Get the time index values that span this period.
       tdx <- c( period$Year1[j]:period$Year2[j] )
-
-      if(period$Period == period$Period[2])
-        tdx <- tMP:nT
 
       if ( validSim )
       {
@@ -173,6 +201,11 @@
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
+
+        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+        noFishBt <- noFishBt[,2:ncol(noFishBt)]
+
+        noFishDept <- Bt / noFishBt
 
       }
    
@@ -289,23 +322,53 @@
         result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
 
-        # MedProb NCN Goal 2
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        #Hard code ProbGt.75NoFish over tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.75NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.75NoFish" ] <- tmp[5]
+
+        #Hard code ProbGt.75B0 at end of tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx[length(tdx)]], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75B0end" ] <- tmp
+
+        # MedProb NCN Goal 2 (.76B0 over 2 gens)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .76, refProb = 1, probs = quantVals )
         result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
         result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
         result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
 
+        # MedProb NCN Goal 2 (.76NoFish over 2 gens)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbNCNGoal2NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbNCNGoal2NoFish" ] <- tmp[5]
+
+
+        # NCN Goal 2 at end of 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx[length(tdx)]], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2end" ] <- tmp
+
         # We should add the other USR candidates here
-        # .6B0
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        # .6B0 over 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .6, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.6B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
-        # B0
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = 1, refProb = 1, probs = quantVals )
+
+        # .6B0 at end of 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx[length(tdx)]], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.6B0end" ] <- tmp
+
+        # B0 over 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = 1, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGtB0" ] <- tmp[3]
         result[ iRow, "Q1ProbGtB0" ] <- tmp[1]
         result[ iRow, "Q2ProbGtB0" ] <- tmp[5]
+
+        # B0 at end of 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx[length(tdx)]], target = B0, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtB0end" ] <- tmp
 
         # average biomass over productive period
         
@@ -788,17 +851,24 @@
   tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
   tmp[ Bt >= refPt ] <- 1
 
-  # Count the number of years in each replicate where where Bt > refPt.
-  val <- apply( tmp,1,sum )
+  if( ncol(Bt) == 1 )
+  {
+    pVal <- sum(tmp) / nrow(tmp)
+    return(pVal)
+  } else {
+    # Count the number of years in each replicate where where Bt > refPt.
+    val <- apply( tmp,1,sum )
 
-  # Calculate the proportion of years in each replicate where Bt > refPt.
-  pVal <- val / ncol( Bt )
+    # Calculate the proportion of years in each replicate where Bt > refPt.
+    pVal <- val / ncol( Bt )
 
-  # browser()
+    # browser()
 
-  # Compute the mean proportion of years GT refPt.
-  result <- quantile( pVal, probs, na.rm = T )
-  result
+    # Compute the mean proportion of years GT refPt.
+    result <- quantile( pVal, probs, na.rm = T )
+    result
+  }
+  
 }
 
 # .calcStatsTarget (Calculate target statistics WRT dep, time, certainty)

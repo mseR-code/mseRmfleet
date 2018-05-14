@@ -12,6 +12,20 @@ source("../../mseRplots.R")
 
 source("plotBioFunctions.R")
 
+MPnames <- c( "NoFish",
+              "minE18.8_HR.2",
+              "minE18.8_HR.2_cap5",
+              "minE18.8_HR.1",
+              "minE18.8_HR.1_cap5",
+              "minE.5B0_HR.2",
+              "minE.5B0_HR.2_cap5",
+              "minE.5B0_HR.1",
+              "minE.5B0_HR.1_cap5",
+              "HS30-60_HR.2",
+              "HS30-60_HR.2_cap5",
+              "HS30-60_HR.1",
+              "HS30-60_HR.1_cap5" )
+
 rep <- 25
 
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
@@ -34,6 +48,49 @@ readInfoFile <- function( sim )
 # Read in info files, sort by  scenarios
 info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df )
+info.df$scenarioLabel <- as.character(info.df$scenarioLabel)
+info.df$mpLabel <- as.character(info.df$mpLabel)
+
+scenarios <- unique(info.df$scenarioLabel)
+# MPnames   <-unique(info.df$mpLabel)
+
+# calcStatsPFMAProp_DR()
+statAreaPropStats <- read.csv(  "./statAreaBiomass/statAreaPropTable.csv",
+                                header = TRUE, stringsAsFactors = FALSE )
+
+
+# Now plot Cleveland plots
+# Show stat Areas >25% separately but on same plot
+
+
+plotComparativeScenarioStatAreaProps( scenList = scenarios[length(scenarios):1],
+                                      Periods = "2Gen",
+                                      periodLabels = "2Gen",
+                                      MPs = MPnames,
+                                      hlIdx = NULL,
+                                      fileName = "./statAreaBiomass/statAreaSeparate_Cleveland",
+                                      midLine = .75,
+                                      xLim = c(0,1),
+                                      hzLine = NA,
+                                      stats = statAreaPropStats,
+                                      xlabel = expression(paste("P( ", B[Area]/B[WCVI] > .25, " )") ) )
+
+
+# Now show probability of all >25% at the same time.
+plotComparativeScenarioObjs(  scenList = scenarios[length(scenarios):1],
+                              Periods = "2Gen",
+                              periodLabels = "2Gen",
+                              MPs = MPnames,
+                              hlIdx = NULL,
+                              fileName = "./statAreaBiomass/statAreaAll_Cleveland",
+                              statName = "ProbStatAreaAll",
+                              midLine = .75,
+                              xLim = c(0,1),
+                              hzLine = NA,
+                              stats = statAreaPropStats,
+                              quantiles = TRUE,
+                              xlabel = expression(paste("P( ", B[All]/B[WCVI] > .25, " )") ) )
+
 
 
 pdf( file = "Bt_PFMAs_RW.pdf" )
