@@ -2,19 +2,22 @@
 #
 parameter value
 #
-# Scenario 1: WCVI_PulseM_1.5x16
+# Scenario 1: SOG_PulseM_1.5x16
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
+scenario$scenario1$gui$scenarioLabel "SOG_PulseM_1.5x16"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
 #
-# Scenario 2: WCVI_Mbar10
+# Scenario 2: SOG_Mbar10
 #
 scenario$scenario2$opMod$kYearsMbar 10
 scenario$scenario2$gui$nReps 100
-scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
+scenario$scenario2$gui$scenarioLabel "SOG_Mbar10"
+#
+#
+### Management Procedures
 #
 ## Management Procedures
 #
