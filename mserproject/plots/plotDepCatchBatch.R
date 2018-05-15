@@ -49,6 +49,11 @@ currMPs <- c( "NoFish",
 bestMP <- c(  "NoFish",
               "minE.5B0_HR.1_cap5")
 
+checkMPs <- c(  "NoFish",
+                "minE.5B0_HR.1",
+                "minE.5B0_HR.1_cap5")
+
+
 whatWeLike_minE18.8 <- 3:5
 whatWeLike_minE.5B0 <- 6:9
 whatWeLike_.HS30.60 <- 11:13
@@ -93,30 +98,30 @@ yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
 # now plot the depCatch multi panels we want
-plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
+#                           scenarios = scenList, df = info.df)
 
 plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
+plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",
                           scenarios = scenList, df = info.df)
 
 # plotDepCatchMultiPanels(  MPnames = currMP_proxy, plotNameRoot = "currMP_proxy",
 #                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
-                          plotNameRoot = "minE18.8_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
+#                           plotNameRoot = "minE18.8_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
-                          plotNameRoot = "minE.5B0_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
+#                           plotNameRoot = "minE.5B0_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
-                          plotNameRoot = "HS30-60_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
+#                           plotNameRoot = "HS30-60_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
-                          plotNameRoot = "baseHCRs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
+#                           plotNameRoot = "baseHCRs",
+#                           scenarios = scenList, df = info.df)
