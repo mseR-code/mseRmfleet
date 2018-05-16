@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "NoFish"
+gui$mpLabel "currMP"
 gui$nReps 3
 gui$scenarioLabel "SOG_Setup"
 gui$simAnnotate TRUE
@@ -144,8 +144,8 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$herringCutoffType "relative"
-mp$hcr$herringCutoffVal .25
+mp$hcr$herringCutoffType "absolute"
+mp$hcr$herringCutoffVal 21.2
 mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE

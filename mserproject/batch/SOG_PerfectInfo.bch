@@ -35,20 +35,21 @@ mp$mp2$mp$hcr$herringCutoffVal 21.2
 mp$mp2$mp$hcr$herringCutoffType "absolute"
 mp$mp2$mp$hcr$rule "herring"
 #
-## Management Procedure 3: minE21.2_HR.2_cap5
+## Management Procedure 3: minE21.2_HR.2_cap30
 #
-mp$mp3$gui$mpLabel "PerfectInfo_minE21.2_HR.2_cap5"
+mp$mp3$gui$mpLabel "PerfectInfo_minE21.2_HR.2_cap30"
 mp$mp3$mp$hcr$targHRHerring .2
 mp$mp3$mp$hcr$herringCutoffVal 21.2
+mp$mp3$mp$hcr$catchCeiling 30.0
 mp$mp3$mp$hcr$herringCutoffType "absolute"
 mp$mp3$mp$hcr$rule "herring"
 #
-## Management Procedure 4: minE21.2_HR.1_cap5
+## Management Procedure 4: minE21.2_HR.1_cap30
 #
-mp$mp4$gui$mpLabel "PerfectInfo_minE21.2_HR.1_cap5"
+mp$mp4$gui$mpLabel "PerfectInfo_minE21.2_HR.1_cap30"
 mp$mp4$mp$hcr$targHRHerring .1
 mp$mp4$mp$hcr$herringCutoffVal 21.2
-mp$mp4$mp$hcr$catchCeiling 5.0
+mp$mp4$mp$hcr$catchCeiling 30.0
 mp$mp4$mp$hcr$herringCutoffType "absolute"
 mp$mp4$mp$hcr$rule "herring"
 #
@@ -68,22 +69,22 @@ mp$mp6$mp$hcr$herringCutoffVal .5
 mp$mp6$mp$hcr$herringCutoffType "relative"
 mp$mp6$mp$hcr$rule "herring"
 #
-## Management Procedure 7: minE.5B0_HR.2_cap5
+## Management Procedure 7: minE.5B0_HR.2_cap30
 #
-mp$mp7$gui$mpLabel "PerfectInfo_minE.5B0_HR.2_cap5"
+mp$mp7$gui$mpLabel "PerfectInfo_minE.5B0_HR.2_cap30"
 mp$mp7$mp$hcr$targHRHerring .2
 mp$mp7$mp$hcr$herringCutoffVal .5
-mp$mp7$mp$hcr$catchCeiling 5.0
+mp$mp7$mp$hcr$catchCeiling 30.0
 mp$mp7$mp$hcr$herringCutoffType "relative"
 mp$mp7$mp$hcr$rule "herring"
 #
-## Management Procedure 8: minE.5B0_HR.1_cap5
+## Management Procedure 8: minE.5B0_HR.1_cap30
 #
-mp$mp8$gui$mpLabel "PerfectInfo_minE.5B0_HR.1_cap5"
+mp$mp8$gui$mpLabel "PerfectInfo_minE.5B0_HR.1_cap30"
 mp$mp8$mp$hcr$targHRHerring .1
 mp$mp8$mp$hcr$herringCutoffVal .5
 mp$mp8$mp$hcr$herringCutoffType "relative"
-mp$mp8$mp$hcr$catchCeiling 5.0
+mp$mp8$mp$hcr$catchCeiling 30.0
 mp$mp8$mp$hcr$rule "herring"
 #
 ## Management Procedure 9: HS30-60_HR.2
@@ -102,21 +103,21 @@ mp$mp10$mp$hcr$rule "linear"
 mp$mp10$mp$hcr$lowerBoundMult .3
 mp$mp10$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 11: HS30-60_HR.2_cap5
+## Management Procedure 11: HS30-60_HR.2_cap30
 #
-mp$mp11$gui$mpLabel "PerfectInfo_HS30-60_HR.2_cap5"
+mp$mp11$gui$mpLabel "PerfectInfo_HS30-60_HR.2_cap30"
 mp$mp11$mp$hcr$targHRHerring .2
 mp$mp11$mp$hcr$rule "linear"
-mp$mp11$mp$hcr$catchCeiling 5.0
+mp$mp11$mp$hcr$catchCeiling 30.0
 mp$mp11$mp$hcr$lowerBoundMult .3
 mp$mp11$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 12: HS30-60_HR.1_cap5
+## Management Procedure 12: HS30-60_HR.1_cap30
 #
-mp$mp12$gui$mpLabel "PerfectInfo_HS30-60_HR.1_cap5"
+mp$mp12$gui$mpLabel "PerfectInfo_HS30-60_HR.1_cap30"
 mp$mp12$mp$hcr$targHRHerring .1
 mp$mp12$mp$hcr$rule "linear"
-mp$mp12$mp$hcr$catchCeiling 5.0
+mp$mp12$mp$hcr$catchCeiling 30.0
 mp$mp12$mp$hcr$lowerBoundMult .3
 mp$mp12$mp$hcr$upperBoundMult .6
 #
