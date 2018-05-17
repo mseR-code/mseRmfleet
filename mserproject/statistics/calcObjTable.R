@@ -2,6 +2,8 @@
 # for each MP/scenario combo, and output to
 # an objectives table
 
+library(dplyr)
+
 # source mseR functions
 source("../../mseRtools.R")
 source("../../mseRoptions.R")
@@ -16,13 +18,32 @@ scenarios <- unique( perfTable$Scenario )
 MPs       <- unique( perfTable$Procedure )
 Periods   <- unique( perfTable$Period )
 
-probDeclineTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 8 )
-colnames(probDeclineTable) <- c( "Scenario","MP",
-                              "AccProb.Short","ObsProb.Short",
-                              "AccProb.Med","ObsProb.Med",
-                              "AccProb.Long","ObsProb.Long" )
+PerfectInfo <- FALSE
+if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-probDeclineTable <- as.data.frame(probDeclineTable)
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 19 )
+colnames(objTable) <- c(  "Scenario","MP",
+                          "ProbGt.3B0_3Gen",
+                          "ProbGt.3B0_4Gen",
+                          "ProbGt.6B0_2Gen",
+                          "ProbGt.6B0_end2Gen",
+                          "medAveCatch_3Gen",
+                          "medAAV_3Gen",
+                          "NCN1_ProbGt.75B0_3Gen",
+                          "NCN1_ProbGt.75B0_end3Gen",
+                          "NCN1_ProbGt.75B0_4Gen",
+                          "NCN1_ProbGt.75B0_end4Gen",
+                          "NCN1_ProbGt.75NoFish_3Gen",
+                          "NCN1_ProbGt.75NoFish_4Gen",
+                          "NCN2_ProbGt.76B0_2Gen",
+                          "NCN2_ProbGt.76B0_end2Gen",
+                          "NCN2_ProbGt.76NoFish_2Gen",
+                          "ProbGtB0_2Gen",
+                          "ProbGtB0_end2Gen")
+
+
+
+objTable <- as.data.frame(objTable)
 tabRow <- 0
 for( sIdx in 1:length(scenarios) )
   for( mIdx in 1:length(MPs) )
@@ -34,20 +55,30 @@ for( sIdx in 1:length(scenarios) )
     scenario  <- scenarios[sIdx]
     mp        <- MPs[mIdx]
 
-    probDeclineTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
-    
-    for( period in c("Short","Med","Long") )
-    {
-      periodTable <-  perfTable %>%
-                      filter( Scenario == scenario,
-                              Procedure == mp,
-                              Period == period )  
+    subPerf <-  perfTable %>%
+                filter( Scenario == scenario,
+                        Procedure == mp )
 
-      colNames <- paste(c("AccProb","ObsProb"),".",period,sep = "")
-      probDeclineTable[tabRow,colNames] <- periodTable[ ,c("pDecline","obsPdecline") ]
-    }
+    objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
     
+    objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
+    objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]
+    objTable[tabRow,"ProbGt.6B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGt.6B0" ]
+    objTable[tabRow,"ProbGt.6B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGt.6B0end" ]
+    objTable[tabRow,"medAveCatch_3Gen"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
+    objTable[tabRow,"medAAV_3Gen"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0_end3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0end" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0_end4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0end" ]
+    objTable[tabRow,"NCN1_ProbGt.75NoFish_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75NoFish" ]
+    objTable[tabRow,"NCN1_ProbGt.75NoFish_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75NoFish" ]
+    objTable[tabRow,"NCN2_ProbGt.76B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2" ]
+    objTable[tabRow,"NCN2_ProbGt.76B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2end" ]
+    objTable[tabRow,"NCN2_ProbGt.76NoFish_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2NoFish" ]
+    objTable[tabRow,"ProbGtB0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGtB0" ]
+    objTable[tabRow,"ProbGtB0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGtB0end" ]
   }
 
 
-write.csv( probDeclineTable, file = "ProbDeclineTable.csv")
+write.csv( objTable, file = "HerringObjectiveTable.csv")
