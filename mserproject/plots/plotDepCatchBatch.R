@@ -16,7 +16,7 @@ source("../../mseRrefPoints.R")
 MPs <- c( "NoFish",
           "minE18.8_HR.2",
           "minE18.8_HR.2_cap5",
-          "minE18.8_HR.1",
+          # "minE18.8_HR.1",
           "minE18.8_HR.1_cap5",
           "minE.5B0_HR.2",
           "minE.5B0_HR.2_cap5",
@@ -25,31 +25,31 @@ MPs <- c( "NoFish",
           "HS30-60_HR.2",
           "HS30-60_HR.2_cap5",
           "HS30-60_HR.1",
-          "HS30-60_HR.1_cap5",
-          "PerfectInfo_minE18.8_HR.2",
-          "PerfectInfo_minE18.8_HR.2_cap5",
-          "PerfectInfo_minE18.8_HR.1",
-          "PerfectInfo_minE18.8_HR.1_cap5",
-          "PerfectInfo_minE.5B0_HR.2",
-          "PerfectInfo_minE.5B0_HR.2_cap5",
-          "PerfectInfo_minE.5B0_HR.1",
-          "PerfectInfo_minE.5B0_HR.1_cap5",
-          "PerfectInfo_HS30-60_HR.2",
-          "PerfectInfo_HS30-60_HR.2_cap5",
-          "PerfectInfo_HS30-60_HR.1",
-          "PerfectInfo_HS30-60_HR.1_cap5" )
+          "HS30-60_HR.1_cap5" )
+MPs_PI <- c(  "PerfectInfo_minE18.8_HR.2",
+              "PerfectInfo_minE18.8_HR.2_cap5",
+              "PerfectInfo_minE18.8_HR.1",
+              "PerfectInfo_minE18.8_HR.1_cap5",
+              "PerfectInfo_minE.5B0_HR.2",
+              "PerfectInfo_minE.5B0_HR.2_cap5",
+              "PerfectInfo_minE.5B0_HR.1",
+              "PerfectInfo_minE.5B0_HR.1_cap5",
+              "PerfectInfo_HS30-60_HR.2",
+              "PerfectInfo_HS30-60_HR.2_cap5",
+              "PerfectInfo_HS30-60_HR.1",
+              "PerfectInfo_HS30-60_HR.1_cap5" )
 
 currMPs <- c( "NoFish",
               "minE18.8_HR.2",
-              "PerfectInfo_minE18.8_HR.2",
-              "minE18.8_HR.2_cap5",
-              "PerfectInfo_minE18.8_HR.2_cap5" )
+              #"PerfectInfo_minE18.8_HR.2",
+              "minE18.8_HR.2_cap5" )
+              #"PerfectInfo_minE18.8_HR.2_cap5" )
 
-whatWeLike_minE18.8 <- 3:5
-whatWeLike_minE.5B0 <- 6:9
-whatWeLike_.HS30.60 <- 11:13
+# whatWeLike_minE18.8 <- 3:5
+# whatWeLike_minE.5B0 <- 6:9
+# whatWeLike_.HS30.60 <- 11:13
 
-base3HCRs <- c(2,6,10)
+# base3HCRs <- c(2,6,10)
 
 
 
@@ -90,23 +90,23 @@ nT <- 92
 
 # now plot the depCatch multi panels we want
 plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
-                          scenarios = scenList, df = info.df)
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
-                          scenarios = scenList, df = info.df)
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
-                          plotNameRoot = "minE18.8_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
+#                           plotNameRoot = "minE18.8_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
-                          plotNameRoot = "minE.5B0_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
+#                           plotNameRoot = "minE.5B0_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
-                          plotNameRoot = "HS30-60_bestMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
+#                           plotNameRoot = "HS30-60_bestMPs",
+#                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
-                          plotNameRoot = "baseHCRs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
+#                           plotNameRoot = "baseHCRs",
+#                           scenarios = scenList, df = info.df)

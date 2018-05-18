@@ -17,7 +17,7 @@ source("plotBioFunctions.R")
 MPnames <- c( "NoFish",
               "minE18.8_HR.2",
               "minE18.8_HR.2_cap5",
-              "minE18.8_HR.1",
+              # "minE18.8_HR.1",
               "minE18.8_HR.1_cap5",
               "minE.5B0_HR.2",
               "minE.5B0_HR.2_cap5",

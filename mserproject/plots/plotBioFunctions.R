@@ -1232,7 +1232,7 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 }
 
 plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
-                                      scenarios = scenList, df = info.df )
+                                      scenarios = scenList, df = info.df, gfx )
 {
 
   for( scenIdx in 1:length(scenarios) )
@@ -1277,7 +1277,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       if(mpIdx == 1) gfx$doLegend <- TRUE
       else gfx$doLegend <- FALSE
 
-      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,50),
                         refPts = FALSE )
 
       # Now rescale blob$Bt if
@@ -1308,7 +1308,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
       if( is.null(mpList[[idx]]) ) next
 
-      .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+      .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,50),
                         refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]) )
     }
     dev.off()

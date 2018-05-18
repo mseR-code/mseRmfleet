@@ -60,24 +60,28 @@ for( sIdx in 1:length(scenarios) )
                         Procedure == mp )
 
     objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
+
+    if(nrow(subPerf) == 0) next
+
+    
     
     objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.6B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGt.6B0" ]
-    objTable[tabRow,"ProbGt.6B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGt.6B0end" ]
+    # objTable[tabRow,"ProbGt.6B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGt.6B0end" ]
     objTable[tabRow,"medAveCatch_3Gen"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
     objTable[tabRow,"medAAV_3Gen"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0_end3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0end" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0_end4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0end" ]
-    objTable[tabRow,"NCN1_ProbGt.75NoFish_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75NoFish" ]
-    objTable[tabRow,"NCN1_ProbGt.75NoFish_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75NoFish" ]
-    objTable[tabRow,"NCN2_ProbGt.76B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2" ]
-    objTable[tabRow,"NCN2_ProbGt.76B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2end" ]
-    objTable[tabRow,"NCN2_ProbGt.76NoFish_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2NoFish" ]
+    # objTable[tabRow,"NCN1_ProbGt.75B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0" ]
+    # objTable[tabRow,"NCN1_ProbGt.75B0_end3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0end" ]
+    # objTable[tabRow,"NCN1_ProbGt.75B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0" ]
+    # objTable[tabRow,"NCN1_ProbGt.75B0_end4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75B0end" ]
+    # objTable[tabRow,"NCN1_ProbGt.75NoFish_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.75NoFish" ]
+    # objTable[tabRow,"NCN1_ProbGt.75NoFish_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.75NoFish" ]
+    # objTable[tabRow,"NCN2_ProbGt.76B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2" ]
+    # objTable[tabRow,"NCN2_ProbGt.76B0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2end" ]
+    # objTable[tabRow,"NCN2_ProbGt.76NoFish_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2NoFish" ]
     objTable[tabRow,"ProbGtB0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGtB0" ]
-    objTable[tabRow,"ProbGtB0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGtB0end" ]
+    # objTable[tabRow,"ProbGtB0_end2Gen"] <- subPerf[subPerf$Period == "Short", "medProbGtB0end" ]
   }
 
 
