@@ -401,13 +401,13 @@
 
       if ( validSim )
       {
-        tmp <- .calcStatsTrend( Bt, t1=t1, delta = t2 - t1 )
+        tmp <- .calcStatsTrend( Bt, t1=tMP, delta = t2 - tMP )
 
-        SSB    <- as.numeric( Bt[,unique(tmp$t1) ] )
+        SSB    <- as.numeric( Bt[,tMP ] )
         target <- B0
 
         tmp$pDecline <- .calcStatsAccDecline( SSB, target, lowProb=0.05,
-                          hiProb=0.5, multLrp=.3, multUsr=.75  )
+                          hiProb=0.5, multLrp=.3, multUsr=.6  )
 
         result[ iRow, "t1Trend" ] <- t1
         result[ iRow, "trendPeriod" ] <- 10
