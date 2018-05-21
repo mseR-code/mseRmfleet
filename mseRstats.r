@@ -70,10 +70,10 @@
                     "t1Trend","trendPeriod","avgExpSlope",
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
-                    "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
+                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
-                    "medProbGtB0","Q1ProbGtB0","Q2ProbGtB0",
+                    "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
                     "medPropClosure","Q1PropClosure","Q2PropClosure")
 
   colNames    <- c( headerNames, statNames )
@@ -283,31 +283,27 @@
       # --- MSE objective statistics, hard coded by SDNJ May 10, 2018
       if( validSim )
       { 
-        #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGt.75B0" ] <- tmp[3]
-        result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
-        result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
+        # Calculate reference quantitites
+        LTA <- mean(Bt[1,1:67])
+        refB <- mean(Bt[1,28:66])
 
-        # MedProb NCN Goal 2
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .75, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
-        result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
-        result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
+        #USR candidate 1: historical average B (LTA)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = LTA, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtLTA" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtLTA" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtLTA" ] <- tmp[5]
 
-        # We should add the other USR candidates here
-        # .6B0
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        # USR candidate 2: biomass over productive period (refB)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = refB, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtrefB" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtrefB" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtrefB" ] <- tmp[5]
+
+        # USR Candidate 3: 2 * LRP
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .6, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.6B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
-        # B0
-        tmp <- .calcQuantsRefPoints( Bt[,tMP:(tMP+9)], target = B0, targMult = 1, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGtB0" ] <- tmp[3]
-        result[ iRow, "Q1ProbGtB0" ] <- tmp[1]
-        result[ iRow, "Q2ProbGtB0" ] <- tmp[5]
-
-        # average biomass over productive period
         
         # Limit reference point
         tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .3, refProb = 1, probs = quantVals )

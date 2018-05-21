@@ -1,8 +1,8 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "currMP"
-gui$nReps 3
-gui$scenarioLabel "SOG_Setup"
+gui$mpLabel "minE21.2_HR.1"
+gui$nReps 100
+gui$scenarioLabel "SOG_PulseM_1.5x16"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -134,7 +134,7 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase "rrBaseFinput"
 mp$hcr$remRefSource "rrSrceEst"
-mp$hcr$rule "linear"
+mp$hcr$rule "herring"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05
@@ -146,7 +146,7 @@ mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 21.2
-mp$hcr$targHRHerring .2
+mp$hcr$targHRHerring .1
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
 mp$hcr$upperBoundMult 0.6
@@ -199,8 +199,8 @@ opMod$nGrps 1
 opMod$obsWtAge read.rep('mserproject/history/iscamSOG2017.rep')
 opMod$nT 92
 opMod$powerg c(1,1,1,1,1)
-opMod$pulseMfrac 0
-opMod$pulseMFrq 0
+opMod$pulseMfrac 0.3
+opMod$pulseMFrq 16
 opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,1.016,0.999002)
 opMod$recDevsOffset 2

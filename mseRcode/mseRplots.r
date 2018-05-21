@@ -13588,12 +13588,12 @@ plotRefPts <- function( obj )
     depTRP <- .TRPHerring
 
     abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
-    abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
+    abline( h = depUSR, lty = 2, col = "darkgreen", lwd = 2 )
 
     if( gfx$doLegend )
       panLegend(  x = .2, y =.5, bty = "n",
                   legTxt = c( expression(.3*B[0]),
-                              expression(.75*B[0])),
+                              expression(.6*B[0])),
                   lty = 2, lwd = 2,
                   col = c("red","darkgreen")  )
 
