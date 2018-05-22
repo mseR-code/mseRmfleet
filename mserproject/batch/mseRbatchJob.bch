@@ -28,29 +28,29 @@ scenario$scenario1$opMod$sigmaM 0
 #
 # Scenario 1: SOG_jumpM
 #
-scenario$scenario1$gui$nReps 50
-scenario$scenario1$gui$scenarioLabel "SOG_jumpM"
-scenario$scenario1$mp$data$inputAges NULL
-scenario$scenario1$mp$data$inputCatch read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$mp$data$inputIndex read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$oldRep TRUE
-scenario$scenario1$opMod$repFile read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$estMdevs read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$estQdevs read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$estRecDevs read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$B0 140.265
-scenario$scenario1$opMod$endM 0.610019
-scenario$scenario1$opMod$M 0.610019
-scenario$scenario1$opMod$obsWtAge read.rep('mserproject/history/iscamconM.rep')
-scenario$scenario1$opMod$qg c(1,1,1,0.797945,0.996262)
-scenario$scenario1$opMod$recM 0.610019
-scenario$scenario1$opMod$repFileName 'mserproject/history/iscamconM.rep'
-scenario$scenario1$opMod$rSteepness 0.668004
-scenario$scenario1$opMod$tauAgeg c(0.4383583,0.2838123,0.4001212)
-scenario$scenario1$opMod$tauIndexg c(0.446474,0.3825827)
-scenario$scenario1$opMod$sigmaM 0
-scenario$scenario1$opMod$endM 0.9
-scenario$scenario1$opMod$endMphase 1
+scenario$scenario2$gui$nReps 50
+scenario$scenario2$gui$scenarioLabel "SOG_jumpM"
+scenario$scenario2$mp$data$inputAges NULL
+scenario$scenario2$mp$data$inputCatch read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$mp$data$inputIndex read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$oldRep TRUE
+scenario$scenario2$opMod$repFile read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$estMdevs read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$estQdevs read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$estRecDevs read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$B0 140.265
+scenario$scenario2$opMod$endM 0.610019
+scenario$scenario2$opMod$M 0.610019
+scenario$scenario2$opMod$obsWtAge read.rep('mserproject/history/iscamconM.rep')
+scenario$scenario2$opMod$qg c(1,1,1,0.797945,0.996262)
+scenario$scenario2$opMod$recM 0.610019
+scenario$scenario2$opMod$repFileName 'mserproject/history/iscamconM.rep'
+scenario$scenario2$opMod$rSteepness 0.668004
+scenario$scenario2$opMod$tauAgeg c(0.4383583,0.2838123,0.4001212)
+scenario$scenario2$opMod$tauIndexg c(0.446474,0.3825827)
+scenario$scenario2$opMod$sigmaM 0
+scenario$scenario2$opMod$endM 0.9
+scenario$scenario2$opMod$endMphase 1
 #
 ## Management Procedures
 #
