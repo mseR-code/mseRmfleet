@@ -826,6 +826,7 @@ ageLenOpMod <- function( objRef, t )
     g <- useAges[i]
     if( !.AGESERIESINPUT | (t >= tMP) )
     {
+      # if(t < tMP ) browser()
       # if(t >= tMP - 1) browser()
       if( Ctg[t,g] > 0. ) 
       {
@@ -2247,18 +2248,28 @@ iscamWrite <- function ( obj )
   {
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlObj$mp$data$inputCatch
-    catch <- catch$dCatchData
-    catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
-    years <- catch[,1]
-    times <- years - .INITYEAR + 1
-    gears <- catch[,2]
-
-    gearNums <- unique(gears)
-    for( g in gearNums )
+    if( ctlObj$opMod$oldRep ) # If using old ISCAM input
     {
-      gearTimes <- times[gears == g]
-      om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
+      catch <- catch$ct
+      for( g in 1:3 )
+        om$Ctg[1:(tMP - 1 ),g] <- catch[g,]
     }
+    else # using new iscam-pbs input
+    {
+      catch <- catch$dCatchData
+      catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
+      years <- catch[,1]
+      times <- years - .INITYEAR + 1
+      gears <- catch[,2]
+
+      gearNums <- unique(gears)
+      for( g in gearNums )
+      {
+        gearTimes <- times[gears == g]
+        om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
+      }
+    }
+    
 
     cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
     .CATCHSERIESINPUT <<- TRUE
@@ -2290,7 +2301,7 @@ iscamWrite <- function ( obj )
       gearTimes <- times[gears == g]
       om$Itg[gearTimes,g] <- indices[gearTimes, 2]
     }
-
+  
     om$Itg[ om$Itg < 0 ] <- NA
   
     # SPC: note the hack in using the transpose of the indices. Should
@@ -2309,7 +2320,7 @@ iscamWrite <- function ( obj )
   #----------------------------------------------------------------------------#
   # (2c) BEGIN AGE DATA                                                      --#
   #----------------------------------------------------------------------------#
-
+  .AGESERIESINPUT <<- FALSE
   if ( !is.null(ctlObj$mp$data$inputAges) )
   {
     ages <- ctlObj$mp$data$inputAges$Ahat
@@ -3224,8 +3235,15 @@ iscamWrite <- function ( obj )
   if( !is.null( ctlList$opMod$obsWtAge) )
   {
     obj$om$Wta <- matrix(0, ncol = nAges, nrow = nT )
-    obsWtAge <- ctlList$opMod$obsWtAge$d3_wt_avg
-    obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
+
+    if(ctlList$opMod$oldRep)
+    {
+      obsWtAge <- ctlList$opMod$obsWtAge$wt_obs
+      obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[1:(tMP-1),]  
+    } else {
+      obsWtAge <- ctlList$opMod$obsWtAge$d3_wt_avg
+      obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
+    }
 
     # Need to update how this is done...
     obj$om$Wta[(tMP):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP + 1), 
