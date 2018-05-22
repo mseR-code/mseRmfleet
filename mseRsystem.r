@@ -3201,6 +3201,7 @@ iscamWrite <- function ( obj )
   if( !is.null( ctlList$opMod$estMdevs) )
   {
     Mta <- ctlList$opMod$estMdevs$M
+    browser()
     obj$om$Mt[1:(tMP-1)] <- Mta[,1]
 
     if( !is.null(ctlList$opMod$kYearsMbar) )
