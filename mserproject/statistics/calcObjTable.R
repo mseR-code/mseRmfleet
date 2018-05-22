@@ -58,8 +58,6 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
 
     if(nrow(subPerf) == 0) next
-
-    
     
     objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]

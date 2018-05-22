@@ -163,9 +163,6 @@
       # Get the time index values that span this period.
       tdx <- c( period$Year1[j]:period$Year2[j] )
 
-      if(period$Period == period$Period[2])
-        tdx <- tMP:nT
-
       if ( validSim )
       {
         # Get the variables to be summarized, these are nReps by nT matrices.
@@ -285,7 +282,7 @@
       { 
         # Calculate reference quantitites
         LTA <- mean(Bt[1,1:67])
-        refB <- mean(Bt[1,28:66])
+        refB <- mean(Bt[1,38:66])
 
         #USR candidate 1: historical average B (LTA)
         tmp <- .calcQuantsRefPoints( Bt[,tdx], target = LTA, targMult = 1, refProb = 1, probs = quantVals )

@@ -304,7 +304,7 @@
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"medProbGtrefB",1
-"sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"medPropClosure",0
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Med",68,82,"Q1PropClosure",0
@@ -366,7 +366,7 @@
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q1ProbGt.6B0",0.8975
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"medProbGtrefB",1
-"sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q1ProbGtrefB",0.9975
+"sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"medPropClosure",0
 "sim1605201815034310","SOG_PulseM_1.5x16","HS30-60_HR.1","Long",68,87,"Q1PropClosure",0
@@ -490,7 +490,7 @@
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"medProbGtrefB",1
-"sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"medPropClosure",0
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Med",68,82,"Q1PropClosure",0
@@ -552,7 +552,7 @@
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q1ProbGt.6B0",0.8975
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"medProbGtrefB",1
-"sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q1ProbGtrefB",0.9975
+"sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"medPropClosure",0
 "sim160520181504056","SOG_PulseM_1.5x16","minE.5B0_HR.1","Long",68,87,"Q1PropClosure",0
@@ -676,7 +676,7 @@
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"medProbGtrefB",1
-"sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"medPropClosure",0
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Med",68,82,"Q1PropClosure",0
@@ -738,7 +738,7 @@
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"medProbGtrefB",1
-"sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"medPropClosure",0
 "sim1605201815043719","SOG_Mbar10","minE.5B0_HR.1","Long",68,87,"Q1PropClosure",0
@@ -862,7 +862,7 @@
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"medProbGtrefB",1
-"sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"medPropClosure",0
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Med",68,82,"Q1PropClosure",0
@@ -924,7 +924,7 @@
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"medProbGtrefB",1
-"sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"medPropClosure",0
 "sim1605201815050223","SOG_Mbar10","HS30-60_HR.1","Long",68,87,"Q1PropClosure",0
@@ -986,7 +986,7 @@
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q1ProbGt.6B0",0.595
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"medProbGtrefB",1
-"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
+"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q1ProbGtrefB",0.595
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"medPropClosure",0
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Short",68,77,"Q1PropClosure",0
@@ -1047,8 +1047,8 @@
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"medProbGt.6B0",0.866666666666667
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q1ProbGt.6B0",0.6
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q2ProbGt.6B0",1
-"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q1ProbGtrefB",0.666666666666667
+"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"medProbGtrefB",0.866666666666667
+"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"medPropClosure",0
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Med",68,82,"Q1PropClosure",0
@@ -1109,8 +1109,8 @@
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"medProbGt.6B0",0.8
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q1ProbGt.6B0",0.5
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"medProbGtrefB",0.85
-"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q1ProbGtrefB",0.6
+"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"medProbGtrefB",0.8
+"sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q1ProbGtrefB",0.5
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"medPropClosure",0
 "sim1605201815095722","SOG_Mbar10","HS30-60_HR.2","Long",68,87,"Q1PropClosure",0
@@ -1172,7 +1172,7 @@
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q1ProbGt.6B0",0.595
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"medProbGtrefB",1
-"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
+"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q1ProbGtrefB",0.595
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"medPropClosure",0
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Short",68,77,"Q1PropClosure",0
@@ -1233,8 +1233,8 @@
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"medProbGt.6B0",0.866666666666667
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q1ProbGt.6B0",0.6
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q2ProbGt.6B0",1
-"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q1ProbGtrefB",0.73
+"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"medProbGtrefB",0.866666666666667
+"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"medPropClosure",0
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Med",68,82,"Q1PropClosure",0
@@ -1295,8 +1295,8 @@
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"medProbGt.6B0",0.8
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q1ProbGt.6B0",0.5
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"medProbGtrefB",0.85
-"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q1ProbGtrefB",0.6
+"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"medProbGtrefB",0.825
+"sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q1ProbGtrefB",0.5
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"medPropClosure",0
 "sim1605201815101218","SOG_Mbar10","minE.5B0_HR.2","Long",68,87,"Q1PropClosure",0
@@ -1358,7 +1358,7 @@
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q1ProbGt.6B0",0.6
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"medProbGtrefB",1
-"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q1ProbGtrefB",0.7
+"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"medPropClosure",0
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Short",68,77,"Q1PropClosure",0
@@ -1420,7 +1420,7 @@
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q1ProbGt.6B0",0.596666666666667
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q2ProbGt.6B0",1
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q1ProbGtrefB",0.666666666666667
+"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"medPropClosure",0
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Med",68,82,"Q1PropClosure",0
@@ -1481,8 +1481,8 @@
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"medProbGt.6B0",0.85
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q1ProbGt.6B0",0.5
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"medProbGtrefB",0.9
-"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q1ProbGtrefB",0.6475
+"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"medProbGtrefB",0.85
+"sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q1ProbGtrefB",0.5475
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"medPropClosure",0
 "sim160520181510235","SOG_PulseM_1.5x16","minE.5B0_HR.2","Long",68,87,"Q1PropClosure",0
@@ -1544,7 +1544,7 @@
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q1ProbGt.6B0",0.6
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"medProbGtrefB",1
-"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q1ProbGtrefB",0.7
+"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"medPropClosure",0
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Short",68,77,"Q1PropClosure",0
@@ -1606,7 +1606,7 @@
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q1ProbGt.6B0",0.596666666666667
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q2ProbGt.6B0",1
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q1ProbGtrefB",0.666666666666667
+"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"medPropClosure",0
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Med",68,82,"Q1PropClosure",0
@@ -1667,8 +1667,8 @@
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"medProbGt.6B0",0.85
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q1ProbGt.6B0",0.5
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"medProbGtrefB",0.9
-"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q1ProbGtrefB",0.6
+"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"medProbGtrefB",0.85
+"sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q1ProbGtrefB",0.5475
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"medPropClosure",0
 "sim160520181510469","SOG_PulseM_1.5x16","HS30-60_HR.2","Long",68,87,"Q1PropClosure",0
@@ -1978,7 +1978,7 @@
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -2040,7 +2040,7 @@
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822094214","SOG_Mbar10","minE.5B0_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -2164,7 +2164,7 @@
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"medProbGtrefB",1
-"sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"medPropClosure",0
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Med",68,82,"Q1PropClosure",0
@@ -2226,7 +2226,7 @@
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q1ProbGt.6B0",0.8975
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"medProbGtrefB",1
-"sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q1ProbGtrefB",0.9975
+"sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"medPropClosure",0
 "sim180520182209592","SOG_PulseM_1.5x16","minE21.2_HR.1","Long",68,87,"Q1PropClosure",0
@@ -2350,7 +2350,7 @@
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -2412,7 +2412,7 @@
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",1
+"sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim180520182210154","SOG_PulseM_1.5x16","minE21.2_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -2536,7 +2536,7 @@
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"medProbGtrefB",1
-"sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q1ProbGtrefB",1
+"sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"medPropClosure",0
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Med",68,82,"Q1PropClosure",0
@@ -2598,7 +2598,7 @@
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"medProbGtrefB",1
-"sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q1ProbGtrefB",0.9
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"medPropClosure",0
 "sim1805201822104310","SOG_Mbar10","minE21.2_HR.1","Long",68,87,"Q1PropClosure",0
@@ -2722,7 +2722,7 @@
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -2784,7 +2784,7 @@
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822105412","SOG_Mbar10","minE21.2_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -2908,7 +2908,7 @@
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.996666666666667
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -2970,7 +2970,7 @@
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.95
+"sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822105716","SOG_Mbar10","HS30-60_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -3094,7 +3094,7 @@
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -3156,7 +3156,7 @@
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",1
+"sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim180520182210596","SOG_PulseM_1.5x16","minE.5B0_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -3280,7 +3280,7 @@
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGt.6B0",0.933333333333333
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",1
+"sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q1ProbGtrefB",0.996666666666667
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"medPropClosure",0
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Med",68,82,"Q1PropClosure",0
@@ -3342,7 +3342,7 @@
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGt.6B0",0.9
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",1
+"sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q1ProbGtrefB",0.9475
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"medPropClosure",0
 "sim180520182211038","SOG_PulseM_1.5x16","HS30-60_HR.1_cap30","Long",68,87,"Q1PropClosure",0
@@ -3404,7 +3404,7 @@
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.695
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.8
+"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.7
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -3466,7 +3466,7 @@
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.863333333333333
+"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -3528,7 +3528,7 @@
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.745
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.795
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822151415","SOG_Mbar10","HS30-60_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -3590,7 +3590,7 @@
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.695
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.8
+"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.7
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -3652,7 +3652,7 @@
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.866666666666667
+"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -3714,7 +3714,7 @@
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.745
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.795
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822151613","SOG_Mbar10","minE.5B0_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -3776,7 +3776,7 @@
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.695
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.8
+"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.7
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -3838,7 +3838,7 @@
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.86
+"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -3900,7 +3900,7 @@
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.745
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.795
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim1805201822160211","SOG_Mbar10","minE21.2_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -3962,7 +3962,7 @@
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.8
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.9
+"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.895
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -4024,7 +4024,7 @@
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.863333333333333
+"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -4086,7 +4086,7 @@
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.7
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim180520182216385","SOG_PulseM_1.5x16","minE.5B0_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -4148,7 +4148,7 @@
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.8
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.9
+"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.895
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -4210,7 +4210,7 @@
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.863333333333333
+"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -4272,7 +4272,7 @@
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.6975
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim180520182216427","SOG_PulseM_1.5x16","HS30-60_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -4334,7 +4334,7 @@
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q1ProbGt.6B0",0.6
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"medProbGtrefB",1
-"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q1ProbGtrefB",0.7
+"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"medPropClosure",0
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Short",68,77,"Q1PropClosure",0
@@ -4396,7 +4396,7 @@
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q1ProbGt.6B0",0.596666666666667
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q1ProbGtrefB",0.666666666666667
+"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"medPropClosure",0
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Med",68,82,"Q1PropClosure",0
@@ -4457,8 +4457,8 @@
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"medProbGt.6B0",0.85
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q1ProbGt.6B0",0.5
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"medProbGtrefB",0.9
-"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q1ProbGtrefB",0.6
+"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"medProbGtrefB",0.85
+"sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q1ProbGtrefB",0.5
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"medPropClosure",0
 "sim180520182216431","SOG_PulseM_1.5x16","minE21.2_HR.2","Long",68,87,"Q1PropClosure",0
@@ -4520,7 +4520,7 @@
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGt.6B0",0.8
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q2ProbGt.6B0",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"medProbGtrefB",1
-"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.9
+"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q1ProbGtrefB",0.895
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q2ProbGtrefB",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"medPropClosure",0
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Short",68,77,"Q1PropClosure",0
@@ -4582,7 +4582,7 @@
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGt.6B0",0.733333333333333
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q2ProbGt.6B0",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"medProbGtrefB",1
-"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.863333333333333
+"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q1ProbGtrefB",0.796666666666667
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"medPropClosure",0
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Med",68,82,"Q1PropClosure",0
@@ -4644,7 +4644,7 @@
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGt.6B0",0.65
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q2ProbGt.6B0",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"medProbGtrefB",1
-"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7975
+"sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q1ProbGtrefB",0.7
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"medPropClosure",0
 "sim180520182217113","SOG_PulseM_1.5x16","minE21.2_HR.2_cap30","Long",68,87,"Q1PropClosure",0
@@ -4706,7 +4706,7 @@
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q1ProbGt.6B0",0.595
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q2ProbGt.6B0",1
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"medProbGtrefB",1
-"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q1ProbGtrefB",0.6
+"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q1ProbGtrefB",0.595
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q2ProbGtrefB",1
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"medPropClosure",0
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Short",68,77,"Q1PropClosure",0
@@ -4767,8 +4767,8 @@
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"medProbGt.6B0",0.866666666666667
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q1ProbGt.6B0",0.6
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q2ProbGt.6B0",1
-"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"medProbGtrefB",0.933333333333333
-"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q1ProbGtrefB",0.663333333333333
+"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"medProbGtrefB",0.866666666666667
+"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q1ProbGtrefB",0.6
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q2ProbGtrefB",1
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"medPropClosure",0
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Med",68,82,"Q1PropClosure",0
@@ -4829,8 +4829,8 @@
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"medProbGt.6B0",0.8
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q1ProbGt.6B0",0.4975
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q2ProbGt.6B0",1
-"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"medProbGtrefB",0.85
-"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q1ProbGtrefB",0.5975
+"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"medProbGtrefB",0.8
+"sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q1ProbGtrefB",0.5
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q2ProbGtrefB",1
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"medPropClosure",0
 "sim180520182217299","SOG_Mbar10","minE21.2_HR.2","Long",68,87,"Q1PropClosure",0
