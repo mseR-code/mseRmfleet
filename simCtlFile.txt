@@ -80,7 +80,7 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(66,90,1)"
 mp$data$idxAges2 "c(66,90)"
 mp$data$indexType "c(1,1)"
-mp$data$inputAges NULL
+mp$data$inputAges read.rep('mserproject/history/simWCVIHerring2015.rep')
 mp$data$inputCatch read.rep('mserproject/history/simWCVIHerring2015.rep')
 mp$data$inputIndex read.rep('mserproject/history/simWCVIHerring2015.rep')
 mp$data$k1Ages "c(1,1,1)"
