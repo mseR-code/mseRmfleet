@@ -164,7 +164,7 @@ opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(4.5e-6)
 opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
-opMod$kYearsMbar 10
+opMod$kYearsMbar NULL
 opMod$endM 0.610019
 opMod$endMphase NULL
 opMod$futureOption 3

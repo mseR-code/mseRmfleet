@@ -15,27 +15,39 @@ perfTable <- read.csv(  "mseRstatistics_perfTable1.csv", header =T,
 
 # Get scenario/MP labels
 scenarios <- unique( perfTable$Scenario )
-MPs       <- unique( perfTable$Procedure )
+# MPs       <- unique( perfTable$Procedure )
+
+MPs <- c( "NoFish",
+          "minE21.2_HR.2",
+          "minE21.2_HR.2_cap30",
+          "minE21.2_HR.1",
+          "minE21.2_HR.1_cap30",
+          "minE.5B0_HR.2",
+          "minE.5B0_HR.2_cap30",
+          "minE.5B0_HR.1",
+          "minE.5B0_HR.1_cap30",
+          "HS30-60_HR.2",
+          "HS30-60_HR.2_cap30",
+          "HS30-60_HR.1",
+          "HS30-60_HR.1_cap30" )
+
 Periods   <- unique( perfTable$Period )
 
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 15 )
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 12 )
 colnames(objTable) <- c(  "Scenario","MP",
                           "ProbGt.3B0_3Gen",
                           "ProbGt.3B0_4Gen",
-                          "ProbGt.6B0_2Gen",
                           "ProbGt.6B0_3Gen",
                           "ProbGt.6B0_4Gen",
-                          "ProbGtLTA_2Gen",
+                          "medAveCatch_3Gen",
+                          "medAAV_3Gen",
                           "ProbGtLTA_3Gen",
                           "ProbGtLTA_4Gen",
-                          "ProbGtrefB0_2Gen",
                           "ProbGtrefB0_3Gen",
-                          "ProbGtrefB0_4Gen",
-                          "medAveCatch_3Gen",
-                          "medAAV_3Gen")
+                          "ProbGtrefB0_4Gen")
 
 
 
@@ -58,6 +70,8 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
 
     if(nrow(subPerf) == 0) next
+
+    if(nrow(subPerf) > 3 ) browser()
     
     objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]

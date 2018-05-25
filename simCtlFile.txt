@@ -1,8 +1,8 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "minE21.2_HR.2"
+gui$mpLabel "NoFish"
 gui$nReps 1
-gui$scenarioLabel "SOG_conM"
+gui$scenarioLabel "SOG_jumpM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -165,9 +165,9 @@ opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(4.5e-6)
 opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
-opMod$kYearsMbar 10
-opMod$endM 0.610019
-opMod$endMphase NULL
+opMod$kYearsMbar NULL
+opMod$endM 0.9
+opMod$endMphase 1
 opMod$futureOption 3
 opMod$oldRep TRUE
 opMod$repFile read.rep('mserproject/history/iscamconM.rep')

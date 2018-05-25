@@ -3217,6 +3217,7 @@ iscamWrite <- function ( obj )
       trendM    <- (log(endM) - log( obj$om$Mt[tMP-1]) ) / (nT - tMP+1)
       obj$om$Mt[tMP:nT] <- obj$om$Mt[tMP-1] * ranM[tMP:nT] * exp( trendM * (1:(nT-tMP+1)) )
     } else {
+      browser()
       phaseTime <- ctlList$opMod$endMphase
       trendM    <- (log(endM) - log( obj$om$Mt[tMP-1]) ) / phaseTime
       obj$om$Mt[tMP:(tMP+phaseTime-1)] <- obj$om$Mt[tMP-1] * ranM[tMP:(tMP+phaseTime-1)] * exp( trendM * (1:phaseTime) )

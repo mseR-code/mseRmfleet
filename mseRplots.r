@@ -3773,6 +3773,8 @@
   landedFmsy    <- obj$refPtList$landedFmsy
   discardedFmsy <- obj$refPtList$discardedFmsy
   
+  browser()
+
   # Management procedure.
   #Itg   <- obj$mp$assess$ItgScaled[ iRep,(2:ncol(obj$mp$assess$ItgScaled)), ]
   
@@ -12178,7 +12180,7 @@ plotRefPts <- function( obj )
 
   omBt       <- obj$om$SBt
   omBt       <- omBt[ iRep, (2:ncol(omBt)) ]
-  retroExpBt <- obj$mp$assess$retroExpBt
+  retroExpBt <- obj$mp$assess$retroSpawnBt
   retroExpBt <- retroExpBt[ retroExpBt[,"iRep"]==iRep, ]
   assessBt   <- retroExpBt[ ,(2:ncol(retroExpBt)) ]
   legalB     <- obj$om$legalB[ iRep, (2:ncol(obj$om$legalB)) ]
@@ -12240,11 +12242,11 @@ plotRefPts <- function( obj )
       if ( gfx$doLegend )
       {   
         panLegend( 0.5,0.85, adj=0,
-          legTxt=c( "Legal biomass","SSB","Index","Retro Exp. Bt"), cex=.CEXLEG2,
-          col=c( .BlegCOL, .BtCOL, .GearCOL[i], .BtEstCOL ),
-          lty=c( .BlegLTY, .BtLTY,          NA, .BtEstLTY ),
-          lwd=c( .BlegLWD, .BtLWD,          NA, .BtEstLWD ),
-          pch=c(       NA,     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
+          legTxt=c( "SSB","Index","Retro Exp. Bt"), cex=.CEXLEG2,
+          col=c( .BtCOL, .GearCOL[i], .BtEstCOL ),
+          lty=c( .BtLTY,          NA, .BtEstLTY ),
+          lwd=c( .BtLWD,          NA, .BtEstLWD ),
+          pch=c(     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
       }
     }
     mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
@@ -12255,23 +12257,23 @@ plotRefPts <- function( obj )
     plot( xLim, yLim, type="n", axes=FALSE, xlab="",ylab="" )
   
     lines( c(1:nT), omBt,   col=.BtCOL,   lty=.BtLTY,   lwd=.BtLWD )
-    lines( c(1:nT), legalB, col=.BlegCOL, lty=.BlegLTY, lwd=.BlegLWD )
+    # lines( c(1:nT), legalB, col=.BlegCOL, lty=.BlegLTY, lwd=.BlegLWD )
   
     if ( gfx$doLegend )
     {   
-      panLegend( 0.7,0.9, adj=0,
-        legTxt=c( "Legal biomass","SSB","Bmsy","Retro Exp. Bt","1st Fit","2nd Fit"), cex=.CEXLEG2,
-        pt.bg=c( "black","black","black","black","green","darkgreen"),
-        pt.cex=c( NA,NA,NA,NA,1.2,1.2),
-        col=c( .BlegCOL, .BtCOL, "black", .BtEstCOL, "black","black" ),
-        lty=c( .BlegLTY, .BtLTY,.BmsyLTY, .BtEstLTY, 1, 1 ),
-        lwd=c( .BlegLWD, .BtLWD,       1, .BtEstLWD, 2, 2 ),
+      panLegend( 0.1,0.9, adj=0,
+        legTxt=c( "SSB",".3B0","1st Fit","2nd Fit"), cex=.CEXLEG2,
+        pt.bg=c(  "black","black","green","darkgreen"),
+        pt.cex=c( NA,NA,NA,1.2,1.2),
+        col=c( .BtCOL, "orange", .BtEstCOL, "black","black" ),
+        lty=c( .BtLTY,.BmsyLTY, .BtEstLTY, 1, 1 ),
+        lwd=c( .BtLWD,.BmsyLWD, .BtEstLWD, 2, 2 ),
         pch=c(         NA,     NA,      NA,          NA, 21, 21 ),
         bg="white", bty="n" )
     }
   
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
-    abline( h=0.3*B0, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )  
+    abline( h=0.3*B0, col="orange", lty=.BmsyLTY, lwd=.BmsyLWD )  
   
     if ( gfx$useYears )
     {
@@ -12290,7 +12292,7 @@ plotRefPts <- function( obj )
     
     box()
     mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
-    mtext( side=2, line=.INLINE2, cex=.CEXLAB, "Biomass (000s t)" )
+    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12333,7 +12335,7 @@ plotRefPts <- function( obj )
                      useYears=FALSE ) )
 {
   nCol       <- dim( obj$om$legalHR )[2]
-  legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
+  legalHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
   sublegalHR <- obj$om$sublegalHR[ iRep,c(2:nCol) ]
   tMP        <- obj$ctlList$opMod$tMP
   
@@ -12388,7 +12390,7 @@ plotRefPts <- function( obj )
       
       if ( gfx$doLegend )
       {
-        panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"), cex=1.2,
+        panLegend( 0.7,0.95, legTxt=c("Legal"), cex=1.2,
           lty=c( .LegUtgLTY, .SlegUtgLTY ), lwd=c(.LegUtgLWD,.SlegUtgLWD ) )    
       }
     }
@@ -12407,13 +12409,16 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
-      panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"),
-        lty=c( .LegUtLTY, .SlegUtLTY ), lwd=c( .LegUtLWD, .SlegUtLWD ) )    
+      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
+        lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+        col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
-    abline( h=Umsy, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
+    targetHR <- blob$ctlList$mp$hcr$targHRHerring
+
+    abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
 
     .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
@@ -12423,7 +12428,7 @@ plotRefPts <- function( obj )
     
     box()
     mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
-    mtext( side=2, line=.OUTLINE2, cex=.CEXLAB2, outer=TRUE, "Harvest Rate" )
+    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
 
     if ( gfx$annotate )
     {   

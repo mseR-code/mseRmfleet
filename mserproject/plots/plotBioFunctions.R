@@ -1,5 +1,30 @@
 # Functions for plotting OM outputs
 
+plotMtBtFitUt <- function(  )
+{
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,1) )
+
+  par(mfrow = c(3,1), mar =c(2,2,2,2), oma = c(3,3,1,1) )
+
+  .plotMt(blob, gfx = gfx )
+  panLegend(  x = 0.3, y = 0.3, bty = "n",
+              legTxt = c( "OM", "Last Fit", "First Fit"),
+              col = c("purple","red","darkgreen" ),
+              lwd = c(2,2,2))
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,200) )
+
+  .plotBtFit(blob, gfx = gfx )
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE )
+
+  .plotUt(blob, gfx = gfx )  
+}
+
+
 plotMinEscapementHCR <- function( cutoff = .5, refHR = .2,
                                   refB = 45.6158, cutoffType = "relative",
                                   yLim = c(0,.3),

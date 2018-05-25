@@ -12,6 +12,7 @@ scenario$scenario1$gui$scenarioLabel "SOG_conM"
 scenario$scenario2$gui$nReps 50
 scenario$scenario2$gui$scenarioLabel "SOG_jumpM"
 scenario$scenario2$opMod$endM 0.9
+scenario$scenario1$opMod$kYearsMbar NULL
 scenario$scenario2$opMod$endMphase 1
 #
 ## Management Procedures
