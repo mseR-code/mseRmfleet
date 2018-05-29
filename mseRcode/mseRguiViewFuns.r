@@ -1281,6 +1281,12 @@ guiView <- function()
       .plotPmodHCR( obj, iSim, iRep, gfx=list( annotate=vwAnnotate,
         doLegend=vwLegend, xLim=xLim, yLim=yLim ) )
     }
+    if( methodId == .CAAMOD )
+    {
+      .plotHerringHCR(  obj, iRep, gfx=list( annotate=vwAnnotate,
+                        doLegend=vwLegend, xLim=xLim, yLim=yLim ) )
+      
+    }
     else
       .plotStatus( paste( "Harvest Control Rule Plot Not Implemented for Method =",methodId ) )
   }        

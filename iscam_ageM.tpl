@@ -118,6 +118,9 @@ DATA_SECTION
 	!!ofstream of9("M_tot.mcmc");
 	!!ofstream of10("future_sbt.mcmc");
 	!!ofstream of11("bt.mcmc");
+	!!ofstream of12("Nage1951.mcmc");
+	!!ofstream of13("fgt.mcmc");
+	
 		
 	!! cout<<"iSCAM has detected that you are on a "<<PLATFORM<<" box"<<endl;
 	
@@ -3313,6 +3316,8 @@ FUNCTION mcmc_output
 		ofs<<"f ";
 		ofs<<"harvestRate ";
 		ofs<<"availHarvestHCR ";
+		for( int j = 1; j <= ngear; j++ )
+			ofs<<"sel_gear"<<j<<" "<<"sel_sd"<<j<<" ";
 		//ofs<<"Linf ";
 		//ofs<<"t0 ";
 		//ofs<<"vonK ";
@@ -3321,6 +3326,35 @@ FUNCTION mcmc_output
 		//ofs<<"aMat50 ";
 		//ofs<<"aMat95 ";
 		ofs<<endl;
+
+		ofstream of13("fgt.mcmc");
+		for( int g = 1; g < 6; g++)
+			for( int t = 1951; t < 2018; t ++ )
+				of13<<setw(10)<<"f_gear"<<g<<"_t"<<t<<" ";
+		of13<<endl;
+
+		ofstream of2("rt.mcmc");
+		for( int t = 1953; t < 2018; t ++ )
+			of2<<"R_"<<t<<" ";
+		of2<<endl;
+
+		ofstream of5("Nage2.mcmc");
+		for( int t = 1951; t <= 2018; t ++ )
+			of5<<"R_"<<t<<" ";
+		of5<<endl;
+
+		ofstream of9("M_tot.mcmc");
+		for( int t = 1951; t <= 2017; t ++ )
+			of9<<"M_"<<t<<" ";
+		of9<<endl;
+
+		ofstream of12("Nage1951.mcmc");
+		for( int a = 2; a <= 10; a ++ )
+			of12<<"N_"<<a<<" ";
+		of12<<endl;
+
+
+
 		
 	//moved to DATA_SECTION	
 	//	ofstream of1("sbt.mcmc");
@@ -3333,7 +3367,7 @@ FUNCTION mcmc_output
 	}
 	
 	// leading parameters & reference points
-	calc_reference_points();
+	// calc_reference_points();
 	// decision table output
 		// JSC (29Aug12) forecasts based on terminal year M	
 		//dvector future_bt = value(elem_prod(elem_prod(N(nyr+1),exp(-M_tot(nyr))),wt_obs(nyr+1)));
@@ -3391,6 +3425,8 @@ FUNCTION mcmc_output
 	//if( bmsy > 0 && min(fmsy) >= 0 )
 	{
 		ofstream ofs("iscam_ageM.mcmc",ios::app);
+		
+
 		ofs<< theta<<" ";
 		ofs<< bo<<" ";
 		ofs<< sbo<<" ";
@@ -3406,6 +3442,8 @@ FUNCTION mcmc_output
 		ofs<< f<<" ";
 		ofs<< harvestRate<<" ";
 		ofs<< availHarvestHCR<<" ";
+		for( int j = 1; j <= ngear; j ++ )
+			ofs<<exp(sel_par(j,1,1))<<" "<<exp(sel_par(j,1,2))<<" ";
 		//ofs<< linf<<" ";
 		//ofs<< to<<" ";
 		//ofs<< vonbk<<" ";
@@ -3422,7 +3460,7 @@ FUNCTION mcmc_output
 	ofstream of1("sbt.mcmc",ios::app);
 	of1<<setw(10)<<sbt(syr,nyr)<<endl;
 	
-	// output age-1 recruits
+	// output age-2 recruits
 	ofstream of2("rt.mcmc",ios::app);
 	of2<<setw(10)<<rt<<endl;
 	
@@ -3457,6 +3495,17 @@ FUNCTION mcmc_output
 	// output total stock biomass
 	ofstream of11("bt.mcmc",ios::app);
 	of11<<setw(10)<<bt(syr,nyr)<<endl;
+
+	// output numbers at age in year 1951
+	ofstream of12("Nage1951.mcmc",ios::app);
+	of12<<setw(10)<<row(N,syr)<<endl;
+
+	// output gear spec fishing mortality
+	ofstream of13("fgt.mcmc",ios::app);
+	for( int g = 1; g < 6; g ++ )
+		of13<<setw(10)<<row(ft,g);
+	
+	of13<<endl;
 	
   }
 
@@ -3907,6 +3956,12 @@ FINAL_SECTION
 			
 			bscmd = "cp bt.mcmc " + BaseFileName + ".mcbt";
 			system(bscmd);
+
+			bscmd = "cp Nage1951.mcmc " + BaseFileName + ".mcN1951";
+			system(bscmd);
+
+			bscmd = "cp fgt.mcmc " + BaseFileName + ".mcFgt";
+			system(bscmd);
 		
 			cout<<"Copied MCMC Files"<<endl;
 		}
@@ -3973,6 +4028,9 @@ FINAL_SECTION
 			system(bscmd);
 			
 			bscmd = "copy bt.mcmc " + BaseFileName + ".mcbt";
+			system(bscmd);
+
+			bscmd = "cp Nage1951.mcmc " + BaseFileName + ".mcN1951";
 			system(bscmd);
 		
 			cout<<"Copied MCMC Files"<<endl;

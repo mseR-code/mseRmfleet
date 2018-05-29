@@ -44,7 +44,6 @@ calcRefPoints <- function( opModList )
 
   # palgPars: used to compute proportion of age a, growth-group l discarded.
   obj$sizeLim <- obj$sizeLim
-  obj$L95Dg   <- obj$L95Dg
   obj$L50Dg   <- obj$L50Dg
   obj$volReleaseSize <- obj$volReleaseSize
 
@@ -218,7 +217,8 @@ calcRefPoints <- function( opModList )
   L95Cg2 <- salgPars$L95Cg2
   L50Cg2 <- salgPars$L50Cg2
 
-  
+  selAge <- salgPars$selAge
+
 
   # From sableOpmod.tpl:
   #for( g=1; g<=nFisheries; g++ )
@@ -240,6 +240,10 @@ calcRefPoints <- function( opModList )
   Salg <- array( data=NA, dim=c(A,nGrps,nGear) )
   for( g in 1:nGear )
   {
+    if( selAge )
+    {
+      for( l in 1:ncol(Lal) ) Lal[,l] <- 1:nrow(Lal)
+    } 
     if ( selType[g] == 2 )     # Use dome-shaped function (normal).
     {
       Salg[,,g] <- exp(-(L50Cg1[g] - Lal)^2/2/L95Cg1[g]/L95Cg1[g])
@@ -368,13 +372,20 @@ calcRefPoints <- function( opModList )
   A50       <- obj$aMat50
   A95       <- obj$aMat95
 
+
+
+  if(!is.null(obj$selAge))
+    selAge <- obj$selAge
+  else selAge <- FALSE
+
   salgPars <- list( L50Cg1 = obj$L50Cg1,
                     L95Cg1 = obj$L95Cg1,
                     L95Cg2 = obj$L95Cg2,
                     L50Cg2 = obj$L50Cg2,
                     selType = obj$selType,
                     nGrps  = obj$nGrps,
-                    nGear  = obj$nGear
+                    nGear  = obj$nGear,
+                    selAge = selAge
                   )
 
   palgPars <- list( sizeLim  = obj$sizeLim,
@@ -449,7 +460,7 @@ calcRefPoints <- function( opModList )
   nGear <- obj$nGear
 
   # HACK to use average M over history for ssbpr at initialisation
-  Mta <- obj$repFile$M_tot
+  Mta <- obj$repFile$M
   Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
   M <- Mbar[1]
   
@@ -599,6 +610,8 @@ calcRefPoints <- function( opModList )
     equil$sublegal <- recruits*tmp$yprSubLeg
     equil$fg       <- obj$fg
     equil$legalHR  <- equil$landed/equil$legb
+
+  if(!is.finite(equil$sublegb)) browser()
     
   return( as.ref(equil) )
 }
@@ -636,7 +649,7 @@ calcRefPoints <- function( opModList )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
 
-  optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+  optF <- optim( par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
   for( i in 1:length(f) )
@@ -658,6 +671,7 @@ calcRefPoints <- function( opModList )
     sublegal[i]  <- tmp$sublegal
     legalHR[i]   <- tmp$legal/tmp$legb
     
+
     if( tmp$sublegb > 0. )
       sublegalHR[i] <- tmp$sublegal/tmp$sublegb
     else
