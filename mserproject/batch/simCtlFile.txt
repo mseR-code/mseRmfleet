@@ -209,7 +209,7 @@ opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 opMod$rSeed 1270
 opMod$rSteepness 0.73723
-#opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)

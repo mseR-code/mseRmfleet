@@ -35,7 +35,7 @@ scenario$scenario3$mp$data$inputAges NULL
 #
 scenario$scenario4$opMod$kYearsMbar NULL
 scenario$scenario4$gui$nReps 100
-scenario$scenario4$gui$scenarioLabel "WCVI_jumpM"
+scenario$scenario4$gui$scenarioLabel "WCVI_.5conM"
 scenario$scenario4$opMod$sigmaM 0
 scenario$scenario4$opMod$endM "0.5jump"
 scenario$scenario4$opMod$endMphase 1
