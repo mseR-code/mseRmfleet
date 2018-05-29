@@ -1,7 +1,7 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
 gui$mpLabel "NoFish"
-gui$nReps 3
+gui$nReps 100
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
@@ -43,7 +43,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 5
+mp$assess$methodId 6
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -96,7 +96,7 @@ mp$data$useAges "c(1,2,3)"
 mp$data$useIndex "c(4,5)"
 mp$hcr$binQuota 10
 mp$hcr$catchFloor 0
-mp$hcr$catchCeiling NULL
+mp$hcr$catchCeiling 5.0
 mp$hcr$consTAC 2.4
 mp$hcr$ctlPtFreq 1
 mp$hcr$Dec1a 0.01
@@ -122,7 +122,7 @@ mp$hcr$lowerTrendPct 0.1
 mp$hcr$maxDeltaTACc NULL
 mp$hcr$maxDeltaTACf NULL
 mp$hcr$minDeltaTACup 0.
-mp$hcr$deltaTACcType "relative"
+mp$hcr$deltaTACcType "absolute"
 mp$hcr$nMCMC 1
 mp$hcr$nProjYears 5
 mp$hcr$nThin 1
@@ -143,9 +143,9 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$rule "herring"
-mp$hcr$herringCutoffType "relative"
-mp$hcr$herringCutoffVal .25
+mp$hcr$rule "linear"
+mp$hcr$herringCutoffType "absolute"
+mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
@@ -168,10 +168,10 @@ opMod$kYearsMbar NULL
 opMod$endM 0.583934
 opMod$endMphase NULL
 opMod$futureOption 3
-opMod$repFile read.rep('mserproject/history/iscamWCVI2017.rep')
-opMod$estMdevs read.rep('mserproject/history/iscamWCVI2017.rep')
-opMod$estQdevs read.rep('mserproject/history/iscamWCVI2017.rep')
-opMod$estRecDevs read.rep('mserproject/history/iscamWCVI2017.rep')
+opMod$repFile NULL
+opMod$estMdevs "repFile"
+opMod$estQdevs NULL
+opMod$estRecDevs NULL
 opMod$fg c(1.0000000,1.22315243,0.4361168,0.1,0.1)
 opMod$firstRepYear 1
 opMod$gammaM 0
@@ -196,7 +196,7 @@ opMod$maxF 3
 opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
-opMod$obsWtAge read.rep('mserproject/history/iscamWCVI2017.rep')
+opMod$obsWtAge "repFile"
 opMod$nT 92
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMfrac 0
@@ -209,6 +209,9 @@ opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 opMod$rSeed 1270
 opMod$rSteepness 0.73723
+#opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$postSampleSize 5000
+opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
 opMod$sigmaM 0.1

@@ -245,6 +245,12 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
  
   # Start timer.
   t1 <- proc.time()[3]
+
+  # Read rep file if included
+  if( !is.null(ctlList$opMod$repFileName) )
+  {
+    ctlList$opMod$repFile <- read.rep(ctlList$opMod$repFileName)
+  }
   
   opMod <- ctlList$opMod
   
@@ -595,7 +601,7 @@ ageLenOpMod <- function( objRef, t )
   {
     if( !is.null(ctlList$opMod$repFileName) )
     {
-      repFile   <- read.rep(ctlList$opMod$repFileName)
+      repFile   <- ctlList$opMod$repFile
       avgR      <- repFile$rbar   
       inputFtg  <- repFile$ft
       inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
@@ -615,8 +621,8 @@ ageLenOpMod <- function( objRef, t )
     }  
 
     # Now overwrite OM values with input values
-    Ftg       <- inputFtg
-    Rt[1:66]  <- inputRt[1:66]
+    Ftg[1:67,]    <- inputFtg[1:67,]
+    Rt[1:66]      <- inputRt[1:66]
   }
   
   # What to do in year 68?? I feel like ISCAM predicts this..
@@ -3131,6 +3137,10 @@ iscamWrite <- function ( obj )
     obj$ctlList$opMod$B0          <- as.numeric( mcmcPar[postDraw, "sbo"] )
     obj$ctlList$opMod$M           <- as.numeric( mcmcPar[postDraw, "m"] )
     obj$ctlList$opMod$recM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "mean" )
+      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "1.5jump" )
+      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
     obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])

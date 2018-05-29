@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "PerfectInfo_HS30-60_cap5kt"
+gui$mpLabel "NoFish"
 gui$nReps 100
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
@@ -80,9 +80,9 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(68,92,1)"
 mp$data$idxAges2 "c(68,92)"
 mp$data$indexType "c(1,1)"
-mp$data$inputAges NULL
-mp$data$inputCatch "read.rep('mserproject/history/iscamWCVI2017.rep')"
-mp$data$inputIndex "read.rep('mserproject/history/iscamWCVI2017.rep')"
+mp$data$inputAges read.rep('mserproject/history/iscamWCVI2017.rep')
+mp$data$inputCatch read.rep('mserproject/history/iscamWCVI2017.rep')
+mp$data$inputIndex read.rep('mserproject/history/iscamWCVI2017.rep')
 mp$data$k1Ages "c(1,1,1)"
 mp$data$k1Index "c(1,1)"
 mp$data$k2Ages "c(1,1,1)"
@@ -209,8 +209,8 @@ opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 opMod$rSeed 1270
 opMod$rSteepness 0.73723
-opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
-opMod$postSampleSize 1000
+opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
