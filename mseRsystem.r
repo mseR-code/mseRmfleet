@@ -3124,7 +3124,7 @@ iscamWrite <- function ( obj )
     # inputRt[1]    <- mcmcPar[postDraw,"rbar_ag1"] * exp(mcmcM[postDraw,1])
 
     # Update Mdevs for inserting into history
-    ctlList$opMod$estMdevs <- list( M = t(as.matrix(mcmcM[postDraw,]) ) )
+    ctlList$opMod$estMdevs <- list( M = t(as.matrix(mcmcM[postDraw,], nrow = 1) ) )
 
     # Now save the sample draws to new parts of opMod list
     # for use in solveInitPop
@@ -3138,9 +3138,9 @@ iscamWrite <- function ( obj )
     obj$ctlList$opMod$M           <- as.numeric( mcmcPar[postDraw, "m"] )
     obj$ctlList$opMod$recM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "mean" )
-      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+      ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "1.5jump" )
-      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+      ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
     obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])
@@ -3254,11 +3254,14 @@ iscamWrite <- function ( obj )
       obj$om$Mt <- rep( ctlList$opMod$M[1:nGrps], nT )
   }
 
-  if( ctlList$opMod$estMdevs == "repFile" )
+  if( !is.null(ctlList$opMod$estMdevs ) )
   {
-    estMdevs <- read.rep(ctlList$opMod$repFileName)
-    Mta <- estMdevs$M
-    obj$om$Mt[1:(tMP-1)] <- Mta[,1]
+    # Get M time series from repFile or from MCMC samples
+    estMdevs <- ctlList$opMod$estMdevs
+    if( estMdevs == "repFile" )
+      estMdevs <- ctlList$opMod$repFile
+
+    obj$om$Mt[1:(tMP-1)] <- estMdevs$M[,1]
 
     if( !is.null(ctlList$opMod$kYearsMbar) )
     {
@@ -3266,6 +3269,8 @@ iscamWrite <- function ( obj )
       Mbar <- mean( obj$om$Mt[ (tMP - k):(tMP - 1 ) ] )
       endM <- Mbar
     }
+
+    browser()
 
     # Now modify the projected Mt time series to begin at the end of 
     # the history  
@@ -3291,7 +3296,7 @@ iscamWrite <- function ( obj )
 
   if( ctlList$opMod$obsWtAge == "repFile" )
   {
-    obsWtAge <- read.rep(ctlList$opMod$repFileName)
+    obsWtAge <- ctlList$opMod$repFile
     obj$om$Wta <- matrix(0, ncol = nAges, nrow = nT )
     obsWtAge <- obsWtAge$d3_wt_avg
     obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
