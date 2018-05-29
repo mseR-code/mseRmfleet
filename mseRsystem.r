@@ -3140,7 +3140,9 @@ iscamWrite <- function ( obj )
     if( obj$ctlList$opMod$endM == "mean" )
       ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "1.5jump" )
-      ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+      ctlList$opMod$endM        <- 1.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "0.5jump" )
+      ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
     obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])
@@ -3269,8 +3271,6 @@ iscamWrite <- function ( obj )
       Mbar <- mean( obj$om$Mt[ (tMP - k):(tMP - 1 ) ] )
       endM <- Mbar
     }
-
-    browser()
 
     # Now modify the projected Mt time series to begin at the end of 
     # the history  

@@ -1,7 +1,7 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
 gui$mpLabel "NoFish"
-gui$nReps 100
+gui$nReps 20
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE

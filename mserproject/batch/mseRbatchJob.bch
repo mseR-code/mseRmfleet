@@ -37,7 +37,7 @@ scenario$scenario4$opMod$kYearsMbar NULL
 scenario$scenario4$gui$nReps 100
 scenario$scenario4$gui$scenarioLabel "WCVI_jumpM"
 scenario$scenario4$opMod$sigmaM 0
-scenario$scenario4$opMod$endM "1.5jump"
+scenario$scenario4$opMod$endM "0.5jump"
 scenario$scenario4$opMod$endMphase 1
 scenario$scenario4$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
 scenario$scenario4$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
