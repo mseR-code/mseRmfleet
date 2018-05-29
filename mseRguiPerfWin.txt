@@ -75,7 +75,7 @@ grid 4 1 padx=5
         label text="Obj 1"
         entry name=pfDep1  value=0.2 width=5 mode="numeric" function=.subPerf noeditbg="darkgreen" noeditfg="white" padx=2 sticky=W
         entry name=pfYear1 value=60  width=5 mode="numeric" function=.subPerf noeditbg="cyan" padx=2 sticky=W
-        entry name=pfProb1 value=0.9 width=5 mode="numeric" function=.subPerf noeditbg="black" noeditf="white" padx=2 sticky=W
+        entry name=pfProb1 value=0.1 width=5 mode="numeric" function=.subPerf noeditbg="black" noeditf="white" padx=2 sticky=W
         
         null
         radio name=pfObj1 value=dep  text="" function=.subPerf mode=character select=T

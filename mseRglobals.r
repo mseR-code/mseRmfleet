@@ -79,8 +79,8 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .KALMAN  <- 2           # Kalman filter.
 .PMOD    <- 3           # Surplus production model.
 .DDMOD   <- 4           # Delay-Difference model.
-.CAAMOD  <- 5           # Catch-At-Age model.
-.VPA     <- 6           # Virtual Population Analysis.
+.CAAMOD  <- 5           # ISCAM CAA model
+.ISCAMRW <- 6           # ISCAM CAA with RW on Mt
 .PERFECT <- 7           # Perfect information.
 
 # Flag to indicate a fishery collapse
@@ -88,6 +88,13 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 
 # Flag to indicate ISCAM is being used as the AM
 .ISCAMFLAG <- TRUE
+
+# Herring related objective depletion values
+.BlimHerring  <- .3
+.USRHerring   <- .6
+.TRPHerring   <- .75
+
+.FBt_Perf <- FALSE
 
 # Flag to produce Mt envelopes in Perf under legal HR
 .USEMt <- TRUE
@@ -110,7 +117,9 @@ if( .ISCAMFLAG )
 {
   cat( "ISCAM option selected, CAA MPs will use ISCAM AM\n")
   .METHODLAB[5] <- "ISCAM"
+  .METHODLAB[6] <- "ISCAM_RW"
   .METHODLAB[1] <- "Data"
+
 }
                  
 # Global Options from 2010.
@@ -145,7 +154,7 @@ if( .ISCAMFLAG )
 
 # Reference point grid - used by calcRefCurves in mseRrefPoints.r.
 .nFVALS <- 100
-.MAXF   <- 2.5                    # Multiplier of M in generating yield curves
+.MAXF   <- .5                   # Multiplier of M in generating yield curves
 .MAXIT  <- 50                   # Max iterations for solving F multipliers fg in refpts
 .FGINIT <- rep(-2,5)            # Initial Fgs given to optim to solve allocation prob
 

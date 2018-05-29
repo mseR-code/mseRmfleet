@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------#
 #-- Performance statistics functions                                         --#
 #------------------------------------------------------------------------------#
-
+library(dplyr)
 # .calcPerfStats (Calculate performance statistics by calling .calcStatsXXX).
 # Purpose:       Calculate various performance statistics with the function
 #                name .calcStatsXXX, where XXX determined the statistics.
@@ -56,7 +56,7 @@
   nResults    <- nSim * length( period$Period )
   headerNames <- c( "SimFolder" ,"Scenario","Procedure","Period","t1","t2")
   statNames   <- c( "medAvgDep","Q1AvgDep","Q2AvgDep",
-                    "medFinalDep","Q1finalDep","Q2finalDep",
+                    "medFinalDep","Q1FinalDep","Q2FinalDep",
                     "medLowDep","Q1LowDep","Q2LowDep",
                     "medAAV", "Q1AAV","Q2AAV",
                     "medAvgCatch","Q1AvgCatch","Q2AvgCatch",
@@ -70,7 +70,12 @@
                     "t1Trend","trendPeriod","avgExpSlope",
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
-                    "pGT.75B0","pGt.3B0")
+                    "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
+                    "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
+                    "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
+                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
+                    "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
+                    "medPropClosure","Q1PropClosure","Q2PropClosure")
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -78,6 +83,31 @@
 
   # Set the results to noSimVal
   result[ ,statNames ] <- noSimVal
+
+  # Create a list to hold the NoFish MP for each scenario
+  scenarios <- unique(trackData$scenario)
+  scenarios <- scenarios[ scenarios != "" ]
+  noFishBlobs <- vector(mode= "list", length = length(scenarios) )
+  names(noFishBlobs) <- scenarios
+
+  noFishTrack <-  trackData %>%
+                  filter( mp == "NoFish" )
+
+  for( scenIdx in 1:length(scenarios) )
+  {
+    scenarioName <- scenarios[scenIdx]
+    scenNoFishTrack <-  noFishTrack %>%
+                        filter( scenario == scenarioName )
+
+    simFile     <- scenNoFishTrack[ 1, "simFile" ]
+    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+
+    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+    load( file=simFilePath )
+    assign( "blob", blob, pos=1 )
+    noFishBlobs[[scenarioName]] <- blob
+  }
 
   # Initialize row counter.
   iRow    <- 0
@@ -152,6 +182,9 @@
       result[ iRow, "t1"     ]     <- period$Year1[j]
       result[ iRow, "t2"     ]     <- period$Year2[j]
 
+      # Pull scenario name to scale Bt by NoFish
+      scenarioName <- trackData[i,"scenario"]
+
       # Usefull for trend statistics.
       t1 <- result[ iRow, "t1" ]
       t2 <- result[ iRow, "t2" ]
@@ -162,10 +195,15 @@
       if ( validSim )
       {
         # Get the variables to be summarized, these are nReps by nT matrices.
-        Bt   <- blob$om$Bt[ ,c(2:ncol(blob$om$Bt)) ]
+        Bt   <- blob$om$SBt[ ,c(2:ncol(blob$om$Bt)) ]
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
+
+        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+        noFishBt <- noFishBt[,2:ncol(noFishBt)]
+
+        noFishDept <- Bt / noFishBt
 
       }
    
@@ -174,8 +212,8 @@
       {
         tmp <- .calcStatsDepletion( Dept[,tdx], quantVals )
         result[ iRow, "medAvgDep" ] <- tmp$medAvgDep
-        result[ iRow, "Q1AvgDep" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgDep" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1AvgDep" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2AvgDep" ]  <- tmp$qVals[5]
       }
 
       #--- Final depletion for period                                       ---#
@@ -183,8 +221,8 @@
       {
         tmp <- .calcStatsFinalDep( Dept[,tdx], quantVals )
         result[ iRow, "medFinalDep" ] <- tmp$medFinalDep
-        result[ iRow, "Q1finalDep" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2finalDep" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1FinalDep" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2FinalDep" ]  <- tmp$qVals[5]
       }
 
       #--- Low depletion for period                                         ---#
@@ -201,8 +239,8 @@
       {
         tmp <- .calcStatsCatch( Ct[,tdx], quantVals )
         result[ iRow, "medAvgCatch" ] <- tmp$medAvgCatch
-        result[ iRow, "Q1AvgCatch" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgCatch" ]  <- tmp$qVals[4]
+        result[ iRow, "Q1AvgCatch" ]  <- tmp$qVals[1]
+        result[ iRow, "Q2AvgCatch" ]  <- tmp$qVals[5]
       }
 
       #--- Low catch for period                                             ---#
@@ -222,16 +260,6 @@
         result[ iRow, "Q1HighCatch" ]  <- tmp$qVals[2]
         result[ iRow, "Q2HighCatch" ]  <- tmp$qVals[4]
       }
-
-      
-      # ---- Probability catch is below floor of 1192 tonnes (Added by K.Holt)
-      if ( validSim )
-      {
-        floor <-1.992
-        tmp<-.calcPropFloor(Ct[,tdx], floor)
-        result[ iRow, "pObj4" ] <- mean(tmp)
-      }
-      
       
       
       
@@ -250,8 +278,8 @@
       {
         tmp <- .calcStatsAAV( Ct, tdx, quantVals )
         result[ iRow,"medAAV" ] <- tmp$medAAV
-        result[ iRow,"Q1AAV" ]  <- tmp$qVals[2]
-        result[ iRow,"Q2AAV" ]  <- tmp$qVals[4]
+        result[ iRow,"Q1AAV" ]  <- tmp$qVals[1]
+        result[ iRow,"Q2AAV" ]  <- tmp$qVals[5]
       }
 
       #--- Zone Objectives Statistics                                       ---#
@@ -276,20 +304,72 @@
 
       if ( validSim )
       {
-
-        tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=guiInfo$pfLimitMultBmsy, refProb=0.95 )
+        # Updated for Herring .3B0 LRP (DFO) and .75B0 TRP (NCN Goal 1)
+        tmp <- .calcStatsRefPoints( Bt[,tdx], target=B0, targMult=.3, refProb=0.95 )
         result[ iRow,"pGTlrp" ] <- tmp
-        tmp <- .calcStatsRefPoints( Bt[,tdx], target=Bmsy, targMult=1, refProb=0.5 )
+        tmp <- .calcStatsRefPoints( Bt[,tdx], target=B0, targMult=.75, refProb=0.5 )
         result[ iRow,"pGTtarg" ] <- tmp
       }
 
-      # --- NCN objective statistics, hard coded by SDNJ March 20, 2018
+      # --- MSE objective statistics, hard coded by SDNJ May 10, 2018
       if( validSim )
-      {  
-        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .75, refProb = 1 )
-        result[ iRow, "pGT.75B0" ] <- tmp
-        tmp <- .calcStatsRefPoints( Bt[,tMP:nT], target = B0, targMult = .3, refProb = 1 )
-        result[ iRow, "pGT.3B0" ] <- tmp
+      { 
+        LTA <- mean(Bt[1,1:67])
+        refB <- mean(Bt[1,38:46])
+
+        #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
+
+        #Hard code ProbGt.75NoFish over tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.75NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.75NoFish" ] <- tmp[5]
+
+  
+        # MedProb NCN Goal 2 (.76B0 over 2 gens)
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .76, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
+        result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
+        result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
+
+        # MedProb NCN Goal 2 (.76NoFish over 2 gens)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbNCNGoal2NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbNCNGoal2NoFish" ] <- tmp[5]
+
+
+        # We should add the other USR candidates here
+        # .6B0 over 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.6B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
+
+    
+        # LTA over 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = LTA, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtLTA" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtLTA" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtLTA" ] <- tmp[5]
+
+        # refB over 2 gens
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = refB, targMult = 1, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGtrefB" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtrefB" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtrefB" ] <- tmp[5]
+
+        # average biomass over productive period
+        
+        # Limit reference point
+        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .3, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.3B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.3B0" ] <- tmp[5]
       }
       #--- Objective Statistics from GUI.
 
@@ -352,6 +432,19 @@
         result[ iRow,"pHealthy" ] <- tmpHealthy$avgPtarget
       }
 
+      if( validSim )
+      {
+        # Hijack calcPropFloor() to calculate proportion
+        # of years below a .5kt TAC, representing
+        # lost fishing opportunities.
+        tmp <- .calcPropFloor( Ct[,tdx], floor = .5 )
+        tmp <- quantile( 1-tmp, probs = quantVals )
+        result[iRow,"medPropClosure"] <- tmp[3]
+        result[iRow,"Q1PropClosure"] <- tmp[1]
+        result[iRow,"Q2PropClosure"] <- tmp[5]
+
+      }
+
       #--- Policy Statistics                                                ---#
 
       if ( validSim )
@@ -368,13 +461,13 @@
 
       if ( validSim )
       {
-        tmp <- .calcStatsTrend( Bt, t1=t1, delta=10 )
+        tmp <- .calcStatsTrend( Bt, t1=t1, delta = t2 - t1 )
 
         SSB    <- as.numeric( Bt[,unique(tmp$t1) ] )
-        target <- blob$ctlList$refPts$ssbFmsy
+        target <- B0
 
         tmp$pDecline <- .calcStatsAccDecline( SSB, target, lowProb=0.05,
-                          hiProb=0.5, multLrp=.4, multUsr=.8  )
+                          hiProb=0.5, multLrp=.3, multUsr=.75  )
 
         result[ iRow, "t1Trend" ] <- t1
         result[ iRow, "trendPeriod" ] <- 10
@@ -386,7 +479,8 @@
         result[ iRow, "trendDec" ]    <- nDec
         result[ iRow, "obsPdecline" ] <- pObs
 
-        result[ iRow, "pDecline" ]    <- mean( tmp$pDecline )
+        result[ iRow, "pDecline" ]    <- median( tmp$pDecline )
+
       }
 
       #--- Convenience - Depletion and Catch at t1 for each period.         ---#
@@ -470,7 +564,7 @@
     medAAV <- median( AAV )
     # Compute the quantiles of the distribution.
     # Use the quantiles specified in the interface (qLower, qUpper).
-    qVals <- quantile( AAV, probs=probs )
+    qVals <- quantile( AAV, probs=probs, na.rm = T )
   }
   else
   {
@@ -499,7 +593,7 @@
   # Compute the median of the average catch values.
   medAvgCatch <- median( avgCatch )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgCatch, probs=probs )
+  qVals <- quantile( avgCatch, probs=probs, na.rm = T )
   val <- list( medAvgCatch=medAvgCatch, qVals=qVals )
   val
 }
@@ -520,7 +614,7 @@
   # Compute the median of the average catch values.
   medAvgDiscard <- median( avgDiscard )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgDiscard, probs=probs )
+  qVals <- quantile( avgDiscard, probs=probs, na.rm = T )
   val <- list( medAvgDiscard=medAvgDiscard, qVals=qVals )
   val
 }
@@ -537,11 +631,11 @@
 .calcStatsDepletion <- function( Dept, probs=c(0.05,0.1,0.5,0.9,0.95) )
 {
   # Average depletion by replicate (avgDept is vector len=ncol(Dept)).
-  avgDep <- apply( Dept,1,mean )
+  avgDep <- apply( Dept,1,mean, na.rm = T )
   # Compute the median of the average depletion values.
   medAvgDep <- median( avgDep )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( avgDep, probs=probs )
+  qVals <- quantile( avgDep, probs=probs, na.rm = T )
   val <- list( medAvgDep=medAvgDep, qVals=qVals )
   val
 }
@@ -563,9 +657,9 @@
   # is the last column (t2) in the matrix - the final depletion for the period.
   finalDep <- Dept[ ,ncol(Dept) ]
   # Compute the median of the final depletion values, final year of period over reps.
-  medFinalDep <- median( finalDep )
+  medFinalDep <- median( finalDep, na.rm  = T )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( finalDep, probs=probs )
+  qVals <- quantile( finalDep, probs=probs, na.rm = T )
   val <- list( medFinalDep=medFinalDep, qVals=qVals )
   val
 }
@@ -586,7 +680,7 @@
   # Compute the median of the low depletion values for the period over reps.
   medHighCat <- median( highCat )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( highCat, probs=probs )
+  qVals <- quantile( highCat, probs=probs, na.rm = T )
   val <- list( medHighCat=medHighCat, qVals=qVals )
   val
 }
@@ -607,7 +701,7 @@
   # Compute the median of the low depletion values for the period over reps.
   medLowCat <- median( lowCat )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( lowCat, probs=probs )
+  qVals <- quantile( lowCat, probs=probs, na.rm = T )
   val <- list( medLowCat=medLowCat, qVals=qVals )
   val
 }
@@ -648,11 +742,11 @@
 {
   # Extract the low depletion values from the replicate.
   # This apply operation returns a vector of length=nRep.
-  lowDep <- apply( Dept,1,min )
+  lowDep <- apply( Dept,1,min, na.rm = T )
   # Compute the median of the low depletion values for the period over reps.
   medLowDep <- median( lowDep )
   # Compute the quantiles of the distribution.
-  qVals <- quantile( lowDep, probs=probs )
+  qVals <- quantile( lowDep, probs=probs, na.rm = T )
   val <- list( medLowDep=medLowDep, qVals=qVals )
   val
 }
@@ -736,8 +830,38 @@
   pVal <- val / ncol( Bt )
 
   # Compute the mean proportion of years GT refPt.
-  result <- mean( pVal )
+  result <- median( pVal )
   result
+}
+
+.calcQuantsRefPoints <- function( Bt, target, targMult, refProb, probs )
+{
+  refPt <- targMult * target
+
+  if(class(Bt) == "numeric" ) Bt <- matrix( Bt, ncol = 1)
+
+  # Find all years in period where Bt > refPt.
+  tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
+  tmp[ Bt >= refPt ] <- 1
+
+  if( ncol(Bt) == 1 )
+  {
+    pVal <- sum(tmp) / nrow(tmp)
+    return(pVal)
+  } else {
+    # Count the number of years in each replicate where where Bt > refPt.
+    val <- apply( tmp,1,sum )
+
+    # Calculate the proportion of years in each replicate where Bt > refPt.
+    pVal <- val / ncol( Bt )
+
+    # browser()
+
+    # Compute the mean proportion of years GT refPt.
+    result <- quantile( pVal, probs, na.rm = T )
+    result
+  }
+  
 }
 
 # .calcStatsTarget (Calculate target statistics WRT dep, time, certainty)
@@ -806,7 +930,7 @@
   {
     # (3) Calculate the depletion at objYear and objProb.
     depVals <- Dept[ ,objYear ]    
-    objDep <- quantile( depVals,probs=(1.0-objProb) )
+    objDep <- quantile( depVals,probs=(1.0-objProb), na.rm = T )
     
     cat( "\nMSG (.calcStatsTarget) Depletion >=",objDep," at year",objYear,
          "with",objProb,"probability.\n" )
@@ -884,7 +1008,7 @@
   probAtTargetYear <- sum( targetVals >= target ) / nrow(Xt)
 
   # (3) Calculate the target at targetYear and targetProb.
-  targetAtYearProb <- quantile( targetVals,probs=(1.0-targetProb) )
+  targetAtYearProb <- quantile( targetVals,probs=(1.0-targetProb), na.rm = T )
 
   # Return a list result.
   result <- list( yearAtTargetProb=yearAtTargetProb, probAtTargetYear=probAtTargetYear,
