@@ -27,6 +27,7 @@ scenario$scenario3$opMod$kYearsMbar NULL
 scenario$scenario3$gui$nReps 100
 scenario$scenario3$gui$scenarioLabel "WCVI_conM"
 scenario$scenario3$opMod$sigmaM 0
+scenario$scenario1$opMod$endM "mean"
 scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
 scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 scenario$scenario3$mp$data$inputAges NULL
