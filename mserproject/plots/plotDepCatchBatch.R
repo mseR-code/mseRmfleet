@@ -16,49 +16,46 @@ source("plotBioFunctions.R")
 
 MPs <- c( "NoFish",
           "minE18.8_HR.2",
-          "minE18.8_HR.2_cap5",
           "minE18.8_HR.1",
-          "minE18.8_HR.1_cap5",
+          "minE18.8_HR.1_cap2",
           "minE.5B0_HR.2",
-          "minE.5B0_HR.2_cap5",
           "minE.5B0_HR.1",
-          "minE.5B0_HR.1_cap5",
+          "minE.5B0_HR.1_cap2",
           "HS30-60_HR.2",
-          "HS30-60_HR.2_cap5",
           "HS30-60_HR.1",
-          "HS30-60_HR.1_cap5",
-          "PerfectInfo_minE18.8_HR.2",
-          "PerfectInfo_minE18.8_HR.2_cap5",
-          "PerfectInfo_minE18.8_HR.1",
-          "PerfectInfo_minE18.8_HR.1_cap5",
-          "PerfectInfo_minE.5B0_HR.2",
-          "PerfectInfo_minE.5B0_HR.2_cap5",
-          "PerfectInfo_minE.5B0_HR.1",
-          "PerfectInfo_minE.5B0_HR.1_cap5",
-          "PerfectInfo_HS30-60_HR.2",
-          "PerfectInfo_HS30-60_HR.2_cap5",
-          "PerfectInfo_HS30-60_HR.1",
-          "PerfectInfo_HS30-60_HR.1_cap5" )
+          "HS30-60_HR.1_cap2" )
+          # "PerfectInfo_minE18.8_HR.2",
+          # "PerfectInfo_minE18.8_HR.2_cap5",
+          # "PerfectInfo_minE18.8_HR.1",
+          # "PerfectInfo_minE18.8_HR.1_cap5",
+          # "PerfectInfo_minE.5B0_HR.2",
+          # "PerfectInfo_minE.5B0_HR.2_cap5",
+          # "PerfectInfo_minE.5B0_HR.1",
+          # "PerfectInfo_minE.5B0_HR.1_cap5",
+          # "PerfectInfo_HS30-60_HR.2",
+          # "PerfectInfo_HS30-60_HR.2_cap5",
+          # "PerfectInfo_HS30-60_HR.1",
+          # "PerfectInfo_HS30-60_HR.1_cap5" )
 
-currMPs <- c( "NoFish",
-              "minE18.8_HR.2",
-              "PerfectInfo_minE18.8_HR.2",
-              "minE18.8_HR.2_cap5",
-              "PerfectInfo_minE18.8_HR.2_cap5" )
+# currMPs <- c( "NoFish",
+#               "minE18.8_HR.2",
+#               "PerfectInfo_minE18.8_HR.2",
+#               "minE18.8_HR.2_cap5",
+#               "PerfectInfo_minE18.8_HR.2_cap5" )
 
-bestMP <- c(  "NoFish",
-              "minE.5B0_HR.1_cap5")
+# bestMP <- c(  "NoFish",
+#               "minE.5B0_HR.1_cap5")
 
-checkMPs <- c(  "NoFish",
-                "minE.5B0_HR.1",
-                "minE.5B0_HR.1_cap5")
+# checkMPs <- c(  "NoFish",
+#                 "minE.5B0_HR.1",
+#                 "minE.5B0_HR.1_cap5")
 
 
-whatWeLike_minE18.8 <- 3:5
-whatWeLike_minE.5B0 <- 6:9
-whatWeLike_.HS30.60 <- 11:13
+# whatWeLike_minE18.8 <- 3:5
+# whatWeLike_minE.5B0 <- 6:9
+# whatWeLike_.HS30.60 <- 11:13
 
-base3HCRs <- c(2,6,10)
+# base3HCRs <- c(2,6,10)
 
 
 
@@ -91,7 +88,9 @@ info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df ) %>%
             arrange(scenarioLabel,mpLabel)
 
-scenList <- unique( info.df$scenarioLabel )
+# scenList <- unique( info.df$scenarioLabel )
+
+scenList <- c( "WCVI_Mbar10", "WCVI_PulseM_1.5x16" )
 # MPs       <- unique( info.df$mpLabel )
 
 yrs <- seq(1951,by = 1, length = 92)
@@ -101,11 +100,11 @@ nT <- 92
 # plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
 #                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
                           scenarios = scenList, df = info.df)
 
-plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",
-                          scenarios = scenList, df = info.df)
+# plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",
+#                           scenarios = scenList, df = info.df)
 
 # plotDepCatchMultiPanels(  MPnames = currMP_proxy, plotNameRoot = "currMP_proxy",
 #                           scenarios = scenList, df = info.df)

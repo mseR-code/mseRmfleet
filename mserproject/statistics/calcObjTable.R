@@ -14,22 +14,21 @@ perfTable <- read.csv(  "mseRstatistics_perfTable1.csv", header =T,
                         stringsAsFactors = FALSE)
 
 # Get scenario/MP labels
-scenarios <- unique( perfTable$Scenario )
+# scenarios <- unique( perfTable$Scenario )
 # MPs       <- unique( perfTable$Procedure )
 
 MPs <- c( "NoFish",
           "minE18.8_HR.2",
-          "minE18.8_HR.2_cap5",
           "minE18.8_HR.1",
-          "minE18.8_HR.1_cap5",
+          "minE18.8_HR.1_cap2",
           "minE.5B0_HR.2",
-          "minE.5B0_HR.2_cap5",
           "minE.5B0_HR.1",
-          "minE.5B0_HR.1_cap5",
+          "minE.5B0_HR.1_cap2",
           "HS30-60_HR.2",
-          "HS30-60_HR.2_cap5",
           "HS30-60_HR.1",
-          "HS30-60_HR.1_cap5" )
+          "HS30-60_HR.1_cap2" )
+
+scenarios <- c( "WCVI_Mbar10", "WCVI_PulseM_1.5x16" )
 
 Periods   <- unique( perfTable$Period )
 
