@@ -263,9 +263,13 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   if( !is.null(opMod$posteriorSamples) )
   {
     # Set seed and draw random sample of replicates here.
-    set.seed( ctlList$opMod$postSampleSeed )
-    postSampleSize <- ctlList$opMod$postSampleSize
-    ctlList$opMod$posteriorDraws <- sample(x = 1:postSampleSize, size = ctlList$gui$nReps )
+    mcmcParPath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
+    mcmcPar       <- read.csv( mcmcParPath, header =T ) 
+    samples       <- .quantileStratSample(  post = mcmcPar,
+                                            par1 = "m", par2 = "sbo",
+                                            nBreaks = 10 )
+    ctlList$opMod$posteriorDraws <- samples
+    ctlList$opMod$mcmcPar <- mcmcPar
   }
 
   # Create the management procedure object.
