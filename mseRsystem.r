@@ -263,9 +263,13 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   if( !is.null(opMod$posteriorSamples) )
   {
     # Set seed and draw random sample of replicates here.
-    set.seed( ctlList$opMod$postSampleSeed )
-    postSampleSize <- ctlList$opMod$postSampleSize
-    ctlList$opMod$posteriorDraws <- sample(x = 1:postSampleSize, size = ctlList$gui$nReps )
+    mcmcParPath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
+    mcmcPar       <- read.csv( mcmcParPath, header =T ) 
+    samples       <- .quantileStratSample(  post = mcmcPar,
+                                            par1 = "m", par2 = "sbo",
+                                            nBreaks = 10 )
+    ctlList$opMod$posteriorDraws <- samples
+    ctlList$opMod$mcmcPar <- mcmcPar
   }
 
   # Create the management procedure object.
@@ -608,6 +612,7 @@ ageLenOpMod <- function( objRef, t )
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)
 
+      Rt[1:66] <- inputRt[1:66]
     }
     if( !is.null( ctlList$opMod$posteriorSamples ) )
     {
@@ -618,13 +623,13 @@ ageLenOpMod <- function( objRef, t )
       # Use rep file for Na1 until MCMC output is obtained
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)      
+      Rt[1:67]  <- inputRt[1:67]
     }  
 
     # Now overwrite OM values with input values
     Ftg[1:67,]    <- inputFtg[1:67,]
-    Rt[1:66]      <- inputRt[1:66]
   }
-  
+
   # What to do in year 68?? I feel like ISCAM predicts this..
 
   # Initialise population if t=1, else update variables from last time step.
@@ -653,7 +658,7 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) ) omegat[t] <- Rt[t] / tmpR
+      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
@@ -690,6 +695,7 @@ ageLenOpMod <- function( objRef, t )
       if( Bt[t] < pulseLim ) 
       {
         Mt[t] <- obj$om$pulseMt[t]
+
       }
     }
 
@@ -708,7 +714,7 @@ ageLenOpMod <- function( objRef, t )
     gT <<- t
 
     if( t < tMP ) initF <- c( obj$ctlList$opMod$repFile$ft[,t])
-    else initF <- c(rep(0.223,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
+    else initF <- c(rep(0.0,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
     idx0  <- which(Ctg[t,] < 0)
     Ctg[t,idx0] <- 0.
     baranovTime <<- t
@@ -716,16 +722,20 @@ ageLenOpMod <- function( objRef, t )
 
     # browser()
 
-    solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+    solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
                                     C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
-                                    nIter = ctlList$opMod$baranovIter )
+                                    nIter = ctlList$opMod$baranovIter ) )
+
+    if( class(solveF) == "try-error" ) browser(cat("N-R Baranov failed \n"))
 
     solveF[ solveF > 10 ] <- 10
+
     if( any( solveF < 0 ) )
     {
         cat("Warning: negative Ftg... t = ", t, "\n")
         cat( solveF, "\n" )
         solveF[ solveF < 0. ] <- 0.
+        browser()
     }
     Ftg[t,] <- solveF
   }
@@ -3102,12 +3112,14 @@ iscamWrite <- function ( obj )
     mcmcMpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcMt.csv")
     mcmcFpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcFt.csv")
     mcmcRtpath    <- file.path(ctlList$opMod$posteriorSamples,"mcmcRt.csv")
+    mcmcSBpath    <- file.path(ctlList$opMod$posteriorSamples,"mcmcSBt.csv")
     mcmcParpath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
 
     mcmcM         <- read.csv( mcmcMpath, header = T, stringsAsFactors = FALSE)
     mcmcF         <- read.csv( mcmcFpath, header = T, stringsAsFactors = FALSE)
     mcmcRt        <- read.csv( mcmcRtpath, header = T, stringsAsFactors = FALSE)
     mcmcPar       <- read.csv( mcmcParpath, header = T, stringsAsFactors = FALSE)
+    mcmcSBt       <- read.csv( mcmcSBpath, header = T, stringsAsFactors = FALSE)
 
     # Create a new inputF matrix
     inputFtg  <- matrix( nrow = nT, ncol = 5 )
@@ -3721,7 +3733,7 @@ iscamWrite <- function ( obj )
   #----------------------------------------------------------------------------#
 
   # Begin solveInitPop
-  obj <- deref( objRef )  
+  obj <- deref( objRef )
   
   # Determine if catch series has already been input
   if ( !.CATCHSERIESINPUT )
@@ -4297,10 +4309,10 @@ iscamWrite <- function ( obj )
   obj$mp$hcr$precautionaryFt[t] <- targetHarv$precautionaryF # target F prescribed by control rule
   obj <- deref( ageLenOpMod( as.ref(obj),t ) )
 
-  #if ( obj$om$Bt[t] < (0.05*ctlList$opMod$B0) )
-  #{
+  if ( obj$om$Bt[t] < (0.05*ctlList$opMod$B0) )
+  {
     .DEADFLAG <<- FALSE
-  #}
+  }
  
   return( obj )
 }     # END function .updatePop
@@ -5049,4 +5061,47 @@ tsBoot <- function ( seed = NULL, x = histData, length = nT,
     lSim <- lSim + segLen
   }
   return ( Yt )  
+}
+
+# Try a sampling system for h and SSB
+.quantileStratSample <- function( seed = NULL,
+                                  post = SOGtvMpost, par1 = "m", par2 = "sbo",
+                                  nBreaks = 10 )
+{
+  if( !is.null(seed) )
+    set.seed(seed)
+
+  pctiles <- seq(1/nBreaks,1,length = nBreaks)
+
+  par1Quant <- quantile( x = post[,par1], probs = pctiles )
+
+  par1Breaks <- c(0,par1Quant)
+
+  samples <- numeric(length = length(pctiles)^2 )
+
+  for( k in 1:nBreaks )
+    {
+      LB <- par1Breaks[k]
+      UB <- par1Breaks[k+1]
+
+      rowIdx1 <- which(post[,par1] > LB & post[,par1] <= UB  )
+      par2CondQuants <- quantile( x = post[rowIdx1,par2], probs = pctiles )
+      
+      par2CondBreaks <- c( 0, par2CondQuants )
+
+      for( j in 1:nBreaks )
+      {
+        condLB <- par2CondBreaks[j]
+        condUB <- par2CondBreaks[j+1]
+
+        rowIdx2 <- which( post[,par2] > condLB & post[,par2] <= condUB )
+
+        rowIdx <- intersect(rowIdx1, rowIdx2)
+        if(length(rowIdx) == 0) browser()
+        samples[j + (k-1)*nBreaks ] <- sample( x = rowIdx, size = 1 )
+      }
+
+    }  
+
+  samples
 }

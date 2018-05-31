@@ -86,6 +86,7 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,"NCN2_ProbGt.76NoFish_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2NoFish" ]
     objTable[tabRow,"ProbGtSBave_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGtLTA" ]
     objTable[tabRow,"ProbGtSBave-prod_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGtrefB" ]
+    
   }
 
 
