@@ -1,4 +1,4 @@
-  library(parallel)
+library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
 # batchFiles <- 1:8
@@ -62,7 +62,7 @@ startDate <- date()
 batchFolderNames <- file.path(getwd(),batchFolderNames)
 # browser()
 
-tmp     <- parLapply(cl, X=batchFolderNames, fun=doBatchRun)
+tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 # tmp <-lapply(X=file.path(getwd(),batchFolderNames), FUN=doBatchRun)
 stopCluster(cl)
 
