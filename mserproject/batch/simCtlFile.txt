@@ -167,6 +167,7 @@ opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
 opMod$endM 0.583934
 opMod$endMphase NULL
+opMod$endMrule NULL
 opMod$futureOption 3
 opMod$repFile NULL
 opMod$estMdevs "repFile"

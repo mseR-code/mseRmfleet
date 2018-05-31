@@ -9,7 +9,7 @@ scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
-scenario$scenario1$opMod$endM "mean"
+scenario$scenario1$opMod$endMrule "mean"
 scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 scenario$scenario1$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
@@ -27,7 +27,7 @@ scenario$scenario3$opMod$kYearsMbar NULL
 scenario$scenario3$gui$nReps 100
 scenario$scenario3$gui$scenarioLabel "WCVI_conM"
 scenario$scenario3$opMod$sigmaM 0
-scenario$scenario3$opMod$endM "mean"
+scenario$scenario3$opMod$endMrule "mean"
 scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
 scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 scenario$scenario3$mp$data$inputAges NULL
@@ -38,7 +38,7 @@ scenario$scenario4$opMod$kYearsMbar NULL
 scenario$scenario4$gui$nReps 100
 scenario$scenario4$gui$scenarioLabel "WCVI_.5conM"
 scenario$scenario4$opMod$sigmaM 0
-scenario$scenario4$opMod$endM "0.5jump"
+scenario$scenario4$opMod$endMrule "0.75jump"
 scenario$scenario4$opMod$endMphase 1
 scenario$scenario4$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
 scenario$scenario4$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
