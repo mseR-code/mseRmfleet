@@ -657,7 +657,7 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) ) omegat[t] <- Rt[t] / tmpR
+      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
