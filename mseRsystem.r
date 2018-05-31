@@ -1535,9 +1535,6 @@ callProcedureISCAM <- function( obj, t )
   # Will need to update surveys to 0 prop, renormalise
 
   caObj$catchType     <- 1 # hard coded to biomass
-  if(opMod$endM == "mean")
-    endM <- mean( blob$om$Mt[1,2:68] )
-  if( opMod$endM == ".5")
   caObj$M             <- mean(opMod$endM)
 
   # growth pars
