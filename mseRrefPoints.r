@@ -219,7 +219,6 @@ calcRefPoints <- function( opModList )
 
   selAge <- salgPars$selAge
 
-  
 
   # From sableOpmod.tpl:
   #for( g=1; g<=nFisheries; g++ )

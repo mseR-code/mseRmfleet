@@ -589,7 +589,11 @@ plotPFMABtEnv_DR <- function( simNum = 1, info = info.df,
 # a Dir distibution with those parameters.
 plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
                               seedVal = 2324,
-                              DR = "linear" )
+                              DR = "linear",
+                              periodLengths = c(10),
+                              periodLabels = c("2Gen"),
+                              propThresh = .25,
+                              probLine = .75 )
 {
   set.seed(seedVal)
   simID <- info.df$simLabel[simNum]
@@ -599,6 +603,8 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
   yrs <- seq(1951,by = 1, length = 92)
   nT <- blob$ctlList$opMod$nT
   tMP <- blob$ctlList$opMod$tMP
+
+  periodEnds <- tMP + periodLengths - 1 
 
   # scen/MP info
   scenLabel <- info.df$scenarioLabel[simNum]
@@ -672,6 +678,7 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
 
   }
 
+
   # Take quantiles
   areaSIprop_quantiles <- apply(  X = areaSIprops, FUN = quantile,
                                   probs = c(0.025, 0.5, 0.975 ),
@@ -690,7 +697,7 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,3,], col = colPal[4], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    abline( h = .25, lty = 3, lwd =1)
+    abline( h = propThresh, lty = 3, lwd =1)
     panLab( x = 0.9, y = 0.8, txt = "statArea 25")
 
   plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
@@ -700,7 +707,7 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,2,], col = colPal[3], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    abline( h = .25, lty = 3, lwd =1)
+    abline( h = propThresh, lty = 3, lwd =1)
     panLab( x = 0.9, y = 0.8, txt = "statArea 24")
 
     plot( x = range(yrs), y = range(areaSIprop_quantiles, na.rm =T), 
@@ -710,7 +717,7 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
               border = NA, col = "grey70" )
     lines( x = yrs, y = areaSIprop_quantiles[2,1,], col = colPal[2], lwd = 2 )
     abline( v = yrs[tMP], lty = 2 )
-    abline( h = .25, lty = 3, lwd =1)
+    abline( h = propThresh, lty = 3, lwd =1)
     panLab( x = 0.9, y = 0.8, txt = "statArea 23")
 
   titleText <- paste( "Apportioned by ", DR, " Dirichlet Regression", sep = "")
@@ -723,6 +730,180 @@ plotPFMAProp_DR <- function(  simNum = 1, info = info.df,
 
   mtext( side = 1, outer = T, text = "Year" )
   mtext( side = 2, outer = T, text = "Proportion of WCVI biomass", line = 1.5 )
+
+
+} # End plotPFMAProp_DR
+
+# Function to plot projected biomass for the OM over the PFMA sub-areas. 
+# Proportions used for apportionment in the history are taken from
+# a Dirichlet regression of observed proportions on the biomass.
+# Each year of the projection, the alpha values for that biomass
+# level are predicted, and random proportions are drawn from
+# a Dir distibution with those parameters.
+calcStatsPFMAProp_DR <- function( info = info.df,
+                                  scenario = scenarios[1],
+                                  seedVal = 2324,
+                                  DR = "linear",
+                                  periodLengths = c(10),
+                                  periodLabels = c("2Gen"),
+                                  propThresh = .25,
+                                  probLine = .75,
+                                  fileName = "./statAreaBiomass/statAreaPropTable.csv" )
+{
+  set.seed(seedVal)
+
+  # Set up table
+  nResults <- nrow(info) * length(periodLengths)
+
+  headerNames <- c( "SimFolder" ,"Scenario","Procedure","Period","t1","t2")
+  statNames   <- c( "medProbStatArea23","Q1ProbStatArea23","Q2ProbStatArea23",
+                    "medProbStatArea24","Q1ProbStatArea24","Q2ProbStatArea24",
+                    "medProbStatArea25","Q1ProbStatArea25","Q2ProbStatArea25",
+                    "medProbStatAreaAll","Q1ProbStatAreaAll","Q2ProbStatAreaAll")
+
+  colNames    <- c( headerNames, statNames )
+  result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
+  names( result ) <- colNames
+
+
+  iRow <- 0
+
+  for( simNum in 1:nrow(info))
+  {
+    simID <- info$simLabel[simNum]
+    simPath <- file.path("..",simID,paste(simID, ".RData", sep = "") )
+    load(simPath)
+
+    yrs <- seq(1951,by = 1, length = 92)
+    nT <- blob$ctlList$opMod$nT
+    tMP <- blob$ctlList$opMod$tMP
+
+    periodEnds <- tMP + periodLengths - 1 
+
+    # scen/MP info
+    scenLabel <- info.df$scenarioLabel[simNum]
+    mpLabel   <- info.df$mpLabel[simNum]
+    nReps     <- blob$ctlList$gui$nReps
+
+    # Load Dirichlet Regression
+    load("DirichletRegressions.RData")
+    model <- DirReg[[DR]]
+
+    # Convert history into a matrix (3xnt)
+    areaSI <- array(NA, dim = c(nReps,3,nT),
+                        dimnames = list(  paste("rep",1:nReps, sep = ""),
+                                          c("statArea23","statArea24","statArea25"),
+                                          paste("t",1:nT, sep = "") ) )
+
+    areaSIprops <- array( NA, dim = c(nReps,3,nT),
+                              dimnames = list(  paste("rep",1:nReps, sep = ""),
+                                                c("statArea23","statArea24","statArea25"),
+                                                paste("t",1:nT,sep = "") ) )
+
+    areaSBt <- areaSIprops
+
+    SBt <- array( NA, dim = c(nReps, nT),
+                      dimnames = list(  paste("rep",1:nReps, sep = ""),
+                                        paste("t",1:nT) ) )
+
+    Bt <- SBt
+    FBt <- SBt
+
+    # Load history
+    statAreaSIprops <- read.csv("../history/statAreaSI_props.csv")
+    statAreaSI <- read.csv("../history/statAreaSI.csv")
+
+    # Get historical SIs and proportions
+    for( rIdx in 1:nReps )
+    {
+      areaSI[rIdx,1,1:nrow(statAreaSIprops)] <- statAreaSIprops$SI23
+      areaSI[rIdx,2,1:nrow(statAreaSIprops)] <- statAreaSIprops$SI24
+      areaSI[rIdx,3,1:nrow(statAreaSIprops)] <- statAreaSIprops$SI25
+      areaSIprops[rIdx,1,1:nrow(statAreaSIprops)] <- statAreaSIprops$p23
+      areaSIprops[rIdx,2,1:nrow(statAreaSIprops)] <- statAreaSIprops$p24
+      areaSIprops[rIdx,3,1:nrow(statAreaSIprops)] <- statAreaSIprops$p25  
+
+      # Pull historic biomasses
+      SBt[rIdx,] <- blob$om$SBt[rIdx,2:(nT+1)]
+      Bt[rIdx,] <- blob$om$Bt[rIdx,2:(nT+1)]
+
+      Mt <- blob$om$Mt[rIdx,2:(nT+1)]
+
+      if( !is.null(blob$om$FBt) )
+      {
+        FBt[rIdx,] <- blob$om$FBt[rIdx,2:(nT+1)]
+      } else 
+        FBt[rIdx,] <- Bt[rIdx,] * exp(-Mt)  
+
+      # Get alpha values from prediction function
+      # create a new data frame
+      projSBt <- data.frame(wcviSI = SBt[rIdx,tMP:nT])
+      alpha <- predict( model, newdata= projSBt, 
+                        mu=F, alpha = T )
+      # Hack to get past old sims without SBt at t = nT
+      if(nrow(alpha) < nT - tMP + 1) alpha <- rbind(alpha,alpha[1,])
+
+      randomProps <- rdirichlet( n = nT - tMP + 1, alpha = alpha)
+      for( aIdx in 1:3)
+      {
+        areaSIprops[rIdx,aIdx,tMP:nT] <- randomProps[,aIdx]
+        areaSBt[rIdx,aIdx,] <- areaSIprops[rIdx,aIdx,] * SBt[rIdx,]
+      }
+
+    }
+
+    # Compute probability of being above propThresh over period
+    for( perIdx in 1:length(periodEnds))
+    {
+      # Populate result table
+      iRow <- iRow + 1
+
+      result[iRow,"SimFolder"] <- simID
+      result[iRow,"Procedure"] <- mpLabel
+      result[iRow,"Scenario"] <- scenLabel
+      result[iRow,"Period"] <- periodLabels[perIdx]
+      result[iRow,"t1"] <- tMP
+      result[iRow,"t2"] <- periodEnds[perIdx]
+
+      tdx <- tMP:periodEnds[perIdx]
+
+      # Calculate probabilities of >propThresh by stat area
+      areaBprop_sub <- areaSIprops[,,tdx]
+      areaBprop_sub[areaBprop_sub > propThresh] <- 1
+      areaBprop_sub[areaBprop_sub < propThresh] <- 0
+    
+
+      nYears <- length(tdx)
+
+      areaBprop_Prob <- apply(  X = areaBprop_sub, FUN = sum, 
+                                MARGIN = c(1,2) ) / nYears
+
+      areaBprop_QuantProb <- apply( X = areaBprop_Prob,
+                                    FUN = quantile,
+                                    probs = c(0.025, 0.5, 0.975 ),
+                                    MARGIN = 2 )
+
+      result[iRow,c("Q1ProbStatArea23","medProbStatArea23","Q2ProbStatArea23")] <- areaBprop_QuantProb[,1]
+      result[iRow,c("Q1ProbStatArea24","medProbStatArea24","Q2ProbStatArea24")] <- areaBprop_QuantProb[,2]
+      result[iRow,c("Q1ProbStatArea25","medProbStatArea25","Q2ProbStatArea25")] <- areaBprop_QuantProb[,3]
+      
+      # Now do it for >propThresh in all stat areas
+      allAreasBprop <- apply( X = areaBprop_sub, FUN = sum, MARGIN = c(1,3))
+      allAreasBprop[allAreasBprop != 3] <- 0
+      allAreasBprop[allAreasBprop == 3] <- 1
+      allAreasBprop_Prob <- apply( X = allAreasBprop, FUN = sum, MARGIN = 1) / nYears
+      allAreasBprop_QuantProb <- quantile(allAreasBprop_Prob, probs = c(0.025, 0.5, 0.975 ) )
+
+      result[iRow, c("Q1ProbStatAreaAll","medProbStatAreaAll","Q2ProbStatAreaAll")] <- allAreasBprop_QuantProb
+    }
+  }    
+
+  # result$simFolder <- as.character(result$simFolder)
+  # result$Scenario <- as.character(result$Scenario)
+  # result$Procedure <- as.character(result$Procedure)
+
+  # Save the table
+  write.csv( x = result, file = fileName )
 
 
 }
@@ -1145,6 +1326,7 @@ plotComparativeScenarioObjs <- function(  scenList = scenarios[length(scenarios)
                                           xLim = c(0,1),
                                           hzLine = NA,
                                           stats = statTable,
+                                          quantiles = TRUE,
                                           xlabel = expression(paste("P( ", B[t] > .3*B[0], " )") ) )
 {
   outputFile <- paste(fileName, ".pdf", sep = "" )
@@ -1169,7 +1351,8 @@ plotComparativeScenarioObjs <- function(  scenList = scenarios[length(scenarios)
                             MPorder = MPs,
                             mpLabs = MPLabBool,
                             hzLine = hzLine,
-                            highLightIdx = hlIdx )
+                            highLightIdx = hlIdx,
+                            quantiles = quantiles )
     mtext( side = 3, text = scen, cex = 1.3)
 
     # if( scenIdx < length(scenList) ) plot(x = c(0,1), y = c(0,0.3), type = "n", axes = F, xlab = "", ylab = "")
@@ -1196,7 +1379,7 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
                                     MPorder = MPs,
                                     hzLine = NA,
                                     highLightIdx = hlIdx,
-                                    highLightCol = "red" )
+                                    highLightCol = "red")
 {
   if(quantiles)
   {
@@ -1323,7 +1506,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
     if(is.na(noFishID)) next
     if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
-    pdf( file = depCatch_noFish, width = (lenMPlist)*2, height = 6 )
+    pdf( file = depCatch_noFish, width = (lenMPlist)*3, height = 6 )
     par( mfcol = c(2,lenMPlist), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
 
     for( idx in 1:length(mpList) )
@@ -1340,4 +1523,204 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
   }
 }
 
+
+# Plots perf stat tradeoff curves for Herring MPs
+# arguments specify stats for x and y axes,
+# labels and plot ranges for same, and
+# horizontal and vertical lines for 
+# threshold values
+plotPerfStatsTradeoff <- function(  stats = statTable, 
+                                    period = "Short", 
+                                    scenario = scenarios[1],
+                                    xStat = "medProbGt.75NoFish", 
+                                    xLab = expression(P( B[t] > .75*B[NoFish] ) ),
+                                    xLim = c(0,1),
+                                    yStat = "medAvgCatch",
+                                    yLab = "Average Catch (kt)",
+                                    yLim = NULL,
+                                    pchTypes = 1:4,
+                                    vline = .75,
+                                    hline = NA  )
+{
+  subStats <- stats %>%
+              filter( Scenario == scenario,
+                      Period == period )
+
+  MPs <- subStats$Procedure
+
+  # Get the MP idxs for each HCR/HR/cap
+  # HCR
+  noFishMP <- which(grepl("NoFish",MPs))
+  minE18.8MPs <- which(grepl("minE18.8",MPs))
+  minE.5B0MPs <- which(grepl("minE.5B0",MPs))
+  HS30.60MPs <- which(grepl("HS30-60",MPs))
+  # HR
+  HR.1MPs <- which(grepl("HR.1",MPs))
+  HR.2MPs <- which(grepl("HR.2",MPs))
+  # cap
+  capMPs <- which(grepl("cap5",MPs))
+  noCapMPs <- which(!grepl("cap5",MPs))
+
+  yRange <- range(subStats[,yStat])
+  xRange <- range(subStats[,xStat])
+
+  if(is.null(yLim)) yLim <- c(0,max(yRange))
+  if(is.null(xLim)) xLim <- c(0,max(xRange))
+
+  cols <- brewer.pal(n = 3, name = "Dark2")
+
+  # Make a column of pch types
+  subStats$pointType <- numeric(length(MPs))
+  subStats$pointType[intersect(minE18.8MPs,HR.1MPs)] <- pchTypes[1] + 0
+  subStats$pointType[intersect(minE.5B0MPs,HR.1MPs)] <- pchTypes[2] + 0
+  subStats$pointType[intersect(HS30.60MPs,HR.1MPs)] <- pchTypes[3] + 0
+  subStats$pointType[intersect(minE18.8MPs,HR.2MPs)] <- pchTypes[1] + 15
+  subStats$pointType[intersect(minE.5B0MPs,HR.2MPs)] <- pchTypes[2] + 15
+  subStats$pointType[intersect(HS30.60MPs,HR.2MPs)] <- pchTypes[3] + 15
+  subStats$pointType[noFishMP] <- NA
+
+  # Column of point colours
+  subStats$cols <- character(length(MPs))
+  subStats$cols[minE18.8MPs] <- cols[1]
+  subStats$cols[minE.5B0MPs] <- cols[2]
+  subStats$cols[HS30.60MPs] <- cols[3]  
+  subStats$cols[noFishMP] <- NA  
+
+
+  pointY <- jitter(subStats[,yStat], factor = 3, amount = NULL)  
+  pointX <- subStats[,xStat]
+
+  plot( x = xLim, y = yLim, type = "n", xlab = xLab, ylab = yLab )
+    points( x = pointX, y = pointY,
+            pch = subStats$pointType, col = subStats$cols,
+            cex = 2 )
+    abline( h = hline, v = vline, lty = 2, lwd = .8)
+    text( x = pointX[capMPs]+.03, y = pointY[capMPs], 
+          labels = "cap5", cex = .5 )
+
+    panLegend(  x = 0.1, y = 0.3, bty = "n",
+                legTxt = c( "minE18.8_HR.2",
+                            "minE.5B0_HR.2",
+                            "HS30-60_HR.2",
+                            "minE18.8_HR.1",
+                            "minE.5B0_HR.1",
+                            "HS30-60_HR.1"),
+                pch = c(pchTypes+15,pchTypes),
+                col = c(cols,cols),
+                pt.cex = 2 )
+
+
+}
+
+plotComparativeScenarioStatAreaProps <- function( scenList = scenarios[length(scenarios):1],
+                                                  Periods = "2Gen",
+                                                  periodLabels = "2Gen",
+                                                  MPs = MPnames,
+                                                  hlIdx = NULL,
+                                                  fileName = "./statAreaBiomass/statArea23_Cleveland",
+                                                  statName = "ProbStatArea23",
+                                                  midLine = .75,
+                                                  xLim = c(0,1),
+                                                  hzLine = NA,
+                                                  stats = statAreaPropStats,
+                                                  xlabel = expression(paste("P( ", B[23]/B[WCVI] > .25, " )") ) )
+{
+  outputFile <- paste(fileName, ".pdf", sep = "" )
+
+
+  pdf( outputFile, height = 8, width = 6 * length(scenList) )
+
+  par( mfrow = c(1, length(scenList)), mar = c(3,3,3,3), oma = c(3,12,4,3) )
+
+  for( scenIdx in 1:length(scenList) )
+  {
+    scen <- scenList[scenIdx]
+    if( scenIdx == 1 ) MPLabBool <- T
+    else MPLabBool <- F
+
+    plotStatAreaBioClevelands(  scenarioName = scen, 
+                                timePeriods = Periods,
+                                statsTable = stats,
+                                midLine = midLine,
+                                xLim = xLim,
+                                MPorder = MPs,
+                                mpLabs = MPLabBool,
+                                hzLine = hzLine,
+                                highLightIdx = hlIdx,
+                                legend = !MPLabBool )
+    mtext( side = 3, text = scen, cex = 1.3)
+
+    
+
+    
+  }
+
+  mtext( side = 1, outer = T, text = xlabel, line =2 )
+
+  dev.off()
+}
+
+# Cleveland plots from the perfTables
+plotStatAreaBioClevelands <- function(  scenarioName = "WCVI_Mbar10", 
+                                        timePeriods = c("2Gen"),
+                                        periodLabels = c("2Gen"),
+                                        statsTable = stats,
+                                        midLine = NULL,
+                                        xLim = NULL,
+                                        mpLabs = TRUE,
+                                        MPorder = MPs,
+                                        hzLine = NA,
+                                        highLightIdx = hlIdx,
+                                        highLightCol = "red",
+                                        legend = FALSE )
+{
+  # Reduce to scenario
+  subStats <- statsTable %>%
+              dplyr::filter( Scenario == scenarioName,
+                             Period %in% timePeriods )
+
+  if(is.null (MPorder))
+    MPs <- unique(statsTable$Procedure)
+  else MPs <- MPorder
+
+  statAreaJitter <- -1 * seq(from = -.15, to = .15, length = 3 )
+
+  xLim <- c(0,1)
+
+  Q1ColNames <- c("Q1ProbStatArea23","Q1ProbStatArea24","Q1ProbStatArea25")
+  Q2ColNames <- c("Q2ProbStatArea23","Q2ProbStatArea24","Q2ProbStatArea25")
+  medColNames <- c("medProbStatArea23","medProbStatArea24","medProbStatArea25")
+
+  colour <- brewer.pal( n =3, name = "Dark2" )
+
+  plot( x = xLim, y = c(1,length(MPs)), type = "n", las = 1,
+        xlab = "", ylab = "", axes = F )
+    axis( side = 1 )
+    abline( v = midLine, lty = 2, lwd = .8 )
+    for( mpIdx in 1:length(MPs) )
+    {
+      mpStat <- subStats %>%
+                filter( Procedure == MPs[mpIdx] )
+      if(nrow(mpStat) != 1 ) browser()
+      if(mpIdx %in% highLightIdx ) colour <- highLightCol
+      segments( x0 = as.numeric(mpStat[1,Q1ColNames]), 
+                x1 = as.numeric(mpStat[1, Q2ColNames]),
+                y0 = length(MPs) - mpIdx + 1 + statAreaJitter, 
+                y1 = length(MPs) - mpIdx + 1 + statAreaJitter, lwd = 3, col = colour, lty = 1 )
+      points( x = as.numeric(mpStat[1, medColNames]), y = length(MPs) - mpIdx + 1 + statAreaJitter, pch = 15:17, cex = 1.6, col = colour  )
+      abline( h = hzLine, lty = 5, col = "darkgreen" )
+      
+    }
+    if(mpLabs)
+      axis( side = 2, labels = MPs, at = length(MPs):1, las = 1, cex = .8 )
+    else axis( side = 2, labels = NA, at = length(MPs):1 )
+
+    if( legend )
+      panLegend( x = 1.2, y = 0.8,
+                 pch = 15:17,
+                 lwd = 3, lty = 1,
+                 col = colour, 
+                 legTxt = c("statArea 23", "statArea 24", "statArea 25"))
+
+}
 

@@ -5127,6 +5127,11 @@
     abline( h=seq(yLim[1], yLim[2], length=10),   col=.GRIDCOL, lty=.GRIDLTY, lwd=.GRIDLWD )
   }
 
+  if( .ISCAMFLAG )
+  {
+    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
+  }
+
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
   quants <- apply( Ct, 2, quantile, probs=qProbs )

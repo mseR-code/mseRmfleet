@@ -245,6 +245,12 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
  
   # Start timer.
   t1 <- proc.time()[3]
+
+  # Read rep file if included
+  if( !is.null(ctlList$opMod$repFileName) )
+  {
+    ctlList$opMod$repFile <- read.rep(ctlList$opMod$repFileName)
+  }
   
   opMod <- ctlList$opMod
   
@@ -253,6 +259,14 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   tmp <- calcRefPoints( as.ref(opMod) )
   refPts <- deref( tmp )
   cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
+
+  if( !is.null(opMod$posteriorSamples) )
+  {
+    # Set seed and draw random sample of replicates here.
+    set.seed( ctlList$opMod$postSampleSeed )
+    postSampleSize <- ctlList$opMod$postSampleSize
+    ctlList$opMod$posteriorDraws <- sample(x = 1:postSampleSize, size = ctlList$gui$nReps )
+  }
 
   # Create the management procedure object.
   simObj <- .createMP( ctlList, refPts )
@@ -498,7 +512,7 @@ ageLenOpMod <- function( objRef, t )
   Wal   <- obj$refPtList$Wal
   Wal[1] <- 0
 
-  if( !is.null(ctlList$opMod$obsWtAge) & t <= tMP )
+  if( ctlList$opMod$obsWtAge == "repFile" & t <= tMP )
   {
     Wal[2:A] <- obj$om$Wta[t,2:A]
   }
@@ -517,53 +531,7 @@ ageLenOpMod <- function( objRef, t )
   # Selectivity ogives for age-/length-/gear- 
   Salg <- obj$refPtList$Salg
 
-  Salg[1,,] <- 0
-  
-  # avoidance future option: futureOption==1 means that
-  # gear and fishing adjusted to avoid small (sub-legal < 55cm) fish
-  if( ctlList$opMod$futureOption==1 & t > tMP )
-  {
-    for( g in 1:3 )
-    {
-      tmpS <- Salg[ ,, g]
-      tmpS[ Lal < ctlList$opMod$sizeLim[g] ] <- 0.
-      Salg[,,g] <- tmpS       
-    }
-  }
-  
-  # retention future option: futureOption==2 means that
-  # retention probabilities are made knife-edge to simulate
-  # a no high-grading (retention) fishery 
-  if ( ctlList$opMod$futureOption==2 & t > tMP )
-  {
-    L95Dg <- vector("numeric", length=nGear)
-    L50Dg <- vector("numeric", length=nGear)
-    for( g in 1:nGear )
-    {
-        L95Dg[g] <- max(ctlList$opMod$L95Dg[g],
-                    ctlList$opMod$sizeLimFuture[g])
-        L50Dg[g] <- ctlList$opMod$L50Dg[g]
-    }
-    palgPars <- list( sizeLim  = ctlList$opMod$sizeLimFuture,
-                      L50Dg    = L50Dg,
-                      L95Dg    = L95Dg,
-                      nGrps    = nGrps,
-                      nGear    = nGear
-                  )
-    tmpP <- .calcPalg(palgPars,A=A,Lal=Lal)
-    Palg <- tmpP
-  }
-
-  # futureOption==3 means full retention (simulated as retaining
-  # all fish as in the Stratified Random Survey)
-  if( ctlList$opMod$futureOption==3 & t > tMP )
-  {
-    for (a in 1:A)
-    {
-      for (l in 1:nGrps) Palg[a,l,1:3] <- Palg[a,l,5]
-    } 
-  }
-
+  Salg[1,,] <- 0 
   
   sigmaR    <- ctlList$opMod$sigmaR     # std error in log-recruitment
   gammaR    <- ctlList$opMod$gammaR     # autocorrelation in log-recruitment
@@ -579,14 +547,6 @@ ageLenOpMod <- function( objRef, t )
   rec.a     <- obj$refPtList$rec.a     # recruitment slope
   rec.b     <- obj$refPtList$rec.b     # recruitment dd parameter
   R0        <- obj$refPtList$R0        # unfished recruitment
-
-  # if( t==1 )
-  # {
-      tmp <- read.rep(ctlList$opMod$repFileName)
-  #   numAgeYr1_m <- tmp$Nta_m[ctlList$opMod$firstRepYear,]
-  #   numAgeYr1_f <- tmp$Nta_f[ctlList$opMod$firstRepYear,]
-      avgR        <- tmp$rbar
-  # 
 
   recOption   <- ctlList$opMod$recruitmentOption
 
@@ -636,16 +596,43 @@ ageLenOpMod <- function( objRef, t )
 
   # Compute pulse limit
   pulseLim <- ctlList$opMod$pulseMfrac * B0
+
+  if( t == 1 )
+  {
+    if( !is.null(ctlList$opMod$repFileName) )
+    {
+      repFile   <- ctlList$opMod$repFile
+      avgR      <- repFile$rbar   
+      inputFtg  <- repFile$ft
+      inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
+      inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
+      inputNa1  <- c( inputRt[1], inputNa1)
+
+    }
+    if( !is.null( ctlList$opMod$posteriorSamples ) )
+    {
+      postDraw  <- ctlList$opMod$posteriorDraws[ctlList$opMod$repNo]
+      avgR      <- ctlList$opMod$mcmcPar[postDraw,"rbar"]
+      inputFtg  <- ctlList$opMod$inputFtg
+      inputRt   <- ctlList$opMod$inputRt
+      # Use rep file for Na1 until MCMC output is obtained
+      inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
+      inputNa1  <- c( inputRt[1], inputNa1)      
+    }  
+
+    # Now overwrite OM values with input values
+    Ftg[1:67,]    <- inputFtg[1:67,]
+    Rt[1:66]      <- inputRt[1:66]
+  }
   
+  # What to do in year 68?? I feel like ISCAM predicts this..
 
   # Initialise population if t=1, else update variables from last time step.
   if ( t==1 )
   {
     # Recruitment, number-at-age, biomass-at-age
-    Rt[t]     <- obj$ref$R0
     #Nalt[,,t] <- outer( numAgeYr1, rep( obj$refPtList$piOne, nGrps ) )
-    numAgeYr1 <- tmp$N[1,]
-    numAgeYr1 <- c(exp(M[nGrps])*tmp$N[2,1],numAgeYr1)
+    numAgeYr1 <- inputNa1
     Nalt[,1:nGrps,t] <- numAgeYr1
 
     Balt[,,t] <- Nalt[,,t]*Wal
@@ -666,7 +653,7 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( t < tMP ) omegat[t] <- exp(Mt[t]) * tmp$N[t+1,1] / tmpR
+      if( !is.na(Rt[t]) ) omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
@@ -714,16 +701,8 @@ ageLenOpMod <- function( objRef, t )
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
         
   # Solve catch equation for this year's Ftg based on tac allocated among gears
-  solveOK <- FALSE
-  nTimes  <- 0
-  Ftg[t,] <- rep( 0,length(Ftg[t,]) ) 
-  .PAUSE  <<- FALSE
   # if (t >= tMP) browser()
-  if( t < tMP )
-  {
-    Ftg[t,] <- t(tmp$ft)[t,]
-  }
-
+  
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
@@ -2767,7 +2746,7 @@ iscamWrite <- function ( obj )
     .FISHERYCLOSED <<- FALSE  
   
     # Pass the replicate index.
-    ctlList$opMod$rep <- i
+    obj$ctlList$opMod$rep <- i
   
     # Set random number seed in a way that can be reconstructed later.
     set.seed( ctlList$opMod$rSeed + i )
@@ -3120,6 +3099,98 @@ iscamWrite <- function ( obj )
   rep   <- ctlList$opMod$rep
   nGear <- ctlList$opMod$nGear
   nGrps <- ctlList$opMod$nGrps
+
+  if( !is.null(ctlList$opMod$posteriorSamples) ) 
+  {
+    cat(  "\nMSG (.initPop) Sampling posterior for historical period, \n",
+          "\nMSG (.initPop) Initialisation may take longer than usual.\n", sep = "" )
+
+    # Get posterior sample number
+    repNo     <- ctlList$opMod$rep
+    postDraw  <- ctlList$opMod$posteriorDraws[repNo]
+
+    # Read in mcmc samples
+    mcmcMpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcMt.csv")
+    mcmcFpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcFt.csv")
+    mcmcRtpath    <- file.path(ctlList$opMod$posteriorSamples,"mcmcRt.csv")
+    mcmcParpath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
+
+    mcmcM         <- read.csv( mcmcMpath, header = T, stringsAsFactors = FALSE)
+    mcmcF         <- read.csv( mcmcFpath, header = T, stringsAsFactors = FALSE)
+    mcmcRt        <- read.csv( mcmcRtpath, header = T, stringsAsFactors = FALSE)
+    mcmcPar       <- read.csv( mcmcParpath, header = T, stringsAsFactors = FALSE)
+
+    # Create a new inputF matrix
+    inputFtg  <- matrix( nrow = nT, ncol = 5 )
+    inputRt   <- numeric(length = nT)
+    for( g in 1:5 )
+    {
+      gearName <- paste("gear",g, sep = "")
+      cols <- which(grepl( pattern = gearName, x = colnames(mcmcF) ))
+      inputFtg[1:(tMP-1),g] <- as.numeric(mcmcF[postDraw,cols])
+    }
+
+    # Creat input Rt vector, adjust for age-1 recruitment
+    inputRt[1:67] <- as.numeric(mcmcRt[postDraw,2:68] * exp(mcmcM[postDraw,1:67] ) )
+    # inputRt[1]    <- mcmcPar[postDraw,"rbar_ag1"] * exp(mcmcM[postDraw,1])
+
+    # Update Mdevs for inserting into history
+    obj$ctlList$opMod$estMdevs <- list( M = t(as.matrix(mcmcM[postDraw,], nrow = 1) ) )
+
+    # Now save the sample draws to new parts of opMod list
+    # for use in solveInitPop
+    obj$ctlList$opMod$inputFtg    <- inputFtg
+    obj$ctlList$opMod$inputRt     <- inputRt
+    obj$ctlList$opMod$mcmcPar     <- mcmcPar[postDraw,]
+
+    # Update biological parameters for reference
+    # point calculations
+    obj$ctlList$opMod$B0          <- as.numeric( mcmcPar[postDraw, "sbo"] )
+    obj$ctlList$opMod$M           <- as.numeric( mcmcPar[postDraw, "m"] )
+    obj$ctlList$opMod$recM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "mean" )
+      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "1.5jump" )
+      obj$ctlList$opMod$endM        <- 1.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endM == "0.5jump" )
+      obj$ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+
+    # Will need to recalculate Salg from here, rather than re-calling refPts
+    obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])
+    obj$ctlList$opMod$L95Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")] +
+                                      log(19) * mcmcPar[postDraw, c("sel_sd1","sel_sd2","sel_sd3","sel_sd4","sel_sd5")] )
+    obj$ctlList$opMod$qg          <- c(1,1,1, as.numeric(mcmcPar[postDraw,c("q1","q2")]) )
+    obj$ctlList$opMod$rSteepness  <- as.numeric(mcmcPar[postDraw,"h"])
+
+    # Recalculate variance parameters from EIV pars
+    varTheta  <- as.numeric(mcmcPar[postDraw, "vartheta"])
+    varRho    <- as.numeric(mcmcPar[postDraw, "rho"])
+    tau2      <- varRho * varTheta
+    sigma2R   <- (1 - varRho) * varTheta
+
+    obj$ctlList$opMod$tauIndexg <- c(sqrt(tau2), sqrt(tau2)/1.167)
+    obj$ctlList$opMod$sigmaR    <- sqrt(sigma2R)
+
+    # Other variance parameters (ageing error) are not reported
+    # so we can leave those alone for now.
+
+    # recalculate selectivity and overwrite recruitment parameters
+    mcmcOpMod <- obj$ctlList$opMod
+    mcmcSched <- .calcSchedules( mcmcOpMod )
+    obj$refPtList$Salg  <- mcmcSched$Salg
+
+    # Get B0 and steepness
+    B0 <- mcmcOpMod$B0
+    rSteepness <- mcmcOpMod$rSteepness
+
+    # overwrite recruitment pars
+    obj$refPtList$R0    <- as.numeric(mcmcPar[postDraw, "ro"])
+    obj$refPtList$rec.a <- 4.*rSteepness*obj$refPtList$R0 / ( B0*(1.-rSteepness) )
+    obj$refPtList$rec.b  <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
+
+  }
+
+  ctlList <- obj$ctlList
   
   #----------------------------------------------------------------------------#
   #-- CATCH DATA                                                             --#
@@ -3198,10 +3269,14 @@ iscamWrite <- function ( obj )
       obj$om$Mt <- rep( ctlList$opMod$M[1:nGrps], nT )
   }
 
-  if( !is.null( ctlList$opMod$estMdevs) )
+  if( !is.null(ctlList$opMod$estMdevs ) )
   {
-    Mta <- ctlList$opMod$estMdevs$M
-    obj$om$Mt[1:(tMP-1)] <- Mta[,1]
+    # Get M time series from repFile or from MCMC samples
+    estMdevs <- ctlList$opMod$estMdevs
+    if( estMdevs == "repFile" )
+      estMdevs <- ctlList$opMod$repFile
+
+    obj$om$Mt[1:(tMP-1)] <- estMdevs$M[,1]
 
     if( !is.null(ctlList$opMod$kYearsMbar) )
     {
@@ -3233,18 +3308,12 @@ iscamWrite <- function ( obj )
     obj$om$pulseMt[pulseYrs] <- obj$om$Mt[pulseYrs] * ctlList$opMod$pulseMSize
   }
 
-  if( !is.null( ctlList$opMod$obsWtAge) )
+  if( ctlList$opMod$obsWtAge == "repFile" )
   {
+    obsWtAge <- ctlList$opMod$repFile
     obj$om$Wta <- matrix(0, ncol = nAges, nrow = nT )
-
-    if(ctlList$opMod$oldRep)
-    {
-      obsWtAge <- ctlList$opMod$obsWtAge$wt_obs
-      obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[1:(tMP-1),]  
-    } else {
-      obsWtAge <- ctlList$opMod$obsWtAge$d3_wt_avg
-      obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
-    }
+    obsWtAge <- obsWtAge$d3_wt_avg
+    obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
 
     # Need to update how this is done...
     obj$om$Wta[(tMP):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP + 1), 
@@ -3362,6 +3431,9 @@ iscamWrite <- function ( obj )
   #----------------------------------------------------------------------------#
   #-- Initialize population and fishery history                              --#
   #----------------------------------------------------------------------------#
+
+  # Need to update reference points for MCMC draws
+
 
   # Given target depletion level and stochastic recruitment find the catches
   # Ct[1:tMP-1] that give stock status as near as possible to target depletion at tMP-1.

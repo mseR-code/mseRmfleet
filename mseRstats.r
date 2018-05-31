@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------#
 #-- Performance statistics functions                                         --#
 #------------------------------------------------------------------------------#
-
+library(dplyr)
 # .calcPerfStats (Calculate performance statistics by calling .calcStatsXXX).
 # Purpose:       Calculate various performance statistics with the function
 #                name .calcStatsXXX, where XXX determined the statistics.
@@ -73,6 +73,7 @@
                     "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
+                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
                     "medPropClosure","Q1PropClosure","Q2PropClosure")
 
@@ -82,6 +83,31 @@
 
   # Set the results to noSimVal
   result[ ,statNames ] <- noSimVal
+
+  # Create a list to hold the NoFish MP for each scenario
+  scenarios <- unique(trackData$scenario)
+  scenarios <- scenarios[ scenarios != "" ]
+  noFishBlobs <- vector(mode= "list", length = length(scenarios) )
+  names(noFishBlobs) <- scenarios
+
+  noFishTrack <-  trackData %>%
+                  filter( mp == "NoFish" )
+
+  for( scenIdx in 1:length(scenarios) )
+  {
+    scenarioName <- scenarios[scenIdx]
+    scenNoFishTrack <-  noFishTrack %>%
+                        filter( scenario == scenarioName )
+
+    simFile     <- scenNoFishTrack[ 1, "simFile" ]
+    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+
+    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+    load( file=simFilePath )
+    assign( "blob", blob, pos=1 )
+    noFishBlobs[[scenarioName]] <- blob
+  }
 
   # Initialize row counter.
   iRow    <- 0
@@ -156,6 +182,9 @@
       result[ iRow, "t1"     ]     <- period$Year1[j]
       result[ iRow, "t2"     ]     <- period$Year2[j]
 
+      # Pull scenario name to scale Bt by NoFish
+      scenarioName <- trackData[i,"scenario"]
+
       # Usefull for trend statistics.
       t1 <- result[ iRow, "t1" ]
       t2 <- result[ iRow, "t2" ]
@@ -170,6 +199,11 @@
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
+
+        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+        noFishBt <- noFishBt[,2:ncol(noFishBt)]
+
+        noFishDept <- Bt / noFishBt
 
       }
    
@@ -781,17 +815,24 @@
   tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
   tmp[ Bt >= refPt ] <- 1
 
-  # Count the number of years in each replicate where where Bt > refPt.
-  val <- apply( tmp,1,sum )
+  if( ncol(Bt) == 1 )
+  {
+    pVal <- sum(tmp) / nrow(tmp)
+    return(pVal)
+  } else {
+    # Count the number of years in each replicate where where Bt > refPt.
+    val <- apply( tmp,1,sum )
 
-  # Calculate the proportion of years in each replicate where Bt > refPt.
-  pVal <- val / ncol( Bt )
+    # Calculate the proportion of years in each replicate where Bt > refPt.
+    pVal <- val / ncol( Bt )
 
-  # browser()
+    # browser()
 
-  # Compute the mean proportion of years GT refPt.
-  result <- quantile( pVal, probs, na.rm = T )
-  result
+    # Compute the mean proportion of years GT refPt.
+    result <- quantile( pVal, probs, na.rm = T )
+    result
+  }
+  
 }
 
 # .calcStatsTarget (Calculate target statistics WRT dep, time, certainty)

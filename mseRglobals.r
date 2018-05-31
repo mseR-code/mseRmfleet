@@ -154,7 +154,11 @@ if( .ISCAMFLAG )
 
 # Reference point grid - used by calcRefCurves in mseRrefPoints.r.
 .nFVALS <- 100
+<<<<<<< HEAD
 .MAXF   <- 3                    # Multiplier of M in generating yield curves
+=======
+.MAXF   <- .5                   # Multiplier of M in generating yield curves
+>>>>>>> WCVI
 .MAXIT  <- 50                   # Max iterations for solving F multipliers fg in refpts
 .FGINIT <- rep(-2,5)            # Initial Fgs given to optim to solve allocation prob
 

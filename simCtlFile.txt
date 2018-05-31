@@ -1,8 +1,13 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
 gui$mpLabel "NoFish"
+<<<<<<< HEAD
 gui$nReps 1
 gui$scenarioLabel "SOG_jumpM"
+=======
+gui$nReps 20
+gui$scenarioLabel "WCVI"
+>>>>>>> WCVI
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -169,12 +174,20 @@ opMod$kYearsMbar NULL
 opMod$endM 0.9
 opMod$endMphase 1
 opMod$futureOption 3
+<<<<<<< HEAD
 opMod$oldRep TRUE
 opMod$repFile read.rep('mserproject/history/iscamconM.rep')
 opMod$estMdevs read.rep('mserproject/history/iscamconM.rep')
 opMod$estQdevs read.rep('mserproject/history/iscamconM.rep')
 opMod$estRecDevs read.rep('mserproject/history/iscamconM.rep')
 opMod$fg c(1.0000000,1.000,0.4361168,0.1,0.1)
+=======
+opMod$repFile NULL
+opMod$estMdevs "repFile"
+opMod$estQdevs NULL
+opMod$estRecDevs NULL
+opMod$fg c(1.0000000,1.22315243,0.4361168,0.1,0.1)
+>>>>>>> WCVI
 opMod$firstRepYear 1
 opMod$gammaM 0
 opMod$gammaR 0.
@@ -198,7 +211,11 @@ opMod$maxF 3
 opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
+<<<<<<< HEAD
 opMod$obsWtAge read.rep('mserproject/history/iscamconM.rep')
+=======
+opMod$obsWtAge "repFile"
+>>>>>>> WCVI
 opMod$nT 92
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMfrac 0.3
@@ -210,7 +227,14 @@ opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.610019
 opMod$repFileName 'mserproject/history/iscamconM.rep'
 opMod$rSeed 1270
+<<<<<<< HEAD
 opMod$rSteepness 0.668004
+=======
+opMod$rSteepness 0.73723
+opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$postSampleSize 5000
+opMod$postSampleSeed 2335
+>>>>>>> WCVI
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
 opMod$sigmaM 0

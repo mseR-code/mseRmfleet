@@ -2,18 +2,47 @@
 #
 parameter value
 #
-# Scenario 1: SOG_conM
+# Scenario 1: SOG_PulseM_1.5x6
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "SOG_conM"
+scenario$scenario1$gui$scenarioLabel "SOG_PulseM_1.5x16"
+scenario$scenario1$opMod$pulseMfrac 0.3
+scenario$scenario1$opMod$pulseMFrq 16
+scenario$scenario1$opMod$pulseMSize 1.5
+scenario$scenario1$opMod$endM "mean"
+scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
+scenario$scenario1$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
 #
-# Scenario 1: SOG_jumpM
+# Scenario 1: SOG_Mbar10
 #
 scenario$scenario2$gui$nReps 100
-scenario$scenario2$gui$scenarioLabel "SOG_jumpM"
-scenario$scenario2$opMod$endM 0.9
-scenario$scenario2$opMod$kYearsMbar NULL
-scenario$scenario2$opMod$endMphase 1
+scenario$scenario2$gui$scenarioLabel "SOG_Mbar10"
+scenario$scenario2$opMod$kYearsMbar 10
+scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
+scenario$scenario2$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
+#
+# Scenario 3: SOG_conM
+#
+scenario$scenario3$opMod$kYearsMbar NULL
+scenario$scenario3$gui$nReps 100
+scenario$scenario3$gui$scenarioLabel "SOG_conM"
+scenario$scenario3$opMod$sigmaM 0
+scenario$scenario3$opMod$endM "mean"
+scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/SOG/conM/"
+scenario$scenario3$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
+scenario$scenario3$mp$data$inputAges NULL
+#
+# Scenario 4: SOG_1.5conM
+#
+scenario$scenario4$opMod$kYearsMbar NULL
+scenario$scenario4$gui$nReps 100
+scenario$scenario4$gui$scenarioLabel "SOG_.15conM"
+scenario$scenario4$opMod$sigmaM 0
+scenario$scenario4$opMod$endM "1.5jump"
+scenario$scenario4$opMod$endMphase 1
+scenario$scenario4$opMod$posteriorSamples "mserproject/history/localPost/SOG/conM/"
+scenario$scenario4$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
+scenario$scenario4$mp$data$inputAges NULL
 #
 ## Management Procedures
 #
