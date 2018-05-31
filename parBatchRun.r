@@ -1,7 +1,7 @@
-  library(parallel)
+library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
-batchFiles <- 1:26
+batchFiles <- 1:52
 # batchFiles <- c(9:12,21:24)
 nBatchFiles <- length(batchFiles)
 batchFolderNames <- paste("mseRBat",batchFiles,sep = "")
@@ -62,7 +62,7 @@ startDate <- date()
 batchFolderNames <- file.path(getwd(),batchFolderNames)
 # browser()
 
-tmp     <- parLapply(cl, X=batchFolderNames, fun=doBatchRun)
+tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 # tmp <-lapply(X=file.path(getwd(),batchFolderNames), FUN=doBatchRun)
 stopCluster(cl)
 
@@ -71,7 +71,7 @@ for (idx in (1:length(batchFiles)))
 {
   i <- batchFiles[idx]
   # Find the sim output folder in the project file
-  batchProjDir <- file.path(batchFolderNames[i],"mseRproject")
+  batchProjDir <- file.path(batchFolderNames[idx],"mseRproject")
   dirContents <- list.dirs(batchProjDir, full.names=FALSE,
                                   recursive=FALSE)
   simFolder <- try(dirContents[grep(pattern="sim",x=dirContents)])
@@ -100,8 +100,8 @@ for (idx in (1:length(batchFiles)))
   # Now copy the completed simulation
   try(file.copy(from=source,to=destination,recursive=TRUE))
 
-  cat("Removing folder ", batchFolderNames[i], "\n", sep="")
-  # system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
+  cat("Removing folder ", batchFolderNames[idx], "\n", sep="")
+  system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
   options(warn=1)
 }
 elapsed <- (proc.time() - tBegin)[ "elapsed" ]
