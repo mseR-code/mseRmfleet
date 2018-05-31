@@ -1535,6 +1535,9 @@ callProcedureISCAM <- function( obj, t )
   # Will need to update surveys to 0 prop, renormalise
 
   caObj$catchType     <- 1 # hard coded to biomass
+  if(opMod$endM == "mean")
+    endM <- mean( blob$om$Mt[1,2:68] )
+  if( opMod$endM == ".5")
   caObj$M             <- mean(opMod$endM)
 
   # growth pars
@@ -3124,7 +3127,7 @@ iscamWrite <- function ( obj )
     # inputRt[1]    <- mcmcPar[postDraw,"rbar_ag1"] * exp(mcmcM[postDraw,1])
 
     # Update Mdevs for inserting into history
-    ctlList$opMod$estMdevs <- list( M = t(as.matrix(mcmcM[postDraw,], nrow = 1) ) )
+    obj$ctlList$opMod$estMdevs <- list( M = t(as.matrix(mcmcM[postDraw,], nrow = 1) ) )
 
     # Now save the sample draws to new parts of opMod list
     # for use in solveInitPop
@@ -3138,11 +3141,11 @@ iscamWrite <- function ( obj )
     obj$ctlList$opMod$M           <- as.numeric( mcmcPar[postDraw, "m"] )
     obj$ctlList$opMod$recM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "mean" )
-      ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
+      obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "1.5jump" )
-      ctlList$opMod$endM        <- 1.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+      obj$ctlList$opMod$endM        <- 1.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
     if( obj$ctlList$opMod$endM == "0.5jump" )
-      ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+      obj$ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
     obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])
@@ -3178,6 +3181,8 @@ iscamWrite <- function ( obj )
     obj$refPtList$rec.b  <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
 
   }
+
+  ctlList <- obj$ctlList
   
   #----------------------------------------------------------------------------#
   #-- CATCH DATA                                                             --#
