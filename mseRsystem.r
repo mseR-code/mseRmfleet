@@ -5059,3 +5059,45 @@ tsBoot <- function ( seed = NULL, x = histData, length = nT,
   }
   return ( Yt )  
 }
+
+.quantileStratSample <- function(  seed = NULL,
+                                  post = SOGtvMpost, par1 = "h", par2 = "SSB",
+                                  nBreaks = 10 )
+{
+  if( !is.null(seed) )
+    set.seed(seed)
+
+  pctiles <- seq(1/nBreaks,1,length = nBreaks)
+
+  par1Quant <- quantile( x = post[,par1], probs = pctiles )
+
+  par1Breaks <- c(0,par1Quant)
+
+  samples <- numeric(length = length(pctiles)^2 )
+
+  for( k in 1:nBreaks )
+    {
+      LB <- par1Breaks[k]
+      UB <- par1Breaks[k+1]
+
+      rowIdx1 <- which(post[,par1] > LB & post[,par1] <= UB  )
+      par2CondQuants <- quantile( x = post[rowIdx1,par2], probs = pctiles )
+      
+      par2CondBreaks <- c( 0, par2CondQuants )
+
+      for( j in 1:nBreaks )
+      {
+        condLB <- par2CondBreaks[j]
+        condUB <- par2CondBreaks[j+1]
+
+        rowIdx2 <- which( post[,par2] > condLB & post[,par2] <= condUB )
+
+        rowIdx <- intersect(rowIdx1, rowIdx2)
+        if(length(rowIdx) == 0) browser()
+        samples[j + (k-1)*nBreaks ] <- sample( x = rowIdx, size = 1 )
+      }
+
+    }  
+
+  samples
+}
