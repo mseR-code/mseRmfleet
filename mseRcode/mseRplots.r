@@ -13598,12 +13598,7 @@ plotRefPts <- function( obj )
     depTRP <- .TRPHerring
 
     abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
-<<<<<<< HEAD
     abline( h = depUSR, lty = 2, col = "darkgreen", lwd = 2 )
-=======
-    abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
-    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
->>>>>>> WCVI
 
     if( gfx$doLegend )
       panLegend(  x = .2, y =.5, bty = "n",

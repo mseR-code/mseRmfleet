@@ -2,7 +2,7 @@
 parameter value
 gui$mpLabel "minE21.2_HR.2"
 gui$nReps 100
-gui$scenarioLabel "SOG_conM"
+gui$scenarioLabel "SOG_tvM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -166,6 +166,7 @@ opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
 opMod$endM 0.610019
+opMod$endMrule NULL
 opMod$endMphase NULL
 opMod$futureOption 3
 opMod$repFile NULL
@@ -214,7 +215,7 @@ opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
-opMod$sigmaM 0
+opMod$sigmaM 0.1
 opMod$sigmaR 0.704871
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
@@ -224,7 +225,7 @@ opMod$kBoot 10
 opMod$bootTolSD .1
 opMod$bootTolMult 1
 opMod$volSizeRelease c(65,65,65,65,65)
-opMod$tauAgeg c(0.4383583,0.2838123,0.4001212)
+opMod$tauAgeg c(0.4356639,0.2798076,0.3896216)
 opMod$tauIndexg c(0.446474,0.3825827)
 opMod$tauReleaseg c(0.42436000,0.83308600,0.65831000,0,0)
 opMod$tMP 68

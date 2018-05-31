@@ -2227,26 +2227,18 @@ iscamWrite <- function ( obj )
   {
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlObj$mp$data$inputCatch
-    if( ctlObj$opMod$oldRep ) # If using old ISCAM input
-    {
-      catch <- catch$ct
-      for( g in 1:3 )
-        om$Ctg[1:(tMP - 1 ),g] <- catch[g,]
-    }
-    else # using new iscam-pbs input
-    {
-      catch <- catch$dCatchData
-      catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
-      years <- catch[,1]
-      times <- years - .INITYEAR + 1
-      gears <- catch[,2]
+    
+    catch <- catch$dCatchData
+    catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
+    years <- catch[,1]
+    times <- years - .INITYEAR + 1
+    gears <- catch[,2]
 
-      gearNums <- unique(gears)
-      for( g in gearNums )
-      {
-        gearTimes <- times[gears == g]
-        om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
-      }
+    gearNums <- unique(gears)
+    for( g in gearNums )
+    {
+      gearTimes <- times[gears == g]
+      om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
     }
     
 
@@ -3148,12 +3140,14 @@ iscamWrite <- function ( obj )
     obj$ctlList$opMod$B0          <- as.numeric( mcmcPar[postDraw, "sbo"] )
     obj$ctlList$opMod$M           <- as.numeric( mcmcPar[postDraw, "m"] )
     obj$ctlList$opMod$recM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
-    if( obj$ctlList$opMod$endM == "mean" )
+    if( obj$ctlList$opMod$endMrule == "mean" )
       obj$ctlList$opMod$endM        <- mean( as.numeric( mcmcM[postDraw, ] ) )
-    if( obj$ctlList$opMod$endM == "1.5jump" )
+    if( obj$ctlList$opMod$endMrule == "1.5jump" )
       obj$ctlList$opMod$endM        <- 1.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
-    if( obj$ctlList$opMod$endM == "0.5jump" )
+    if( obj$ctlList$opMod$endMrule == "0.5jump" )
       obj$ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
+    if( obj$ctlList$opMod$endMrule == "0.75jump" )
+      obj$ctlList$opMod$endM        <- 0.75 * mean( as.numeric( mcmcM[postDraw, ] ) )
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
     obj$ctlList$opMod$L50Cg1      <- as.numeric(mcmcPar[postDraw, c("sel_gear1","sel_gear2","sel_gear3","sel_gear4","sel_gear5")])
