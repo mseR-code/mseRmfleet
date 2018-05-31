@@ -1,13 +1,8 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "NoFish"
-<<<<<<< HEAD
-gui$nReps 1
-gui$scenarioLabel "SOG_jumpM"
-=======
-gui$nReps 20
-gui$scenarioLabel "WCVI"
->>>>>>> WCVI
+gui$mpLabel "minE21.2_HR.2"
+gui$nReps 100
+gui$scenarioLabel "SOG_tvM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -85,10 +80,9 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(68,92,1)"
 mp$data$idxAges2 "c(68,92)"
 mp$data$indexType "c(1,1)"
-#$mp$data$inputAges #read.rep('mserproject/history/iscamconM.rep')
 mp$data$inputAges NULL
-mp$data$inputCatch read.rep('mserproject/history/iscamconM.rep')
-mp$data$inputIndex read.rep('mserproject/history/iscamconM.rep')
+mp$data$inputCatch read.rep('mserproject/history/iscamSOG2017.rep')
+mp$data$inputIndex read.rep('mserproject/history/iscamSOG2017.rep')
 mp$data$k1Ages "c(1,1,1)"
 mp$data$k1Index "c(1,1)"
 mp$data$k2Ages "c(1,1,1)"
@@ -128,7 +122,7 @@ mp$hcr$lowerTrendPct 0.1
 mp$hcr$maxDeltaTACc NULL
 mp$hcr$maxDeltaTACf NULL
 mp$hcr$minDeltaTACup 0.
-mp$hcr$deltaTACcType "relative"
+mp$hcr$deltaTACcType "absolute"
 mp$hcr$nMCMC 1
 mp$hcr$nProjYears 5
 mp$hcr$nThin 1
@@ -152,7 +146,7 @@ mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 21.2
-mp$hcr$targHRHerring .1
+mp$hcr$targHRHerring .2
 mp$hcr$trendYears 0
 mp$hcr$updateRefPts TRUE
 mp$hcr$upperBoundMult 0.6
@@ -171,23 +165,15 @@ opMod$c1 c(4.5e-6)
 opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
-opMod$endM 0.9
-opMod$endMphase 1
+opMod$endM 0.610019
+opMod$endMrule NULL
+opMod$endMphase NULL
 opMod$futureOption 3
-<<<<<<< HEAD
-opMod$oldRep TRUE
-opMod$repFile read.rep('mserproject/history/iscamconM.rep')
-opMod$estMdevs read.rep('mserproject/history/iscamconM.rep')
-opMod$estQdevs read.rep('mserproject/history/iscamconM.rep')
-opMod$estRecDevs read.rep('mserproject/history/iscamconM.rep')
-opMod$fg c(1.0000000,1.000,0.4361168,0.1,0.1)
-=======
 opMod$repFile NULL
 opMod$estMdevs "repFile"
 opMod$estQdevs NULL
 opMod$estRecDevs NULL
 opMod$fg c(1.0000000,1.22315243,0.4361168,0.1,0.1)
->>>>>>> WCVI
 opMod$firstRepYear 1
 opMod$gammaM 0
 opMod$gammaR 0.
@@ -211,11 +197,7 @@ opMod$maxF 3
 opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
-<<<<<<< HEAD
-opMod$obsWtAge read.rep('mserproject/history/iscamconM.rep')
-=======
 opMod$obsWtAge "repFile"
->>>>>>> WCVI
 opMod$nT 92
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMfrac 0.3
@@ -225,19 +207,15 @@ opMod$qg c(1,1,1,0.797945,0.996262)
 opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.610019
-opMod$repFileName 'mserproject/history/iscamconM.rep'
+opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
 opMod$rSeed 1270
-<<<<<<< HEAD
-opMod$rSteepness 0.668004
-=======
-opMod$rSteepness 0.73723
-opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$rSteepness 0.775463
+opMod$posteriorSamples "mserproject/history/localPost/SOG/conM/"
 opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
->>>>>>> WCVI
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
-opMod$sigmaM 0
+opMod$sigmaM 0.1
 opMod$sigmaR 0.704871
 opMod$sizeLim c(1,1,1,1,1)
 opMod$sizeLimFuture c(1,1,1,1,1)
@@ -247,7 +225,7 @@ opMod$kBoot 10
 opMod$bootTolSD .1
 opMod$bootTolMult 1
 opMod$volSizeRelease c(65,65,65,65,65)
-opMod$tauAgeg c(0.4383583,0.2838123,0.4001212)
+opMod$tauAgeg c(0.4356639,0.2798076,0.3896216)
 opMod$tauIndexg c(0.446474,0.3825827)
 opMod$tauReleaseg c(0.42436000,0.83308600,0.65831000,0,0)
 opMod$tMP 68
