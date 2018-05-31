@@ -96,7 +96,7 @@ mp$data$useAges "c(1,2,3)"
 mp$data$useIndex "c(4,5)"
 mp$hcr$binQuota 10
 mp$hcr$catchFloor 0
-mp$hcr$catchCeiling 5.0
+mp$hcr$catchCeiling NULL
 mp$hcr$consTAC 2.4
 mp$hcr$ctlPtFreq 1
 mp$hcr$Dec1a 0.01
