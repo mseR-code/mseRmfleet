@@ -2,7 +2,7 @@
 parameter value
 gui$mpLabel "minE21.2_HR.2"
 gui$nReps 100
-gui$scenarioLabel "SOG_tvM"
+gui$scenarioLabel "SOG_tvM_post"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
