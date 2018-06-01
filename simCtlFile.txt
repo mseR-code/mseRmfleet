@@ -1,7 +1,8 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "minE21.2_HR.2"
+gui$mpLabel "PerfectInfo_minE21.2_HR.2"
 gui$nReps 100
+gui$quiet TRUE
 gui$scenarioLabel "SOG_tvM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
