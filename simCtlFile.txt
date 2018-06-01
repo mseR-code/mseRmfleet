@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "PerfectInfo_minE21.2_HR.2"
+gui$mpLabel "PerfectInfo_HS30-60_HR.2"
 gui$nReps 100
 gui$quiet TRUE
 gui$scenarioLabel "SOG_tvM"
@@ -135,7 +135,7 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase "rrBaseFinput"
 mp$hcr$remRefSource "rrSrceEst"
-mp$hcr$rule "herring"
+mp$hcr$rule "linear"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05
@@ -209,7 +209,7 @@ opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.610019
 opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
-opMod$rSeed 1270
+opMod$rSeed 1275
 opMod$rSteepness 0.775463
 opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
 opMod$postSampleSize 5000
