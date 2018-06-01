@@ -241,7 +241,9 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   
   ctlPars <- .readParFile( ctlFile )
   ctlList <- .createList( ctlPars )
-  cat( "\nMSG (runMSE) Parameter list created.\n" )
+
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (runMSE) Parameter list created.\n" )
  
   # Start timer.
   t1 <- proc.time()[3]
@@ -255,10 +257,12 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   opMod <- ctlList$opMod
   
   # Calculate life history schedules and OM equilibrium reference points.  
-  cat( "\nMSG (.createMP) Calculating reference points...\n ")
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.createMP) Calculating reference points...\n ")
   tmp <- calcRefPoints( as.ref(opMod) )
   refPts <- deref( tmp )
-  cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
 
   if( !is.null(opMod$posteriorSamples) )
   {
@@ -295,7 +299,8 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   # Make the simulation folder.
   simFolder <- paste( "sim", stamp, sep="" )
   dir.create( file.path( .PRJFLD, simFolder ) )
-  cat( "\nMSG (runMSE) Created simulation folder ",simFolder,"in",.PRJFLD,"\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (runMSE) Created simulation folder ",simFolder,"in",.PRJFLD,"\n" )
 
   # Save the simXXX.Rdata version of the blob to the simulation folder.
   blobFilePath <- file.path( .PRJFLD,simFolder,blobFileName )
@@ -1947,7 +1952,8 @@ iscamWrite <- function ( obj )
   cat ( file=topDat, ctlFile, "\n", append = T)
   cat ( file=topDat, pfcFile, "\n", append = T)
 
-  cat ("\nMSG (writeISCAM) EM dat and ctl files created.\n", sep = "")
+  # if( !ctlList$gui$quiet )
+  #   cat ("\nMSG (writeISCAM) EM dat and ctl files created.\n", sep = "")
   return()
 }
 
@@ -2304,13 +2310,14 @@ iscamWrite <- function ( obj )
       gearTimes <- times[gears == g]
       om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
     }
-
-    cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
     .CATCHSERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating catch from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating catch from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2342,13 +2349,15 @@ iscamWrite <- function ( obj )
     #      probably determine this on the fly, or else make sure it is
     #      always done this way. I suppose that ncol>nrow could be used
     #      to test whether transpose is needed, except in very data-limited case.
-
-    cat( "\nMSG (.createMP) Read stock abundance indices from file.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read stock abundance indices from file.\n" )
+    
     .INDEXSERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating indices from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating indices from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2383,13 +2392,14 @@ iscamWrite <- function ( obj )
     }
 
     
-    
-    cat( "\nMSG (.createMP) Read age data from file.\n" )    
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read age data from file.\n" )    
     .AGESERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating ages from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating ages from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2401,13 +2411,15 @@ iscamWrite <- function ( obj )
     other <- ctlObj$opModData$other
     print( other )
     print( names(other) )
-    
-    cat( "\nMSG (.createMP) Read other data from file.\n" )    
+
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read other data from file.\n" )    
     scan()
   }
   else
   {
-    cat( "\nMSG (.createMP) No other calculations from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) No other calculations from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2792,8 +2804,9 @@ iscamWrite <- function ( obj )
   
   # Loop over simulation replicates.
   .LASTSOLUTION <<- NULL
-  
-  cat( "\nMSG (.mgmtProc) Running feedback loop...\n" ) 
+  if(!obj$ctlList$gui$quiet)
+    cat( "\nMSG (.mgmtProc) Running feedback loop...\n" ) 
+
   for ( i in 1:nReps )
   {
     # Initialize .DEADFLAG and .FISHERYCLOSED
@@ -2814,7 +2827,8 @@ iscamWrite <- function ( obj )
     # Initialise simulation object for t=1,2,...tMP-1 pre-MP period.
     obj <- deref( .initPop( as.ref(obj) ) )
 
-    cat( "\nMSG (.mgmtProc) Elapsed time in .initPop = ", proc.time()[3]-t1, "\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.mgmtProc) Elapsed time in .initPop = ", proc.time()[3]-t1, "\n" )
     
     # Initialize annual biomass assessments and target F
     #obj$mp$hcr$targetFt <- rep( NA,nT )
@@ -2923,8 +2937,12 @@ iscamWrite <- function ( obj )
     blob$mp$assess$retroExpBt[ startRow:endRow, ]   <- cbind( reps, obj$mp$assess$retroExpBt )
     
     diffTime <- proc.time()[3] - startTime
-    writeProgress( i, nReps )
-    cat( "Elapsed time = ", diffTime, "\n" )
+    if(!obj$ctlList$gui$quiet)
+    {
+      writeProgress( i, nReps )
+      cat( "Elapsed time = ", diffTime, "\n" )  
+    }
+    
   
   }     # End simulation loop.
   
@@ -3159,8 +3177,9 @@ iscamWrite <- function ( obj )
 
   if( !is.null(ctlList$opMod$posteriorSamples) ) 
   {
-    cat(  "\nMSG (.initPop) Sampling posterior for historical period, \n",
-          "\nMSG (.initPop) Initialisation may take longer than usual.\n", sep = "" )
+    if(!obj$ctlList$gui$quiet)
+      cat(  "\nMSG (.initPop) Sampling posterior for historical period, \n",
+            "\nMSG (.initPop) Initialisation may take longer than usual.\n", sep = "" )
 
     # Get posterior sample number
     repNo     <- ctlList$opMod$rep
@@ -3276,14 +3295,15 @@ iscamWrite <- function ( obj )
     }
 
     obj$om$Ctg[is.na(obj$om$Ctg)] <- 0
-
-    cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
     .CATCHSERIESINPUT <<- TRUE         
   }
   
   if ( is.null( ctlList$mp$data$inputCatch ) )
   {
-    cat( "\nMSG (.initPop) Calculating catch from operating model.\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Calculating catch from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -3423,7 +3443,9 @@ iscamWrite <- function ( obj )
     # Finally replace recruitment deviations from file in the omegat.
     omegat[(1+recDevsOffset):(length(recDevs)+recDevsOffset)] <- exp( recDevs )
 
-    cat( "\nMSG (.initPop) Read recruitment deviations from file...\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Read recruitment deviations from file...\n" )
+
     .RECSERIESINPUT <<- TRUE
   }
   # Input numbers-at-age and length for the historical period
@@ -3435,7 +3457,8 @@ iscamWrite <- function ( obj )
   
   if ( is.null( ctlList$opMod$estRecDevs ) )
   {
-    cat( "\nMSG (.initPop) Calculating recruitment deviations from operating model.\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Calculating recruitment deviations from operating model.\n" )
   }  
   
   #----------------------------------------------------------------------------#
@@ -4721,10 +4744,12 @@ iscamWrite <- function ( obj )
   
   # Calculate life history schedules and OM equilibrium reference points.
   t1 <- proc.time()[3]
-  cat( "\nMSG (.writePinDat) Calculating reference points, please wait...\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.writePinDat) Calculating reference points, please wait...\n" )
   tmp <- calcRefPoints( as.ref(opMod) )
   refPts <- deref( tmp )
-  cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )  
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )  
 
   nFisheries <- opMod$nGear
   nGrps      <- opMod$nGrps

@@ -21,29 +21,6 @@ scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
 scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 scenario$scenario2$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
-# Scenario 3: WCVI_conM
-#
-scenario$scenario3$opMod$kYearsMbar NULL
-scenario$scenario3$gui$nReps 100
-scenario$scenario3$gui$scenarioLabel "WCVI_conM"
-scenario$scenario3$opMod$sigmaM 0
-scenario$scenario3$opMod$endMrule "mean"
-scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
-scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-scenario$scenario3$mp$data$inputAges NULL
-#
-# Scenario 4: WCVI_jumpM
-#
-scenario$scenario4$opMod$kYearsMbar NULL
-scenario$scenario4$gui$nReps 100
-scenario$scenario4$gui$scenarioLabel "WCVI_.75conM"
-scenario$scenario4$opMod$sigmaM 0
-scenario$scenario4$opMod$endMrule "0.75jump"
-scenario$scenario4$opMod$endMphase 1
-scenario$scenario4$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
-scenario$scenario4$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-scenario$scenario4$mp$data$inputAges NULL
-#
 ## Management Procedures
 #
 ## Management Procedure 1: minE18.8_HR.2

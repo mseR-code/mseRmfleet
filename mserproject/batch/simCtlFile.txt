@@ -2,6 +2,7 @@
 parameter value
 gui$mpLabel "NoFish"
 gui$nReps 100
+gui$quiet TRUE
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
@@ -159,8 +160,8 @@ opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158
-opMod$baranovIter 5
-opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
+opMod$baranovIter 8
+opMod$baranovSteps c(0.5,0.3,0.5,1.,1.)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
