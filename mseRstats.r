@@ -143,6 +143,10 @@ library(dplyr)
       tmp    <- calcRefPoints( as.ref(opMod) )
       refPts <- deref( tmp )
       blob$ctlList$refPts <- refPts
+
+      # Can we recover MCMC parameters here?
+      mcmcPar   <- blob$ctlList$opMod$mcmcPar
+      postDraws <- blob$ctlList$opMod$posteriorDraws
       
       ctlPars <- blob$ctlPars
 
