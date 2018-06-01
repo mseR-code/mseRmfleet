@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "NoFish"
+gui$mpLabel "minE18.8_HR.2"
 gui$nReps 20
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
@@ -96,7 +96,7 @@ mp$data$useAges "c(1,2,3)"
 mp$data$useIndex "c(4,5)"
 mp$hcr$binQuota 10
 mp$hcr$catchFloor 0
-mp$hcr$catchCeiling 5.0
+mp$hcr$catchCeiling NULL
 mp$hcr$consTAC 2.4
 mp$hcr$ctlPtFreq 1
 mp$hcr$Dec1a 0.01
@@ -143,7 +143,7 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$rule "linear"
+mp$hcr$rule "herring"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2

@@ -674,11 +674,11 @@ ageLenOpMod <- function( objRef, t )
     for( a in 2:(A-1) ){
       # loop over growth-groups
       for( l in 1:nGrps ){
-        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp( -Zalt[a-1,l,t-1] )
+        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp( -Zalt[a-1,l,t-1] )
       }
     }
     for( l in 1:nGrps )
-      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(-Zalt[A,l,t-1])
+      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A,l,t-1])
 
     Balt[,,t] <- Nalt[,,t]*Wal
 
@@ -778,6 +778,8 @@ ageLenOpMod <- function( objRef, t )
     legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
   }
+
+  if(t > tMP )browser()
 
   # Calculate spawning biomass at spawn time (post F and M)
   SBt <- sum(Balt[,nGrps,t]*Ma*exp(-fisheryTiming*Mt[t])*exp(-Zalt[,1:nGrps,t]))
