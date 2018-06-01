@@ -647,6 +647,7 @@ ageLenOpMod <- function( objRef, t )
     Ntot[t] <- sum( Nalt[,,t] )
     Bt[t]   <- sum( Balt[,,t] * Ma )
     Nt[t]   <- sum( Nalt[,,t] * Ma )
+
   } # end "if(t==1)"
   else  # t>1
   {
@@ -708,13 +709,18 @@ ageLenOpMod <- function( objRef, t )
         
   # Solve catch equation for this year's Ftg based on tac allocated among gears
   # if (t >= tMP) browser()
+
+  if( t < tMP )
+    fisheryTiming <- 0
+  else
+    fisheryTiming <- 0.75
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
 
     if( t < tMP ) initF <- c( obj$ctlList$opMod$repFile$ft[,t])
-    else initF <- c(rep(0.0,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
+    else initF <- c(rep(0.01,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
     idx0  <- which(Ctg[t,] < 0)
     Ctg[t,idx0] <- 0.
     baranovTime <<- t
@@ -723,25 +729,32 @@ ageLenOpMod <- function( objRef, t )
     # browser()
 
     solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                    C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
-                                    nIter = ctlList$opMod$baranovIter ) )
+                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
+                                        nIter = ctlList$opMod$baranovIter,
+                                        fisheryTiming = fisheryTiming ) )
 
-    if( class(solveF) == "try-error" ) browser(cat("N-R Baranov failed \n"))
+    if(any(!is.finite(solveF))) 
+    {
+      cat("Warning: negative Ftg... t = ", t, "\n") 
+      solveF[!is.finite(solveF)] <- 0
+    }
 
     solveF[ solveF > 10 ] <- 10
 
     if( any( solveF < 0 ) )
     {
+      browser()
         cat("Warning: negative Ftg... t = ", t, "\n")
         cat( solveF, "\n" )
         solveF[ solveF < 0. ] <- 0.
-        browser()
     }
     Ftg[t,] <- solveF
   }
 
+  
+
   # Compute total mortality by summing M and Fg over gear types
-  Zalt[,,t] <- matrix(Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
+  Zalt[,,t] <- matrix((1 - fisheryTiming) * Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
   for( g in 1:(nGear-2) )
     Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]
 
@@ -749,7 +762,7 @@ ageLenOpMod <- function( objRef, t )
   legalC <- 0.; legalD <- 0.; sublegalD <- 0.
   for( g in 1:(nGear-2) )
   {
-    Cal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
+    Cal <- Balt[,,t]*exp(-Mt[t] * fisheryTiming)*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
     Dal <- 0
     
     # catch-age/year/gear
@@ -767,10 +780,10 @@ ageLenOpMod <- function( objRef, t )
   }
 
   # Calculate spawning biomass at spawn time (post F and M)
-  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
+  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-fisheryTiming*Mt[t])*exp(-Zalt[,1:nGrps,t]))
 
   # Calculate spawning biomass before fishing (post M, pre F)
-  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-Mt[t]))
+  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-fisheryTiming*Mt[t]))
 
   # Total landings and harvest rates.
   legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
@@ -3548,11 +3561,15 @@ iscamWrite <- function ( obj )
 
 
 .solveBaranovMfleet <- function(  B, S, F, M, C, nIter = 5, lam = rep(.5,3), 
-                                  quiet = TRUE )
+                                  quiet = TRUE, fisheryTiming = .75 )
 {
   # Follow other functions, but use new derivation of J
+  B <- B * exp(-fisheryTiming*M)
+
   nGear <- length(F)
-  Znew  <- M
+  Znew  <- (1 - fisheryTiming)*M
+
+
 
   for( g in 1:(nGear-2) )
   {    

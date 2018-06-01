@@ -146,6 +146,11 @@ library(dplyr)
       
       ctlPars <- blob$ctlPars
 
+      browser()
+
+      mcmcPar     <- blob$ctlList$opMod$mcmcPar
+      postDraws   <- blob$ctlList$opMod$posteriorDraws
+
       tMP    <- blob$ctlList$opMod$tMP
       nT     <- blob$ctlList$opMod$nT
 
