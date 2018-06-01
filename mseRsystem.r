@@ -728,11 +728,12 @@ ageLenOpMod <- function( objRef, t )
     # Calculate assuming a discrete fishery 
     Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
 
-    testCatch <- min(Ctest, sum(testFishery))
-    testFishery[2] <- testCatch
+    testCatch   <- min(Ctest, sum(testFishery))
+    testFishery <- c(0,testCatch,0,0,0)
 
     Ctg[t,] <- Ctg[t,] + testFishery
   }
+
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
@@ -3133,8 +3134,6 @@ iscamWrite <- function ( obj )
       targetHarv <- min(obj$ctlList$mp$hcr$catchCeiling, targetHarv)
 
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
-
-    browser()
 
     # Save catch in om, adding in test fishery
     obj$om$Ctg[t+1,] <- newCatch
