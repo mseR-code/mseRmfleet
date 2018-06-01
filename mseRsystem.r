@@ -629,12 +629,7 @@ ageLenOpMod <- function( objRef, t )
     # Now overwrite OM values with input values
     Ftg[1:67,]    <- inputFtg[1:67,]
   }
-
-  if( t < tMP )
-    fisheryTiming <- 0
-  else
-    fisheryTiming <- 0.75
-
+  
   # What to do in year 68?? I feel like ISCAM predicts this..
 
   # Initialise population if t=1, else update variables from last time step.
@@ -679,11 +674,11 @@ ageLenOpMod <- function( objRef, t )
     for( a in 2:(A-1) ){
       # loop over growth-groups
       for( l in 1:nGrps ){
-        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp(-fisheryTiming*Mt[t-1])*exp( -Zalt[a-1,l,t-1] )
+        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp( -Zalt[a-1,l,t-1] )
       }
     }
     for( l in 1:nGrps )
-      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(-fisheryTiming*Mt[t-1])*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A,l,t-1])
+      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(-Zalt[A,l,t-1])
 
     Balt[,,t] <- Nalt[,,t]*Wal
 
@@ -711,9 +706,28 @@ ageLenOpMod <- function( objRef, t )
 
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
+
         
   # Solve catch equation for this year's Ftg based on tac allocated among gears
-  # if (t >= tMP) browser()
+  # Add test fishery catch in projection
+  if(t >= tMP)
+  {
+    testFishery <- ctlList$opMod$testFishery
+    # Calculate test fishery catch based on the minimum harvest rate
+    # of the test fishery over the historical period
+    minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
+    minFtest <- log( 1 / (1 - minUtest) )
+
+    # reduce to a small F if needed
+    Ftest <- max(0.01, minFtest)
+    # Calculate assuming a discrete fishery 
+    Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
+
+    testCatch <- min(Ctest, sum(testFishery))
+    testFishery[2] <- testCatch
+
+    Ctg[t,] <- Ctg[t,] + testFishery
+  }
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
@@ -726,35 +740,62 @@ ageLenOpMod <- function( objRef, t )
     baranovTime <<- t
     #if(t>17) browser()
 
-    # browser()
-
     solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
                                         C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
                                         nIter = ctlList$opMod$baranovIter,
-                                        fisheryTiming = fisheryTiming ) )
+                                        fisheryTiming = 0 ) )
 
     if(any(!is.finite(solveF))) 
     {
-      cat("Warning: negative Ftg... t = ", t, "\n") 
+      cat( "Warning: non finite Ftg... t = ", t, "\n" ) 
+      cat( "Reducing step size by half and trying again.\n" ) 
+
+      solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                        nIter = ctlList$opMod$baranovIter,
+                                        fisheryTiming = 0 ) )
+
+      cat( solveF, "\n" )
+
+      if( class(solveF) == "try-error" ) browser()
+
       solveF[!is.finite(solveF)] <- 0
     }
 
-    solveF[ solveF > 10 ] <- 10
-
     if( any( solveF < 0 ) )
     {
-      browser()
+      
         cat("Warning: negative Ftg... t = ", t, "\n")
+        cat( "Reducing step size by half and trying again.\n" ) 
+
+        solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                        nIter = ctlList$opMod$baranovIter,
+                                        fisheryTiming = 0 ) )
+
         cat( solveF, "\n" )
+
+        if( class(solveF) == "try-error" ) browser()
+
         solveF[ solveF < 0. ] <- 0.
     }
+
+    if( class(solveF) == "try-error" ) browser()
+
+    solveF[ solveF > 10 ] <- 10
+
     Ftg[t,] <- solveF
+
+    if(t > 1 & SBt < sum(ctlList$opMod$testFishery) ) browser()
   }
 
+
+  # Add an F based test fishery if biomass is below the threshold
+  # if( Bt[t] <= 0.2 ) Ftg[t,] <- Ftg[t,] + c(0.0,0.01,0.0,0.0,0.0)
   
 
   # Compute total mortality by summing M and Fg over gear types
-  Zalt[,,t] <- matrix((1 - fisheryTiming) * Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
+  Zalt[,,t] <- matrix( Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
   for( g in 1:(nGear-2) )
     Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]
 
@@ -762,7 +803,7 @@ ageLenOpMod <- function( objRef, t )
   legalC <- 0.; legalD <- 0.; sublegalD <- 0.
   for( g in 1:(nGear-2) )
   {
-    Cal <- Balt[,,t]*exp(-Mt[t] * fisheryTiming)*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
+    Cal <- Balt[,,t]*exp((1.-exp(-Zalt[,,t])))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
     Dal <- 0
     
     # catch-age/year/gear
@@ -779,13 +820,13 @@ ageLenOpMod <- function( objRef, t )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
   }
 
-  if(t > tMP )browser()
+  # if(t > tMP )browser()
 
   # Calculate spawning biomass at spawn time (post F and M)
-  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-fisheryTiming*Mt[t])*exp(-Zalt[,1:nGrps,t]))
+  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
 
   # Calculate spawning biomass before fishing (post M, pre F)
-  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-fisheryTiming*Mt[t]))
+  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-Mt[t]))
 
   # Total landings and harvest rates.
   legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
@@ -3028,7 +3069,7 @@ iscamWrite <- function ( obj )
     # 0. Project population forward 1 time step
     # with no catch, skip to next time step if
     # no fishing is occuring
-    obj$om$Ctg[t+1,] <- obj$ctlList$opMod$testFishery
+    obj$om$Ctg[t+1,] <- rep(0.0,5)
     obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
 
     if( obj$ctlList$gui$mpLabel == "NoFish" ) next
@@ -3075,8 +3116,10 @@ iscamWrite <- function ( obj )
 
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
 
+    browser()
+
     # Save catch in om, adding in test fishery
-    obj$om$Ctg[t+1,] <- newCatch + obj$ctlList$opMod$testFishery
+    obj$om$Ctg[t+1,] <- newCatch
 
     # 3. Rerun operating model for next time step
     # with new catch
@@ -3563,7 +3606,7 @@ iscamWrite <- function ( obj )
 
 
 .solveBaranovMfleet <- function(  B, S, F, M, C, nIter = 5, lam = rep(.5,3), 
-                                  quiet = TRUE, fisheryTiming = .75 )
+                                  quiet = TRUE, fisheryTiming = 0 )
 {
   # Follow other functions, but use new derivation of J
   B <- B * exp(-fisheryTiming*M)
@@ -4311,8 +4354,9 @@ iscamWrite <- function ( obj )
   # Set catch limit for the year
   om$Ctg[ t, ]  <- rep( 0, ncol(om$Ctg) )
   om$Ctg[t,]    <- ctlList$opMod$allocProp * min(tmpCatch)
-  # Add test fishery catch
-  om$Ctg[t,]    <- om$Ctg[t,] + ctlList$opMod$testFishery
+
+  # Add test fishery catch - maybe we move this inside the OM
+  # om$Ctg[t,]    <- om$Ctg[t,] + ctlList$opMod$testFishery
 
  
   mp$assess$runStatus[ tRow, "deadFlag" ]      <- .DEADFLAG

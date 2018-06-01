@@ -1,8 +1,8 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "minE18.8_HR.2"
-gui$nReps 20
-gui$scenarioLabel "WCVI"
+gui$mpLabel "NoFish"
+gui$nReps 100
+gui$scenarioLabel "PerfectInfo"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -143,7 +143,7 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$rule "herring"
+mp$hcr$rule "linear"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2
@@ -159,8 +159,8 @@ opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158
-opMod$baranovIter 5
-opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
+opMod$baranovIter 8
+opMod$baranovSteps c(0.5,0.3,0.5,1.,1.)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
@@ -208,7 +208,7 @@ opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-opMod$rSeed 1270
+opMod$rSeed 1290
 opMod$rSteepness 0.73723
 opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 opMod$postSampleSize 5000
