@@ -630,6 +630,11 @@ ageLenOpMod <- function( objRef, t )
     Ftg[1:67,]    <- inputFtg[1:67,]
   }
 
+  if( t < tMP )
+    fisheryTiming <- 0
+  else
+    fisheryTiming <- 0.75
+
   # What to do in year 68?? I feel like ISCAM predicts this..
 
   # Initialise population if t=1, else update variables from last time step.
@@ -674,11 +679,11 @@ ageLenOpMod <- function( objRef, t )
     for( a in 2:(A-1) ){
       # loop over growth-groups
       for( l in 1:nGrps ){
-        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp( -Zalt[a-1,l,t-1] )
+        Nalt[a,l,t] <- Nalt[a-1,l,t-1]*exp(-fisheryTiming*Mt[t-1])*exp( -Zalt[a-1,l,t-1] )
       }
     }
     for( l in 1:nGrps )
-      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A,l,t-1])
+      Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(-fisheryTiming*Mt[t-1])*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(fisheryTiming*Mt[t-1])*exp(-Zalt[A,l,t-1])
 
     Balt[,,t] <- Nalt[,,t]*Wal
 
@@ -709,11 +714,6 @@ ageLenOpMod <- function( objRef, t )
         
   # Solve catch equation for this year's Ftg based on tac allocated among gears
   # if (t >= tMP) browser()
-
-  if( t < tMP )
-    fisheryTiming <- 0
-  else
-    fisheryTiming <- 0.75
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
