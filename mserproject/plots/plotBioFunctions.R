@@ -1489,7 +1489,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
                         refPts = FALSE )
 
       # Now rescale blob$Bt if
-      if( mp != "NoFish" )
+      if( mp != "NoFish" & !is.na(noFishID) )
       {
         blob$om$SBt <- blob$om$SBt / noFishBlob$om$SBt
         blob$ctlList$opMod$B0 <- 1
