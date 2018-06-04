@@ -2,19 +2,24 @@
 #
 parameter value
 #
-# Scenario 1: WCVI_PulseM_1.5x16
+# Scenario 1: WCVI_PulseM_1.5x6
 #
 scenario$scenario1$gui$nReps 100
 scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
+scenario$scenario1$opMod$endMrule "mean"
+scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario1$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
-# Scenario 2: WCVI_Mbar10
+# Scenario 1: WCVI_Mbar10
 #
-scenario$scenario2$opMod$kYearsMbar 10
 scenario$scenario2$gui$nReps 100
 scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
+scenario$scenario2$opMod$kYearsMbar 10
+scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario2$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
 ## Management Procedures
 #
@@ -34,148 +39,67 @@ mp$mp2$mp$hcr$herringCutoffVal 18.8
 mp$mp2$mp$hcr$herringCutoffType "absolute"
 mp$mp2$mp$hcr$rule "herring"
 #
-## Management Procedure 3: minE18.8_HR.2_cap5
+## Management Procedure 3: minE18.8_HR.1_cap2
 #
-mp$mp3$gui$mpLabel "minE18.8_HR.2_cap5"
-mp$mp3$mp$hcr$targHRHerring .2
+mp$mp3$gui$mpLabel "minE18.8_HR.1_cap2"
+mp$mp3$mp$hcr$targHRHerring .1
 mp$mp3$mp$hcr$herringCutoffVal 18.8
-mp$mp3$mp$hcr$catchCeiling 5.0
+mp$mp3$mp$hcr$catchCeiling 2.0
 mp$mp3$mp$hcr$herringCutoffType "absolute"
 mp$mp3$mp$hcr$rule "herring"
 #
-## Management Procedure 4: minE18.8_HR.1_cap5
+## Management Procedure 4: minE.5B0_HR.2
 #
-mp$mp4$gui$mpLabel "minE18.8_HR.1_cap5"
-mp$mp4$mp$hcr$targHRHerring .1
-mp$mp4$mp$hcr$herringCutoffVal 18.8
-mp$mp4$mp$hcr$catchCeiling 5.0
-mp$mp4$mp$hcr$herringCutoffType "absolute"
+mp$mp4$gui$mpLabel "minE.5B0_HR.2"
+mp$mp4$mp$hcr$targHRHerring .2
+mp$mp4$mp$hcr$herringCutoffVal .5
+mp$mp4$mp$hcr$herringCutoffType "relative"
 mp$mp4$mp$hcr$rule "herring"
 #
-## Management Procedure 5: minE18.8_HR.2_cap2
+## Management Procedure 5: minE.5B0_HR.1
 #
-mp$mp5$gui$mpLabel "minE18.8_HR.2_cap2"
-mp$mp5$mp$hcr$targHRHerring .2
-mp$mp5$mp$hcr$herringCutoffVal 18.8
-mp$mp5$mp$hcr$catchCeiling 2.0
-mp$mp5$mp$hcr$herringCutoffType "absolute"
+mp$mp5$gui$mpLabel "minE.5B0_HR.1"
+mp$mp5$mp$hcr$targHRHerring .1
+mp$mp5$mp$hcr$herringCutoffVal .5
+mp$mp5$mp$hcr$herringCutoffType "relative"
 mp$mp5$mp$hcr$rule "herring"
 #
-## Management Procedure 6: minE18.8_HR.1_cap2
+## Management Procedure 6: minE.5B0_HR.1_cap2
 #
-mp$mp6$gui$mpLabel "minE18.8_HR.1_cap2"
+mp$mp6$gui$mpLabel "minE.5B0_HR.1_cap2"
 mp$mp6$mp$hcr$targHRHerring .1
-mp$mp6$mp$hcr$herringCutoffVal 18.8
+mp$mp6$mp$hcr$herringCutoffVal .5
+mp$mp6$mp$hcr$herringCutoffType "relative"
 mp$mp6$mp$hcr$catchCeiling 2.0
-mp$mp6$mp$hcr$herringCutoffType "absolute"
 mp$mp6$mp$hcr$rule "herring"
 #
-## Management Procedure 7: minE.5B0_HR.2
+## Management Procedure 7: HS30-60_HR.2
 #
-mp$mp7$gui$mpLabel "minE.5B0_HR.2"
+mp$mp7$gui$mpLabel "HS30-60_HR.2"
 mp$mp7$mp$hcr$targHRHerring .2
-mp$mp7$mp$hcr$herringCutoffVal .5
-mp$mp7$mp$hcr$herringCutoffType "relative"
-mp$mp7$mp$hcr$rule "herring"
+mp$mp7$mp$hcr$rule "linear"
+mp$mp7$mp$hcr$lowerBoundMult .3
+mp$mp7$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 8: minE.5B0_HR.1
+## Management Procedure 8: HS30-60_HR.1
 #
-mp$mp8$gui$mpLabel "minE.5B0_HR.1"
+mp$mp8$gui$mpLabel "HS30-60_HR.1"
 mp$mp8$mp$hcr$targHRHerring .1
-mp$mp8$mp$hcr$herringCutoffVal .5
-mp$mp8$mp$hcr$herringCutoffType "relative"
-mp$mp8$mp$hcr$rule "herring"
+mp$mp8$mp$hcr$rule "linear"
+mp$mp8$mp$hcr$lowerBoundMult .3
+mp$mp8$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 9: minE.5B0_HR.2_cap5
+## Management Procedure 9: HS30-60_HR.1_cap2
 #
-mp$mp9$gui$mpLabel "minE.5B0_HR.2_cap5"
-mp$mp9$mp$hcr$targHRHerring .2
-mp$mp9$mp$hcr$herringCutoffVal .5
-mp$mp9$mp$hcr$catchCeiling 5.0
-mp$mp9$mp$hcr$herringCutoffType "relative"
-mp$mp9$mp$hcr$rule "herring"
+mp$mp9$gui$mpLabel "HS30-60_HR.1_cap2"
+mp$mp9$mp$hcr$targHRHerring .1
+mp$mp9$mp$hcr$rule "linear"
+mp$mp9$mp$hcr$catchCeiling 2.0
+mp$mp9$mp$hcr$lowerBoundMult .3
+mp$mp9$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 10: minE.5B0_HR.1_cap5
+## Management Procedure 10: NoFish
 #
-mp$mp10$gui$mpLabel "minE.5B0_HR.1_cap5"
-mp$mp10$mp$hcr$targHRHerring .1
-mp$mp10$mp$hcr$herringCutoffVal .5
-mp$mp10$mp$hcr$herringCutoffType "relative"
-mp$mp10$mp$hcr$catchCeiling 5.0
-mp$mp10$mp$hcr$rule "herring"
-#
-## Management Procedure 11: minE.5B0_HR.2_cap2
-#
-mp$mp11$gui$mpLabel "minE.5B0_HR.2_cap2"
-mp$mp11$mp$hcr$targHRHerring .2
-mp$mp11$mp$hcr$herringCutoffVal .5
-mp$mp11$mp$hcr$catchCeiling 2.0
-mp$mp11$mp$hcr$herringCutoffType "relative"
-mp$mp11$mp$hcr$rule "herring"
-#
-## Management Procedure 12: minE.5B0_HR.1_cap2
-#
-mp$mp12$gui$mpLabel "minE.5B0_HR.1_cap2"
-mp$mp12$mp$hcr$targHRHerring .1
-mp$mp12$mp$hcr$herringCutoffVal .5
-mp$mp12$mp$hcr$herringCutoffType "relative"
-mp$mp12$mp$hcr$catchCeiling 2.0
-mp$mp12$mp$hcr$rule "herring"
-#
-## Management Procedure 13: HS30-60_HR.2
-#
-mp$mp13$gui$mpLabel "HS30-60_HR.2"
-mp$mp13$mp$hcr$targHRHerring .2
-mp$mp13$mp$hcr$rule "linear"
-mp$mp13$mp$hcr$lowerBoundMult .3
-mp$mp13$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 14: HS30-60_HR.1
-#
-mp$mp14$gui$mpLabel "HS30-60_HR.1"
-mp$mp14$mp$hcr$targHRHerring .1
-mp$mp14$mp$hcr$rule "linear"
-mp$mp14$mp$hcr$lowerBoundMult .3
-mp$mp14$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 15: HS30-60_HR.2_cap5
-#
-mp$mp15$gui$mpLabel "HS30-60_HR.2_cap5"
-mp$mp15$mp$hcr$targHRHerring .2
-mp$mp15$mp$hcr$rule "linear"
-mp$mp15$mp$hcr$catchCeiling 5.0
-mp$mp15$mp$hcr$lowerBoundMult .3
-mp$mp15$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 16: HS30-60_HR.1_cap5
-#
-mp$mp16$gui$mpLabel "HS30-60_HR.1_cap5"
-mp$mp16$mp$hcr$targHRHerring .1
-mp$mp16$mp$hcr$rule "linear"
-mp$mp16$mp$hcr$catchCeiling 5.0
-mp$mp16$mp$hcr$lowerBoundMult .3
-mp$mp16$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 17: HS30-60_HR.2_cap2
-#
-mp$mp17$gui$mpLabel "HS30-60_HR.2_cap2"
-mp$mp17$mp$hcr$targHRHerring .2
-mp$mp17$mp$hcr$rule "linear"
-mp$mp17$mp$hcr$catchCeiling 2.0
-mp$mp17$mp$hcr$lowerBoundMult .3
-mp$mp17$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 18: HS30-60_HR.1_cap2
-#
-mp$mp18$gui$mpLabel "HS30-60_HR.1_cap2"
-mp$mp18$mp$hcr$targHRHerring .1
-mp$mp18$mp$hcr$rule "linear"
-mp$mp18$mp$hcr$catchCeiling 2.0
-mp$mp18$mp$hcr$lowerBoundMult .3
-mp$mp18$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 18: NoFish
-#
-mp$mp18$gui$mpLabel "NoFish"
+mp$mp10$gui$mpLabel "NoFish"
 #
 # File Ends <not run>.
