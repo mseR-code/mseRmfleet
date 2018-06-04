@@ -1,9 +1,9 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "PerfectInfo"
+gui$mpLabel "HS30-60_HR.2"
 gui$nReps 100
-gui$quiet TRUE
-gui$scenarioLabel "WCVI_tvM"
+gui$quiet FALSE
+gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -209,10 +209,9 @@ opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
 opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
-opMod$rSeed 1290
+opMod$rSeed 1270
 opMod$rSteepness 0.73723
 opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
-opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
