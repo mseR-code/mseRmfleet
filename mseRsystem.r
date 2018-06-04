@@ -612,12 +612,13 @@ ageLenOpMod <- function( objRef, t )
     {
       repFile   <- ctlList$opMod$repFile
       avgR      <- repFile$rbar   
-      inputFtg  <- repFile$ft
+      inputFtg  <- t(repFile$ft)
       inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)
 
       Rt[1:66] <- inputRt[1:66]
+
     }
     if( !is.null( ctlList$opMod$posteriorSamples ) )
     {
@@ -728,12 +729,11 @@ ageLenOpMod <- function( objRef, t )
     # Calculate assuming a discrete fishery 
     Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
 
-    testCatch   <- min(Ctest, sum(testFishery))
-    testFishery <- c(0,testCatch,0,0,0)
+    testCatch <- min(Ctest, sum(testFishery))
+    testFishery[2] <- testCatch
 
     Ctg[t,] <- Ctg[t,] + testFishery
   }
-
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
@@ -750,6 +750,7 @@ ageLenOpMod <- function( objRef, t )
                                         C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
                                         nIter = ctlList$opMod$baranovIter,
                                         fisheryTiming = 0 ) )
+
 
     if(any(!is.finite(solveF))) 
     {
@@ -775,9 +776,9 @@ ageLenOpMod <- function( objRef, t )
         cat( "Reducing step size by half and trying again.\n" ) 
 
         solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
-                                        nIter = ctlList$opMod$baranovIter,
-                                        fisheryTiming = 0 ) )
+                                            C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                            nIter = ctlList$opMod$baranovIter,
+                                            fisheryTiming = 0 ) )
 
         cat( solveF, "\n" )
 
@@ -792,7 +793,8 @@ ageLenOpMod <- function( objRef, t )
 
     Ftg[t,] <- solveF
 
-    if(t > 1 & SBt < sum(ctlList$opMod$testFishery) ) browser()
+    if(t > 1)
+      if(SBt < sum(ctlList$opMod$testFishery) ) browser()
   }
 
 
@@ -809,7 +811,7 @@ ageLenOpMod <- function( objRef, t )
   legalC <- 0.; legalD <- 0.; sublegalD <- 0.
   for( g in 1:(nGear-2) )
   {
-    Cal <- Balt[,,t]*exp((1.-exp(-Zalt[,,t])))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
+    Cal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
     Dal <- 0
     
     # catch-age/year/gear
@@ -1335,7 +1337,7 @@ callProcedureSP <- function( obj, t )
   # Exploitable and spawning biomass are the same for the production model.
   assessment$exploitBt <- assessment$Bt
   assessment$spawnBt   <- assessment$Bt
-											 	  
+                          
   # ARK (17-Nov-10) Just get this back to updatePop and store by gear type there.
   #assessment$ItScaled <- assessment$ItScaled
 
@@ -2470,57 +2472,57 @@ iscamWrite <- function ( obj )
   if ( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
   {
     mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus ) )
   }
   
   if ( ctlObj$mp$assess$methodId == .DDMOD )
   {
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
   }  
 
   if ( ctlObj$mp$assess$methodId == .PMOD )
   {
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
 
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
   }
   
-	# Stock assessment outputs.
-	if( ctlObj$mp$assess$methodId == .PERFECT )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=4 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )	  
-	}  
+  # Stock assessment outputs.
+  if( ctlObj$mp$assess$methodId == .PERFECT )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=4 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )    
+  }  
 
   mp$assess$Ftg <- matrix( NA,nrow=nT,ncol=nGear )
 
   #----------------------------------------------------------------------------#
-	#-- Biomass control points                                                 --#
-	#----------------------------------------------------------------------------#
+  #-- Biomass control points                                                 --#
+  #----------------------------------------------------------------------------#
 
-	# Case 1: Bmsy is basis for HCR control points; equilibrium value is used.
+  # Case 1: Bmsy is basis for HCR control points; equilibrium value is used.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseBmsy" & ctlObj$mp$hcr$statusSource=="statusSrceEquil" )
   {
     # Set statusBase to Bmsy for all nT years.
     mp$hcr$Bref <- rep( refPtsObj$ssbFmsy, nT )
   }
   
-	# Case 2: B0 is basis for HCR control points; equilibrium value is used.
+  # Case 2: B0 is basis for HCR control points; equilibrium value is used.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseB0" & ctlObj$mp$hcr$statusSource=="statusSrceEquil" )
   {
     # Set statusBase to B0 for all nT years.  
@@ -2534,7 +2536,7 @@ iscamWrite <- function ( obj )
     mp$hcr$Bref <- rep( NA, nT )
   }
   
-	# Case 4: B0 is basis for HCR control points; estimated from assessment model.
+  # Case 4: B0 is basis for HCR control points; estimated from assessment model.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseB0" & ctlObj$mp$hcr$statusSource=="statusSrceEst" )
   {
     # Create a vector to be filled each annual estimate.  
@@ -2542,31 +2544,31 @@ iscamWrite <- function ( obj )
   }
   
   #----------------------------------------------------------------------------#
-	#-- Fishery rate control points                                            --#
-	#----------------------------------------------------------------------------#
-	
+  #-- Fishery rate control points                                            --#
+  #----------------------------------------------------------------------------#
+  
   # Case 1: Reference removal rate input directly from simCtlFile.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFinput" )
   {
     mp$hcr$remRate <- rep( ctlObj$mp$hcr$inputF, nT )
   }
   
-	# Case 2: Reference removal rate based on Fmsy; equilibrium value is used.
+  # Case 2: Reference removal rate based on Fmsy; equilibrium value is used.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFmsy" & ctlObj$mp$hcr$remRefSource == "rrSrceEquil" )
   {
     mp$hcr$remRate <- rep( refPtsObj$refPts$Fmsy, nT )
   }
   
-	# Case 3: Reference removal rate based on Fmsy; estimated from assessment model.
+  # Case 3: Reference removal rate based on Fmsy; estimated from assessment model.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFmsy" & ctlObj$mp$hcr$remRefSource == "rrSrceEst" )
   {
     # Create Fmsy vector to be filled with annual estimates.
     mp$hcr$remRate <- rep( NA, nT )
   }
 
-	# Case 4: Reference removal rate is set to F0.1.
-	if ( ctlObj$mp$hcr$remRefBase == "rrBaseF01" ) 
-	{
+  # Case 4: Reference removal rate is set to F0.1.
+  if ( ctlObj$mp$hcr$remRefBase == "rrBaseF01" ) 
+  {
     mp$hcr$remRate <- rep( refPtsObj$F01, nT )
   }
 
@@ -2582,7 +2584,7 @@ iscamWrite <- function ( obj )
   if ( ctlObj$mp$hcr$remRefSource == "rrSrceEst" | ctlObj$mp$hcr$statusSource == "statusSrceEst" )
   {
     mp$hcr$idxCtlPts <- tmpTimes$idxCtlPts
-  }	
+  } 
 
   # Create vectors for lower and upper control point bounds on Bref scale.
   mp$hcr$lowerBound <- rep( NA, nT )
@@ -2606,25 +2608,25 @@ iscamWrite <- function ( obj )
       mp$hcr$nThin <- 1
     }
   }
-	
-	if( ctlObj$mp$assess$methodId == .PMOD )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}
-	
-	if( ctlObj$mp$assess$methodId == .DDMOD )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}	
-	
-	if( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}
-	
+  
+  if( ctlObj$mp$assess$methodId == .PMOD )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  }
+  
+  if( ctlObj$mp$assess$methodId == .DDMOD )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  } 
+  
+  if( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  }
+  
   # Retrospective biomass estimates and recruitment.
-	mp$assess$retroExpBt <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
-	mp$assess$retroRt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroExpBt <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroRt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
   mp$assess$retroMt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
 
   # Build the return object.
@@ -2735,54 +2737,54 @@ iscamWrite <- function ( obj )
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
       mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
 
       mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )
   }
-	
+  
   if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW  )
   {
     # This is for blob - needs to be 1 more column than createMP version for iRep.
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
-	  mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+    mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
     
     mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )
   }
-	
+  
   if( ctlList$mp$assess$methodId == .DDMOD )
   {
     # This is for blob - needs to be 1 more column than createMP version for iRep.
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
-	  mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+    mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
     
     mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )      
-  }	
-	
+  } 
+  
   if( ctlList$mp$assess$methodId == .MOVAVG | ctlList$mp$assess$methodId == .KALMAN )
   {
      mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=2))
      mp$assess$pdfPars <- mp$assess$mpdPars
- 	  
- 	  # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
-    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )  	  
+    
+    # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
+    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )      
   }
-	
-	# Perfect information.
+  
+  # Perfect information.
   if( ctlList$mp$assess$methodId == .PERFECT )
   { 
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=5 ) ) 
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=5 ) ) 
 
- 	  # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
-    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )  	  
+    # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
+    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )      
   }
 
   # Retrospective statistics.
@@ -2836,22 +2838,22 @@ iscamWrite <- function ( obj )
     obj$mp$hcr$precautionaryFt <- rep( NA,nT )
 
     # Initialize stock assessment model outputs (K.Holt; 07-Aug-09)
-	if ( ctlList$mp$assess$methodId == .PERFECT )
-	{
-	    obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
-  	}
-  	
+  if ( ctlList$mp$assess$methodId == .PERFECT )
+  {
+      obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
+    }
+    
     if ( ctlList$mp$assess$methodId == .MOVAVG )
     {
         obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
     }
 
-	if ( ctlList$mp$assess$methodId == .PMOD )
-	{
-	    obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=25 ) )
-  	}
-  	
-	  if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
+  if ( ctlList$mp$assess$methodId == .PMOD )
+  {
+      obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=25 ) )
+    }
+    
+    if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
     {
       obj$mp$assess$mpdPars <- data.frame( matrix(NA,nrow=(nT-tMP+1), ncol=25 ) )
       obj$mp$assess$Rt      <- matrix( NA, nrow=(nT-tMP+1), ncol=(nT+1) )
@@ -2864,7 +2866,7 @@ iscamWrite <- function ( obj )
       # If "NoFish" or "PerfectInfo", skip the assessment feedback
       # loop and use a projection function
       if( ctlList$gui$mpLabel %in% c("NoFish", "PerfectInfo") |
-      	  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
+          substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
       {
         obj <- .projPopNoAssess( obj )
       }
@@ -3135,6 +3137,7 @@ iscamWrite <- function ( obj )
 
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
 
+
     # Save catch in om, adding in test fishery
     obj$om$Ctg[t+1,] <- newCatch
 
@@ -3285,6 +3288,7 @@ iscamWrite <- function ( obj )
     years <- catch[,1]
     times <- years - .INITYEAR + 1
     gears <- catch[,2]
+
 
     gearNums <- unique(gears)
     for( g in gearNums )
@@ -3540,20 +3544,20 @@ iscamWrite <- function ( obj )
 
 .fnBaranov <- function( fPars, B, S, P, D, M, C, nIter=50, lam=0.35, quiet=TRUE )
 {
-	F <- exp( fPars ) # input values are log-scale to contrain > 0
-	nGear  <- length(F)
-	f      <- 0.
-	J      <- rep( 0., nGear^2 )
-	dim(J) <- c( nGear,nGear )
+  F <- exp( fPars ) # input values are log-scale to contrain > 0
+  nGear  <- length(F)
+  f      <- 0.
+  J      <- rep( 0., nGear^2 )
+  dim(J) <- c( nGear,nGear )
   nTimes <- 0
-	falg <- array( data=NA, dim=dim(S) )
+  falg <- array( data=NA, dim=dim(S) )
   for( g in 1:nGear )
     falg[,,g] <- S[,,g]*F[g]*(D[g]*P[,,g] - P[,,g] + 1.)
-	Z <- M + matrixsum( falg )
-	for( g in 1:nGear )
-	{
+  Z <- M + matrixsum( falg )
+  for( g in 1:nGear )
+  {
     # compute function fg(F) <- C - Cg(F)
-		Bprime <- B*S[,,g]*(1.-P[,,g])
+    Bprime <- B*S[,,g]*(1.-P[,,g])
     tmp  <- Bprime*F[g]*(1.-exp(-Z))/Z
     f[g] <- (C[g] - sum(tmp))^2. 
   }
@@ -3727,17 +3731,17 @@ iscamWrite <- function ( obj )
             tmp    <- Bprime*F[g]*(1.-exp(-Z))/Z
             f      <- C[g] - sum(tmp); tmp <- 0
             tmp    <- S[,,g]*( D[g]*P[,,g]-P[,,g]+1. )*( exp(-Z)-F[g]/Z^2 )*Bprime -
-                      ( 1.-exp(-Z) )*Bprime/Z				
+                      ( 1.-exp(-Z) )*Bprime/Z       
             J      <- sum(tmp); tmp <- 0.
             F[g]   <- F[g] - f/J
             Znew   <- Znew + S[,,g]*F[g]*(D[g]*P[,,g] - P[,,g] + 1.)
             #if( baranovTime > 20 ) browser()
         }
-    }	
+    } 
     #F[ F > 1.0 ] <- 1.0 
     # could also return Z so it only needs to be computed once.
     #browser()
-    return(F)	
+    return(F) 
 }     # END function .solveBaranov1
 
 
@@ -3960,7 +3964,7 @@ iscamWrite <- function ( obj )
   if ( ctlList$mp$assess$methodId == .PMOD )
   {
     # need to assemble and fill in the data required by PMOD assessment
-	  # If t == tMP, use init values of 0 for ln omega.
+    # If t == tMP, use init values of 0 for ln omega.
     tmp$spMsy           <- ctlList$mp$assess$spMsy
     tmp$spFmsy          <- ctlList$mp$assess$spFmsy
     tmp$sp_initB        <- ctlList$mp$assess$sp_initB
