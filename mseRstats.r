@@ -146,11 +146,6 @@ library(dplyr)
       
       ctlPars <- blob$ctlPars
 
-      browser()
-
-      mcmcPar     <- blob$ctlList$opMod$mcmcPar
-      postDraws   <- blob$ctlList$opMod$posteriorDraws
-
       tMP    <- blob$ctlList$opMod$tMP
       nT     <- blob$ctlList$opMod$nT
 
@@ -204,6 +199,16 @@ library(dplyr)
         Ct   <- blob$om$Ct[ ,c(2:ncol(blob$om$Ct)) ]
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
+
+        if( !is.null(blob$ctlList$opMod$posteriorDraws) )
+        {
+          mcmcPar     <- blob$ctlList$opMod$mcmcPar
+          postDraws   <- blob$ctlList$opMod$posteriorDraws  
+          SB0         <- mcmcPar[postDraws,"sbo"]
+          for( repIdx in 1:nrow(Dept) )
+            Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
+        }
+        
 
         noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
         noFishBt <- noFishBt[,2:ncol(noFishBt)]

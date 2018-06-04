@@ -9,12 +9,17 @@ scenario$scenario1$gui$scenarioLabel "WCVI_PulseM_1.5x16"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
+scenario$scenario1$opMod$endMrule "mean"
+scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario1$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
 # Scenario 2: WCVI_Mbar10
 #
 scenario$scenario2$opMod$kYearsMbar 10
 scenario$scenario2$gui$nReps 100
 scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
+scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario2$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
 ## Management Procedures
 #
