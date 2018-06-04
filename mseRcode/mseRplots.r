@@ -13462,20 +13462,6 @@ plotRefPts <- function( obj )
 {
   # Get the spawning biomass and number of replicates.
   Bt    <- obj$om$SBt[ , c(2:ncol(obj$om$SBt)) ]
-  Mt    <- obj$om$Mt[ , c(2:ncol(obj$om$Mt)) ]
-  
-  if( .FBt_Perf )
-  {
-    if(!is.null(obj$om$FBt))
-      Bt    <- obj$om$FBt[ ,c(2:ncol(obj$om$SBt))]
-    else {
-      Bt    <- obj$om$Bt[ , c(2:ncol(obj$om$Bt)) ]
-      Bt    <- Bt * exp(-Mt)
-    } 
-      
-  }
-
-  Mbar <- mean(Mt[1,1:67]) 
 
   nReps <- nrow( Bt )
 
@@ -13494,6 +13480,15 @@ plotRefPts <- function( obj )
   Dept   <- Bt   / B0
   #depMSY <- Bmsy
   #Dept   <- Bt
+
+  if( !is.null(blob$ctlList$opMod$posteriorDraws) )
+  {
+    mcmcPar     <- blob$ctlList$opMod$mcmcPar
+    postDraws   <- blob$ctlList$opMod$posteriorDraws  
+    SB0         <- mcmcPar[postDraws,"sbo"]
+    for( repIdx in 1:nrow(Dept) )
+      Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
+  }
 
   # Time indices.
   tMP  <- obj$ctlList$opMod$tMP
