@@ -1,7 +1,7 @@
 # mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
 parameter value
-gui$mpLabel "HS30-60_HR.2"
-gui$nReps 100
+gui$mpLabel "PerfectInfo_HS30-60_HR.2"
+gui$nReps 10
 gui$quiet FALSE
 gui$scenarioLabel "WCVI"
 gui$simAnnotate TRUE

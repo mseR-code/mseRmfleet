@@ -13490,6 +13490,8 @@ plotRefPts <- function( obj )
       Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
   }
 
+  browser()
+
   # Time indices.
   tMP  <- obj$ctlList$opMod$tMP
   nT   <- obj$ctlList$opMod$nT
