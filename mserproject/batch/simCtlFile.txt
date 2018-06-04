@@ -1,9 +1,9 @@
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
-gui$mpLabel "minE21.2_HR.2"
-gui$nReps 100
-gui$quiet TRUE
-gui$scenarioLabel "SOG_tvM_post"
+gui$mpLabel "HS30-60_HR.2"
+gui$nReps 10
+gui$quiet FALSE
+gui$scenarioLabel "SOG_tvM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -81,7 +81,7 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(68,92,1)"
 mp$data$idxAges2 "c(68,92)"
 mp$data$indexType "c(1,1)"
-mp$data$inputAges NULL
+mp$data$inputAges read.rep('mserproject/history/iscamSOG2017.rep')
 mp$data$inputCatch read.rep('mserproject/history/iscamSOG2017.rep')
 mp$data$inputIndex read.rep('mserproject/history/iscamSOG2017.rep')
 mp$data$k1Ages "c(1,1,1)"
@@ -135,7 +135,7 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase "rrBaseFinput"
 mp$hcr$remRefSource "rrSrceEst"
-mp$hcr$rule "herring"
+mp$hcr$rule "linear"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05
@@ -166,7 +166,7 @@ opMod$c1 c(4.5e-6)
 opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
-opMod$endM 0.610019
+opMod$endM 0.5602331
 opMod$endMrule NULL
 opMod$endMphase NULL
 opMod$futureOption 3
@@ -193,7 +193,7 @@ opMod$L95Cg1 c(3.549228,3.902951,5.862269,2.202222,2.202222)
 opMod$L95Cg2 c(50,50,50,40,40)
 opMod$L95Dg c(1,1,1,1,1)
 opMod$Linf c(27)
-opMod$M 0.610019
+opMod$M 0.454854
 opMod$maxF 3
 opMod$nAges 10
 opMod$nGear 5
@@ -207,11 +207,11 @@ opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,0.797945,0.996262)
 opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
-opMod$recM 0.610019
+opMod$recM 0.5602331
 opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
-opMod$rSeed 1270
+opMod$rSeed 1275
 opMod$rSteepness 0.775463
-opMod$posteriorSamples "mserproject/history/localPost/SOG/conM/"
+opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
 opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)

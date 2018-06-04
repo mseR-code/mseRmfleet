@@ -612,12 +612,13 @@ ageLenOpMod <- function( objRef, t )
     {
       repFile   <- ctlList$opMod$repFile
       avgR      <- repFile$rbar   
-      inputFtg  <- repFile$ft
+      inputFtg  <- t(repFile$ft)
       inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)
 
       Rt[1:66] <- inputRt[1:66]
+
     }
     if( !is.null( ctlList$opMod$posteriorSamples ) )
     {
@@ -750,6 +751,7 @@ ageLenOpMod <- function( objRef, t )
                                         nIter = ctlList$opMod$baranovIter,
                                         fisheryTiming = 0 ) )
 
+
     if(any(!is.finite(solveF))) 
     {
       cat( "Warning: non finite Ftg... t = ", t, "\n" ) 
@@ -774,9 +776,9 @@ ageLenOpMod <- function( objRef, t )
         cat( "Reducing step size by half and trying again.\n" ) 
 
         solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
-                                        nIter = ctlList$opMod$baranovIter,
-                                        fisheryTiming = 0 ) )
+                                            C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                            nIter = ctlList$opMod$baranovIter,
+                                            fisheryTiming = 0 ) )
 
         cat( solveF, "\n" )
 
@@ -791,7 +793,8 @@ ageLenOpMod <- function( objRef, t )
 
     Ftg[t,] <- solveF
 
-    if(t > 1 & SBt < sum(ctlList$opMod$testFishery) ) browser()
+    if(t > 1)
+      if(SBt < sum(ctlList$opMod$testFishery) ) browser()
   }
 
 
@@ -808,7 +811,7 @@ ageLenOpMod <- function( objRef, t )
   legalC <- 0.; legalD <- 0.; sublegalD <- 0.
   for( g in 1:(nGear-2) )
   {
-    Cal <- Balt[,,t]*exp((1.-exp(-Zalt[,,t])))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
+    Cal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
     Dal <- 0
     
     # catch-age/year/gear
@@ -3285,6 +3288,7 @@ iscamWrite <- function ( obj )
     years <- catch[,1]
     times <- years - .INITYEAR + 1
     gears <- catch[,2]
+
 
     gearNums <- unique(gears)
     for( g in gearNums )

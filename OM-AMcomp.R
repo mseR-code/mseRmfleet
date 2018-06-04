@@ -1,6 +1,6 @@
 # Start by loading blob from an RData file
 # Load SOG
-load("./mseRproject/sim15052018123526/sim15052018123526.Rdata")
+load("./mseRproject/sim03062018192753/sim03062018192753.Rdata")
 SOGblob <- blob
 # # Load ISCAM F condition
 # load("./mserproject/sim02042018143843/sim02042018143843.RData")

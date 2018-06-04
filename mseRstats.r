@@ -62,7 +62,6 @@ library(dplyr)
                     "medAvgCatch","Q1AvgCatch","Q2AvgCatch",
                     "medLowCatch","Q1LowCatch","Q2LowCatch",
                     "medHighCatch","Q1HighCatch","Q2HighCatch",
-                    "medAvgDiscard","Q1AvgDiscard","Q2AvgDiscard",
                     "criticalP","cautiousP","healthyP",
                     "yearAtTargetProb","probAtTargetYear","targetAtYearProb",
                     "probGteDepMSY","probGteLimit",
@@ -70,7 +69,6 @@ library(dplyr)
                     "t1Trend","trendPeriod","avgExpSlope",
                     "trendDec","trendInc","obsPdecline","pDecline",
                     "pGTlrp","pGTtarg","t1AvgCatch","t1AvgDep", "pObj4",
-                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
                     "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
@@ -93,20 +91,24 @@ library(dplyr)
   noFishTrack <-  trackData %>%
                   filter( mp == "NoFish" )
 
-  for( scenIdx in 1:length(scenarios) )
+  if( nrow(noFishTrack) > 0 )
   {
-    scenarioName <- scenarios[scenIdx]
-    scenNoFishTrack <-  noFishTrack %>%
-                        filter( scenario == scenarioName )
+    noFish <- TRUE
+    for( scenIdx in 1:length(scenarios) )
+    {
+      scenarioName <- scenarios[scenIdx]
+      scenNoFishTrack <-  noFishTrack %>%
+                          filter( scenario == scenarioName )
 
-    simFile     <- scenNoFishTrack[ 1, "simFile" ]
-    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
-    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+      simFile     <- scenNoFishTrack[ 1, "simFile" ]
+      simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+      simFilePath <- file.path( .PRJFLD, simFolder, simFile )
 
-    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
-    load( file=simFilePath )
-    assign( "blob", blob, pos=1 )
-    noFishBlobs[[scenarioName]] <- blob
+      cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+      load( file=simFilePath )
+      assign( "blob", blob, pos=1 )
+      noFishBlobs[[scenarioName]] <- blob
+    }
   }
 
   # Initialize row counter.
@@ -204,11 +206,21 @@ library(dplyr)
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
 
-        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
-        noFishBt <- noFishBt[,2:ncol(noFishBt)]
+        if( !is.null(blob$ctlList$opMod$postDraws) )
+        {
+          postDraws <- blob$ctlList$opMod$postDraws
+          SB0       <- blob$ctlList$opMod$mcmcPar[postDraws,"sbo"]
+          for( repIdx in 1:nrow(Dept) )
+            Dept[repIdx,] <- Bt[repIdx, ] / SB0[repIdx]
+        }
 
-        noFishDept <- Bt / noFishBt
+        if(!is.null(noFishBlobs[[scenarioName]]))
+        {
+          noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+          noFishBt <- noFishBt[,2:ncol(noFishBt)]
 
+          noFishDept <- Bt / noFishBt  
+        }
       }
    
       #--- Depletion Statistics                                             ---#
