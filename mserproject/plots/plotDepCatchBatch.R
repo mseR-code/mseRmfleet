@@ -16,13 +16,13 @@ source("plotBioFunctions.R")
 
 MPs <- c( "NoFish",
           "minE21.2_HR.2",
-          "minE21.2_HR.1",
+          "minE21.2_HR.2_cap30",
           "minE21.2_HR.1_cap30",
           "minE.5B0_HR.2",
-          "minE.5B0_HR.1",
+          "minE.5B0_HR.2_cap30",
           "minE.5B0_HR.1_cap30",
           "HS30-60_HR.2",
-          "HS30-60_HR.1",
+          "HS30-60_HR.1_cap30",
           "HS30-60_HR.1_cap30" )
 
 MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",
@@ -37,8 +37,13 @@ MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",
 
 currMPs <- c( "NoFish",
               "minE21.2_HR.2",
-              "minE21.2_HR.1",
+              "minE21.2_HR.2_cap30",
               "minE21.2_HR.1_cap30" )
+
+bestMPs <- c( "NoFish",
+              "minE21.2_HR.1_cap30",
+              "minE.5B0_HR.1_cap30",
+              "HS30-60_HR.1_cap30" )
 
 
 
@@ -78,15 +83,15 @@ yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
 # now plot the depCatch multi panels we want
-plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "PI_DepCatch",
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs_DepCatch",
                           scenarios = scenList, df = info.df, gfx = gfx)
 
-# plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "SOGconM_currMPs",
-#                           scenarios = scenList, df = info.df, gfx = gfx)
+plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs_DepCatch",
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
-# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
-#                           plotNameRoot = "minE18.8_bestMPs",
-#                           scenarios = scenList, df = info.df)
+plotDepCatchMultiPanels(  MPnames = bestMPs, 
+                          plotNameRoot = "bestMPs_DepCatch",
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
 # plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
 #                           plotNameRoot = "minE.5B0_bestMPs",
