@@ -28,7 +28,7 @@ MPs <- c( "NoFish",
           "HS30-60_HR.1",
           "HS30-60_HR.1_cap2" )
 
-scenarios <- c( "WCVI_Mbar10", "WCVI_PulseM_1.5x16" )
+scenarios <- c( "WCVI_DIM", "WCVI_DDM" )
 
 Periods   <- unique( perfTable$Period )
 
@@ -72,6 +72,8 @@ for( sIdx in 1:length(scenarios) )
 
     objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
     
+
+
     objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]
     objTable[tabRow,"ProbGt.6B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.6B0" ]

@@ -1,5 +1,30 @@
 # Functions for plotting OM outputs
 
+plotMtBtFitUt <- function(  )
+{
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,1) )
+
+  par(mfrow = c(3,1), mar =c(2,2,2,2), oma = c(3,3,1,1) )
+
+  .plotMt(blob, gfx = gfx )
+  panLegend(  x = 0.3, y = 0.3, bty = "n",
+              legTxt = c( "OM", "Last Fit", "First Fit"),
+              col = c("purple","red","darkgreen" ),
+              lwd = c(2,2,2))
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,200) )
+
+  .plotBtFit(blob, gfx = gfx )
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE )
+
+  .plotUt(blob, gfx = gfx )  
+}
+
+
 plotMinEscapementHCR <- function( cutoff = .5, refHR = .2,
                                   refB = 45.6158, cutoffType = "relative",
                                   yLim = c(0,.3),
@@ -1415,7 +1440,7 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 }
 
 plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
-                                      scenarios = scenList, df = info.df )
+                                      scenarios = scenList, df = info.df, gfx )
 {
 
   for( scenIdx in 1:length(scenarios) )
@@ -1460,14 +1485,19 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       if(mpIdx == 1) gfx$doLegend <- TRUE
       else gfx$doLegend <- FALSE
 
-      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,15),
                         refPts = FALSE )
 
       # Now rescale blob$Bt if
-      if( mp != "NoFish" )
+      if( mp != "NoFish" & !is.na(noFishID) )
       {
-        blob$om$SBt <- blob$om$SBt / noFishBlob$om$SBt
+
+        for( i in 1:nrow(blob$om$SBt))
+          blob$om$SBt[i,] <- blob$om$SBt[i,] / noFishBlob$om$SBt[i,]
         blob$ctlList$opMod$B0 <- 1
+
+        if( !is.null(blob$ctlList$opMod$mcmcPar) )
+          blob$ctlList$opMod$mcmcPar[,"sbo"] <- 1
 
         mpList[[mpListIdx]] <- blob
         names(mpList)[mpListIdx] <- mp
@@ -1489,9 +1519,11 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       if(idx == 1) gfx$doLegend <- TRUE
       else gfx$doLegend <- FALSE
 
+      # browser()
+
       if( is.null(mpList[[idx]]) ) next
 
-      .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,10),
+      .plotTulipDepCat( obj = mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,15),
                         refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]) )
     }
     dev.off()
