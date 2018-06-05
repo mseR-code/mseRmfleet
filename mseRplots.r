@@ -1711,7 +1711,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  TRP <- .USRHerring
   
 
   # X-axis limits.
