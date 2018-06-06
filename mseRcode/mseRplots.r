@@ -13483,11 +13483,12 @@ plotRefPts <- function( obj )
 
   if( !is.null(blob$ctlList$opMod$posteriorDraws) )
   {
-    mcmcPar     <- blob$ctlList$opMod$mcmcPar
-    postDraws   <- blob$ctlList$opMod$posteriorDraws  
-    SB0         <- mcmcPar[postDraws,"sbo"]
+    # browser()
+    mcmcPar     <- obj$ctlList$opMod$mcmcPar
+    postDraws   <- obj$ctlList$opMod$posteriorDraws  
+    SB0         <- median(mcmcPar[postDraws,"sbo"])
     for( repIdx in 1:nrow(Dept) )
-      Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
+      Dept[repIdx,] <- Bt[repIdx,] / SB0
   }
 
   # Time indices.
