@@ -269,7 +269,8 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
     # Set seed and draw random sample of replicates here.
     mcmcParPath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
     mcmcPar       <- read.csv( mcmcParPath, header =T ) 
-    samples       <- .quantileStratSample(  post = mcmcPar,
+    samples       <- .quantileStratSample(  seed  = ctlList$opMod$postSampleSeed,
+                                            post = mcmcPar,
                                             par1 = "m", par2 = "sbo",
                                             nBreaks = 10 )
     ctlList$opMod$posteriorDraws <- samples
