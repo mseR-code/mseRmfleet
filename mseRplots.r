@@ -1711,7 +1711,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  TRP <- .USRHerring
   
 
   # X-axis limits.
@@ -1803,7 +1803,7 @@
   # Stock status zone boundaries.
   Bmsy      <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$SBt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
@@ -1819,7 +1819,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  TRP <- .USRHerring
   
 
   # X-axis limits.
@@ -1863,9 +1863,6 @@
 
   lines( c(1:nT), Ct, col=.CtCOL, lty=.CtLTY, lwd=.CtLWD )
   points( c(1:nT), Ct, bg=.CtBG, cex=.CtCEX, col=.CtCOL, pch=.CtPCH )
-
-  lines( c(1:nT), Dt, col=.DtCOL, lty=.DtLTY, lwd=.DtLWD )
-  points( c(1:nT), Dt, bg=.DtBG, cex=.DtCEX, col=.DtCOL, pch=.DtPCH )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
@@ -3589,8 +3586,8 @@
 
  #  if( obj$mp$hcr$specs$remRefBase=="rrBaseFmsy" & obj$mp$hcr$specs$remRefSource=="rrSrceEst" )
  #    remRate <- obj$ctlList$refPts$Fmsy
-	# if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
-	#   remRate <- obj$mp$hcr$specs$remRateInput
+  # if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
+  #   remRate <- obj$mp$hcr$specs$remRateInput
 
   remRate <- obj$mp$hcr$targHRHerring
 
@@ -3773,6 +3770,8 @@
   landedFmsy    <- obj$refPtList$landedFmsy
   discardedFmsy <- obj$refPtList$discardedFmsy
   
+  browser()
+
   # Management procedure.
   #Itg   <- obj$mp$assess$ItgScaled[ iRep,(2:ncol(obj$mp$assess$ItgScaled)), ]
   
@@ -6671,7 +6670,7 @@
   {
     if( obj$mp$hcr$specs$remRefBase == "rrBaseFmsy" )
       remRate <- obj$ctlList$refpts$Fmsy
-  	if ( obj$mp$hcr$specs$remRefBase == "rrBaseF01" )
+    if ( obj$mp$hcr$specs$remRefBase == "rrBaseF01" )
       remRate <- obj$ctlList$refPts$F01
     if ( obj$mp$hcr$specs$remRefBase =="rrBaseFspr" )
       remRate <- obj$ctlList$refPts$FsprX
@@ -12183,7 +12182,7 @@ plotRefPts <- function( obj )
 
   omBt       <- obj$om$SBt
   omBt       <- omBt[ iRep, (2:ncol(omBt)) ]
-  retroExpBt <- obj$mp$assess$retroExpBt
+  retroExpBt <- obj$mp$assess$retroSpawnBt
   retroExpBt <- retroExpBt[ retroExpBt[,"iRep"]==iRep, ]
   assessBt   <- retroExpBt[ ,(2:ncol(retroExpBt)) ]
   legalB     <- obj$om$legalB[ iRep, (2:ncol(obj$om$legalB)) ]
@@ -12245,11 +12244,11 @@ plotRefPts <- function( obj )
       if ( gfx$doLegend )
       {   
         panLegend( 0.5,0.85, adj=0,
-          legTxt=c( "Legal biomass","SSB","Index","Retro Exp. Bt"), cex=.CEXLEG2,
-          col=c( .BlegCOL, .BtCOL, .GearCOL[i], .BtEstCOL ),
-          lty=c( .BlegLTY, .BtLTY,          NA, .BtEstLTY ),
-          lwd=c( .BlegLWD, .BtLWD,          NA, .BtEstLWD ),
-          pch=c(       NA,     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
+          legTxt=c( "SSB","Index","Retro Exp. Bt"), cex=.CEXLEG2,
+          col=c( .BtCOL, .GearCOL[i], .BtEstCOL ),
+          lty=c( .BtLTY,          NA, .BtEstLTY ),
+          lwd=c( .BtLWD,          NA, .BtEstLWD ),
+          pch=c(     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
       }
     }
     mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
@@ -12260,23 +12259,23 @@ plotRefPts <- function( obj )
     plot( xLim, yLim, type="n", axes=FALSE, xlab="",ylab="" )
   
     lines( c(1:nT), omBt,   col=.BtCOL,   lty=.BtLTY,   lwd=.BtLWD )
-    lines( c(1:nT), legalB, col=.BlegCOL, lty=.BlegLTY, lwd=.BlegLWD )
+    # lines( c(1:nT), legalB, col=.BlegCOL, lty=.BlegLTY, lwd=.BlegLWD )
   
     if ( gfx$doLegend )
     {   
-      panLegend( 0.7,0.9, adj=0,
-        legTxt=c( "Legal biomass","SSB","Bmsy","Retro Exp. Bt","1st Fit","2nd Fit"), cex=.CEXLEG2,
-        pt.bg=c( "black","black","black","black","green","darkgreen"),
-        pt.cex=c( NA,NA,NA,NA,1.2,1.2),
-        col=c( .BlegCOL, .BtCOL, "black", .BtEstCOL, "black","black" ),
-        lty=c( .BlegLTY, .BtLTY,.BmsyLTY, .BtEstLTY, 1, 1 ),
-        lwd=c( .BlegLWD, .BtLWD,       1, .BtEstLWD, 2, 2 ),
+      panLegend( 0.1,0.9, adj=0,
+        legTxt=c( "SSB",".3B0","1st Fit","2nd Fit"), cex=.CEXLEG2,
+        pt.bg=c(  "black","black","green","darkgreen"),
+        pt.cex=c( NA,NA,NA,1.2,1.2),
+        col=c( .BtCOL, "orange", .BtEstCOL, "black","black" ),
+        lty=c( .BtLTY,.BmsyLTY, .BtEstLTY, 1, 1 ),
+        lwd=c( .BtLWD,.BmsyLWD, .BtEstLWD, 2, 2 ),
         pch=c(         NA,     NA,      NA,          NA, 21, 21 ),
         bg="white", bty="n" )
     }
   
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
-    abline( h=0.3*B0, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )  
+    abline( h=0.3*B0, col="orange", lty=.BmsyLTY, lwd=.BmsyLWD )  
   
     if ( gfx$useYears )
     {
@@ -12295,7 +12294,7 @@ plotRefPts <- function( obj )
     
     box()
     mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
-    mtext( side=2, line=.INLINE2, cex=.CEXLAB, "Biomass (000s t)" )
+    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12338,7 +12337,7 @@ plotRefPts <- function( obj )
                      useYears=FALSE ) )
 {
   nCol       <- dim( obj$om$legalHR )[2]
-  legalHR    <- obj$om$legalHR[ iRep,c(2:nCol) ]
+  legalHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
   sublegalHR <- obj$om$sublegalHR[ iRep,c(2:nCol) ]
   tMP        <- obj$ctlList$opMod$tMP
   
@@ -12393,7 +12392,7 @@ plotRefPts <- function( obj )
       
       if ( gfx$doLegend )
       {
-        panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"), cex=1.2,
+        panLegend( 0.7,0.95, legTxt=c("Legal"), cex=1.2,
           lty=c( .LegUtgLTY, .SlegUtgLTY ), lwd=c(.LegUtgLWD,.SlegUtgLWD ) )    
       }
     }
@@ -12412,13 +12411,16 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
-      panLegend( 0.7,0.95, legTxt=c("Legal","Sub-legal"),
-        lty=c( .LegUtLTY, .SlegUtLTY ), lwd=c( .LegUtLWD, .SlegUtLWD ) )    
+      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
+        lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+        col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
-    abline( h=Umsy, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
+    targetHR <- blob$ctlList$mp$hcr$targHRHerring
+
+    abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
 
     .addXaxis( xLim, initYear=.INITYEAR, years=gfx$useYears )
@@ -12428,7 +12430,7 @@ plotRefPts <- function( obj )
     
     box()
     mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
-    mtext( side=2, line=.OUTLINE2, cex=.CEXLAB2, outer=TRUE, "Harvest Rate" )
+    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
 
     if ( gfx$annotate )
     {   
@@ -13481,14 +13483,12 @@ plotRefPts <- function( obj )
   #depMSY <- Bmsy
   #Dept   <- Bt
 
-  if( !is.null(blob$ctlList$opMod$posteriorDraws) )
+  if( !is.null(obj$ctlList$opMod$posteriorDraws) )
   {
-    # browser()
-    mcmcPar     <- obj$ctlList$opMod$mcmcPar
-    postDraws   <- obj$ctlList$opMod$posteriorDraws  
-    SB0         <- median(mcmcPar[postDraws,"sbo"])
+    postDraws <- obj$ctlList$opMod$posteriorDraws
+    SB0       <- obj$ctlList$opMod$mcmcPar[postDraws,"sbo"]
     for( repIdx in 1:nrow(Dept) )
-      Dept[repIdx,] <- Bt[repIdx,] / SB0
+      Dept[repIdx,] <- Bt[repIdx,]/SB0[repIdx]
   }
 
   # Time indices.
@@ -13589,13 +13589,12 @@ plotRefPts <- function( obj )
     depTRP <- .TRPHerring
 
     abline( h = depBlim, lty = 2, col = "red", lwd = 2 )
-    abline( h = depTRP, lty = 2, col = "darkgreen", lwd = 2 )
-    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
+    abline( h = depUSR, lty = 2, col = "darkgreen", lwd = 2 )
 
     if( gfx$doLegend )
       panLegend(  x = .2, y =.5, bty = "n",
                   legTxt = c( expression(.3*B[0]),
-                              expression(.75*B[0])),
+                              expression(.6*B[0])),
                   lty = 2, lwd = 2,
                   col = c("red","darkgreen")  )
 
@@ -14410,21 +14409,21 @@ plotRefPts <- function( obj )
 {
   panel.estPars <- function( x,y,z=stats,... )
   {
-	  xMean <- mean( x,na.rm=T )
+    xMean <- mean( x,na.rm=T )
     yMean <- mean( y,na.rm=T )
-		points( x,y,pch=16,cex=0.6,col="darkgray" )
-		abline( h=yMean,v=xMean,col="blue",lty=3 )
+    points( x,y,pch=16,cex=0.6,col="darkgray" )
+    abline( h=yMean,v=xMean,col="blue",lty=3 )
 
-		if ( !is.null(stats) )
+    if ( !is.null(stats) )
     {
       # This is logic to figure out what "pair" is being plotted.
       # The modal estimates are the first row of the mcmcObj.
       # The par()$mfg calls finds the current row and column indices of
       # the panel being plotted.
 
-	    xStat <- z[ par()$mfg[2] ]
+      xStat <- z[ par()$mfg[2] ]
       yStat <- z[ par()$mfg[1] ]
-		  points( xStat,yStat, pch=3, cex=3, lwd=2 )
+      points( xStat,yStat, pch=3, cex=3, lwd=2 )
     }
     
     # Now mark the first and last points (green and red?).
@@ -14433,22 +14432,22 @@ plotRefPts <- function( obj )
     #idx <- seq( 100,length(x),100 )
     #points( x[idx], y[idx], bg="red", cex=1.2, pch=21 )
     
-		points( xMean,yMean, bg="white", pch=21,cex=2 )    
+    points( xMean,yMean, bg="white", pch=21,cex=2 )    
   }
 
   panel.hist <- function( x,... )
   {
     # Histograms for diagonal of pairs plot (from PBS Modelling CCA).
-	  usr <- par("usr")
+    usr <- par("usr")
     on.exit( par(usr) )
-	  h <- hist( x, breaks="Sturges", plot=FALSE )
-	  #h <- hist( x, breaks=15, plot=FALSE )
-	  breaks <- h$breaks
+    h <- hist( x, breaks="Sturges", plot=FALSE )
+    #h <- hist( x, breaks=15, plot=FALSE )
+    breaks <- h$breaks
     nB <- length(breaks)
-	  y <- h$counts
+    y <- h$counts
     y <- y / sum(y)
-	  par( usr = c(usr[1:2], 0, max(y)*1.5) )
-	  rect( breaks[-nB], 0, breaks[-1], y, col="#FFD18F" )
+    par( usr = c(usr[1:2], 0, max(y)*1.5) )
+    rect( breaks[-nB], 0, breaks[-1], y, col="#FFD18F" )
     box()
   }
   

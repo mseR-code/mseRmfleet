@@ -15,7 +15,7 @@ source("../../mseRrefPoints.R")
 source("plotBioFunctions.R")
 
 
-MPs <- c( "minE18.8_HR.2" )
+MPs <- c( "minE21.2_HR.2" )
 
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
           showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )
@@ -73,9 +73,11 @@ for( scenIdx in 1:length(scenList) )
 
     # arrange B0 estimates in a matrix
     B0estimates <- blob$mp$assess$mpdPars$SSB0.sbo
-    SSB0mat <- matrix(blob$ctlList$opMod$B0, nrow = 100, ncol = nT )
+    SSB0mat     <- matrix(NA, nrow = 100, ncol = nT )
+    postDraws   <- blob$ctlList$opMod$posteriorDraws
     for( i in 1:100 )
     {
+      SSB0mat[i,1:67]  <- blob$ctlList$opMod$mcmcPar[postDraws[i],"sbo"]
       SSB0mat[i,68:92] <- B0estimates[1:25 + (i-1)*25]
     }
 
@@ -84,16 +86,17 @@ for( scenIdx in 1:length(scenList) )
 
     traces <- sample(x = 1:100, size = 3 )
 
-    plot( x = range(yrs), y = c(0,max(B0estimates) ), type = "n", 
+    plot( x = range(yrs), y = c(0,quantile(B0estimates, prob = 0.975) ), type = "n", 
           xlab = "", ylab = "", las = 1 )
       polygon(  x = c(yrs,rev(yrs)), y = c(SSB0dist[1,],rev(SSB0dist[3,])),
                 border = NA, col = "grey70" )
+      abline(v = 2018, lty = 2, lwd = 2 )
       lines( x = yrs, y = SSB0dist[2,], lwd = 3 )
       for( t in traces)
         lines( x = yrs, y = SSB0mat[t,], lwd = .8)
-      panLab( x = 0.3, y = 0.3, txt = stamp )
+      panLab( x = 0.2, y = 0.9, txt = stamp )
 
   }
   mtext( side = 1, text = "Year", outer =T, line = 2)
-  mtext( side =2, text = expression(paste("Est. ", B[0] (kt), sep = "" ) ), line = 1.5, outer = T)
+  mtext( side =2, text = expression(paste("Est. ", B[0], " (kt)", sep = "" ) ), line = 1.5, outer = T)
 }

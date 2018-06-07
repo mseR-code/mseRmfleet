@@ -76,7 +76,7 @@ library(dplyr)
                     "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
                     "medPropClosure","Q1PropClosure","Q2PropClosure",
-                    "propYears5PctileGtLRP","propYears25PctileGtLRP")
+                    "minProbBtGt.3B0" )
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -271,18 +271,7 @@ library(dplyr)
         result[ iRow, "Q1HighCatch" ]  <- tmp$qVals[2]
         result[ iRow, "Q2HighCatch" ]  <- tmp$qVals[4]
       }
-      
-      
-      
-      
-      #--- Discard Statistics                                               ---#
-      if ( validSim )
-      {
-        tmp <- .calcStatsDiscard( Dt[,tdx], quantVals )
-        result[ iRow, "medAvgDiscard" ] <- tmp$medAvgDiscard
-        result[ iRow, "Q1AvgDiscard" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgDiscard" ]  <- tmp$qVals[4]
-      }
+    
 
       #--- AAV Catch Statistics                                             ---#
       if ( validSim )
@@ -381,6 +370,10 @@ library(dplyr)
         result[ iRow, "medProbGt.3B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.3B0" ] <- tmp[5]
+
+        # Vertical integration of probability Dt > .3
+        tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .3 )
+        result[ iRow, "minProbBtGt.3B0" ] <- tmp
       }
       #--- Objective Statistics from GUI.
 
@@ -535,6 +528,32 @@ library(dplyr)
 
   return( list( summary1=summary1, summary2=summary2,
                 perResult=perResult ) )
+}
+
+
+# .calcStatsMinProbGtX (Calculate the minimum probability of depletion > X)
+# Purpsoe:      Calculate the minimum probability over reps of being above 
+#               X year to year
+# Parameters:   Dt    - catch biomass as an nRep by nT matrix.
+#               X     - Value to be compared to
+# Returns:      val, a list with the minimum (over years) probability (within
+#               years/over reps) of Dt > X
+# Notes:        Differs from .calcQunatsRefPoints type calcs as it
+#               integrates over reps (vertically) first, then
+#               takes the min of the yearly probability within tdx
+# Source:       A.R. Kronlund
+.calcStatsMinProbGtX <- function( Dt, X = .3 )
+{
+  # Updated depletion values with 1s (success) or 0s (failure)
+  Dt[Dt > X] <- 1
+  Dt[Dt <= X] <- 0
+
+  # Calculate yearly prob (mean of successes)
+  yearlyProbs <- apply(X = Dt, FUN = mean, MARGIN = 2 )
+
+  # Return min value
+  val <- min(yearlyProbs)
+  val
 }
 
 
