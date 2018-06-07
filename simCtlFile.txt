@@ -167,7 +167,7 @@ opMod$c2 c(3.127)
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
 opMod$endM 0.5602331
-opMod$endMrule NULL
+opMod$endMrule "0.25pctile"
 opMod$endMphase NULL
 opMod$futureOption 3
 opMod$repFile NULL
