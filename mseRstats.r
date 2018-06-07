@@ -75,7 +75,8 @@ library(dplyr)
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
                     "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
                     "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
-                    "medPropClosure","Q1PropClosure","Q2PropClosure")
+                    "medPropClosure","Q1PropClosure","Q2PropClosure",
+                    "propYears5PctileGtLRP","propYears25PctileGtLRP")
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
