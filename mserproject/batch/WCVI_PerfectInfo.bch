@@ -21,6 +21,14 @@ scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
 scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 scenario$scenario2$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
+# Scenario 3: WCVI_.25histM
+#
+scenario$scenario3$gui$nReps 100
+scenario$scenario3$gui$scenarioLabel "WCVI_.25histM"
+scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
+scenario$scenario3$opMod$endMrule "0.25pctile"
+#
 ## Management Procedures
 #
 ## Management Procedure 1: minE18.8_HR.2
