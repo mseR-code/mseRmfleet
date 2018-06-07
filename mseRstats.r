@@ -374,6 +374,10 @@ library(dplyr)
         # Vertical integration of probability Dt > .3
         tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .3 )
         result[ iRow, "minProbBtGt.3B0" ] <- tmp
+
+        # total prob (mass of cloud) Dt > .3
+        tmp <- .calcStatsTotProbGtX( Dept[,tdx], X = .3 )
+        result[ iRow, "totProbBtGt.3B0" ] <- tmp
       }
       #--- Objective Statistics from GUI.
 
@@ -536,12 +540,12 @@ library(dplyr)
 #               X year to year
 # Parameters:   Dt    - catch biomass as an nRep by nT matrix.
 #               X     - Value to be compared to
-# Returns:      val, a list with the minimum (over years) probability (within
+# Returns:      val, a numeric of the minimum (over years) probability (within
 #               years/over reps) of Dt > X
 # Notes:        Differs from .calcQunatsRefPoints type calcs as it
 #               integrates over reps (vertically) first, then
 #               takes the min of the yearly probability within tdx
-# Source:       A.R. Kronlund
+# Source:       S. D. N. Johnson
 .calcStatsMinProbGtX <- function( Dt, X = .3 )
 {
   # Updated depletion values with 1s (success) or 0s (failure)
@@ -553,6 +557,30 @@ library(dplyr)
 
   # Return min value
   val <- min(yearlyProbs)
+  val
+}
+
+# .calcStatsTotProbGtX (Calculate the total probability of depletion > X)
+# Purpsoe:      Calculate the probability over reps and time of being above 
+#               X year to year
+# Parameters:   Dt    - catch biomass as an nRep by nT matrix.
+#               X     - Value to be compared to
+# Returns:      val, a numeric of the total probability (over years and 
+#               reps) of Dt > X
+# Notes:        Differs from .calcQunatsRefPoints type calcs as it
+#               integrates over reps and time simultaneously
+# Source:       S. D. N. Johnson
+.calcStatsTotProbGtX <- function( Dt, X = .3 )
+{
+  # Updated depletion values with 1s (success) or 0s (failure)
+  Dt[Dt > X] <- 1
+  Dt[Dt <= X] <- 0
+
+  # Calculate yearly prob (mean of successes)
+  totProb <- sum(Dt) / (nrow(Dt) * ncol(Dt))
+
+  # Return min value
+  val <-  totProb
   val
 }
 

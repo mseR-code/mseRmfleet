@@ -33,18 +33,16 @@ Periods   <- unique( perfTable$Period )
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 12 )
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 10 )
 colnames(objTable) <- c(  "Scenario","MP",
-                          "ProbGt.3B0_3Gen",
-                          "ProbGt.3B0_4Gen",
-                          "ProbGt.6B0_3Gen",
-                          "ProbGt.6B0_4Gen",
-                          "medAveCatch_3Gen",
-                          "medAAV_3Gen",
-                          "ProbGtLTA_3Gen",
-                          "ProbGtLTA_4Gen",
-                          "ProbGtrefB_3Gen",
-                          "ProbGtrefB_4Gen")
+                          "ProbGt.3B0",
+                          "minProbBtGt.3B0",
+                          "totProbBtGt.3B0",
+                          "ProbGt.6B0",
+                          "medAveCatch",
+                          "medAAV",
+                          "ProbGtLTA",
+                          "ProbGtrefB" )
 
 
 objTable <- as.data.frame(objTable)
@@ -69,16 +67,14 @@ for( sIdx in 1:length(scenarios) )
 
     if(nrow(subPerf) > 3 ) browser()
     
-    objTable[tabRow,"ProbGt.3B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
-    objTable[tabRow,"ProbGt.3B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.3B0" ]
-    objTable[tabRow,"ProbGt.6B0_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGt.6B0" ]
-    objTable[tabRow,"ProbGt.6B0_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGt.6B0" ]
-    objTable[tabRow,"ProbGtLTA_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGtLTA" ]
-    objTable[tabRow,"ProbGtLTA_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGtLTA" ]
-    objTable[tabRow,"ProbGtrefB_3Gen"] <- subPerf[subPerf$Period == "Med", "medProbGtrefB" ]
-    objTable[tabRow,"ProbGtrefB_4Gen"] <- subPerf[subPerf$Period == "Long", "medProbGtrefB" ]
-    objTable[tabRow,"medAveCatch_3Gen"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
-    objTable[tabRow,"medAAV_3Gen"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
+    objTable[tabRow,"ProbGt.3B0"] <- subPerf[subPerf$Period == "Med", "medProbGt.3B0" ]
+    objTable[tabRow,"minProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "minProbBtGt.3B0" ]
+    objTable[tabRow,"totProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.3B0" ]
+    objTable[tabRow,"ProbGt.6B0"] <- subPerf[subPerf$Period == "Med", "medProbGt.6B0" ]
+    objTable[tabRow,"ProbGtLTA"] <- subPerf[subPerf$Period == "Med", "medProbGtLTA" ]
+    objTable[tabRow,"ProbGtrefB"] <- subPerf[subPerf$Period == "Med", "medProbGtrefB" ]
+    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
+    objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
 
   }
 
