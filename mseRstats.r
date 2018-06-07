@@ -73,10 +73,13 @@ library(dplyr)
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
-                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
-                    "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
+                    "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
+                    "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
                     "medPropClosure","Q1PropClosure","Q2PropClosure",
-                    "minProbBtGt.3B0" )
+                    "minProbBtGt.3B0","totProbBtGt.3B0",
+                    "minProbBtGt.6B0","totProbBtGt.6B0",
+                    "minProbBtGtBave","totProbBtGtBave",
+                    "minProbBtGtBave-prod","totProbBtGtBave-prod" )
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -314,8 +317,8 @@ library(dplyr)
       # --- MSE objective statistics, hard coded by SDNJ May 10, 2018
       if( validSim )
       { 
-        LTA <- mean(Bt[1,1:67])
-        refB <- mean(Bt[1,38:66])
+        LTA <- apply(X = Bt[ ,1:67], FUN = mean, MARGIN = 1)
+        refB <- apply(X = Bt[ ,38:66], FUN = mean, MARGIN = 1)
 
         # We should add the other USR candidates here
         # LTA
