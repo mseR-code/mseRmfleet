@@ -3,22 +3,37 @@
 load("./mseRproject/sim050620181111177/sim050620181111177.Rdata")
 
 Bt              <- blob$om$SBt
-Bt              <- Bt[,2:ncol(Bt)]
+Bt              <- Bt[,2:68]
+Mt              <- blob$om$Mt[,2:68]
 posteriorDraws  <- blob$ctlList$opMod$posteriorDraws
 SBtMCMCpath     <- file.path(blob$ctlList$opMod$posteriorSamples,"mcmcSBt.csv")
 SBtMCMC         <- read.csv( SBtMCMCpath, header = T )[posteriorDraws,]
+MtMCMCpath      <- file.path(blob$ctlList$opMod$posteriorSamples,"mcmcMt.csv")
+MtMCMC          <- read.csv( MtMCMCpath, header = T )[posteriorDraws,]
 
 MREbt <- as.matrix((Bt - SBtMCMC)/SBtMCMC)
+MREMt <- as.matrix((Mt - MtMCMC)/MtMCMC)
 
 MREbt_Dist <- apply(  X = MREbt, FUN = quantile, MARGIN = 2,
                       probs = c(0.1, 0.5, 0.9) )
 
+MREMt_Dist <- apply(  X = MREMt, FUN = quantile, MARGIN = 2,
+                      probs = c(0.1, 0.5, 0.9) )
+
+par(mfrow = c(2,1), oma = c(3,3,1,1), mar= c(1,1,1,1) )
 plot( x = c(1951,2017), y = c(-1,1), 
       xlab = "", ylab = "", type = "n" )
   polygon(  x = c(1951:2017,2017:1951),
             y = c(MREbt_Dist[1,],rev(MREbt_Dist[3,]) ),
-            border = NA, col = "grey40" )
+            border = NA, col = "grey80" )
   lines( x = 1951:2017, y = MREbt_Dist[2,], lwd = 2 )
+
+plot( x = c(1951,2017), y = c(-1,1), 
+      xlab = "", ylab = "", type = "n" )
+  polygon(  x = c(1951:2017,2017:1951),
+            y = c(MREMt_Dist[1,],rev(MREMt_Dist[3,]) ),
+            border = NA, col = "grey80" )
+  lines( x = 1951:2017, y = MREMt_Dist[2,], lwd = 2 )
   
 
 
