@@ -269,7 +269,7 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
     # Set seed and draw random sample of replicates here.
     mcmcParPath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
     mcmcPar       <- read.csv( mcmcParPath, header =T ) 
-    samples       <- .quantileStratSample(  seed = ctlList$opMod$postSampleSeed,
+    samples       <- .quantileStratSample(  seed  = ctlList$opMod$postSampleSeed,
                                             post = mcmcPar,
                                             par1 = "m", par2 = "sbo",
                                             nBreaks = 10 )
@@ -3238,6 +3238,8 @@ iscamWrite <- function ( obj )
         obj$ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
       if( obj$ctlList$opMod$endMrule == "0.75jump" )
         obj$ctlList$opMod$endM        <- 0.75 * mean( as.numeric( mcmcM[postDraw, ] ) )
+      if( obj$ctlList$opMod$endMrule == "0.25pctile" )
+        obj$ctlList$opMod$endM        <- quantile(as.numeric( mcmcM[postDraw, ] ), prob = 0.25 )
     }
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
