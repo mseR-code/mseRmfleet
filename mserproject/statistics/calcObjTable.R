@@ -19,13 +19,13 @@ scenarios <- unique( perfTable$Scenario )
 
 MPs <- c( "NoFish",
           "minE21.2_HR.2",
-          "minE21.2_HR.2_cap30",
+          "minE21.2_HR.1",
           "minE21.2_HR.1_cap30",
           "minE.5B0_HR.2",
-          "minE.5B0_HR.2_cap30",
+          "minE.5B0_HR.1",
           "minE.5B0_HR.1_cap30",
           "HS30-60_HR.2",
-          "HS30-60_HR.2_cap30",
+          "HS30-60_HR.1",
           "HS30-60_HR.1_cap30" )
 
 Periods   <- unique( perfTable$Period )
