@@ -363,6 +363,8 @@ guiPerf <- function()
         write.csv( perfStats$summary1, paste( fName,"_perfTable1",".csv", sep="" ), row.names=F) # K.Holt added this line & disabled line above for 2017 MSE
         write.csv( perfStats$summary2, paste( fName,"_perfTable2",".csv", sep="" ), row.names=F )
         
+
+        source("mserproject/statistics/calcObjTable.R")
         # calcObjTable(fName) # Calls function from objectivesTable2017.r to summarize performance measures relative to 2017 MSE objectives 
       #}
     }

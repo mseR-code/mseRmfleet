@@ -5,12 +5,12 @@
 library(dplyr)
 
 # source mseR functions
-source("../../mseRtools.R")
-source("../../mseRoptions.R")
-source("../../mseRglobals.R")
+source("./mseRtools.R")
+source("./mseRoptions.R")
+source("./mseRglobals.R")
 
 # First, load the perf table
-perfTable <- read.csv(  "mseRstatistics_perfTable1.csv", header =T, 
+perfTable <- read.csv(  "./mserproject/statistics/mseRstatistics_perfTable1.csv", header =T, 
                         stringsAsFactors = FALSE)
 
 # Get scenario/MP labels
@@ -33,16 +33,22 @@ Periods   <- unique( perfTable$Period )
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 10 )
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 16 )
 colnames(objTable) <- c(  "Scenario","MP",
                           "ProbGt.3B0",
                           "minProbBtGt.3B0",
                           "totProbBtGt.3B0",
                           "ProbGt.6B0",
+                          "minProbBtGt.6B0",
+                          "totProbBtGt.6B0",
                           "medAveCatch",
                           "medAAV",
-                          "ProbGtLTA",
-                          "ProbGtrefB" )
+                          "ProbGtBave",
+                          "minProbBtGtBave",
+                          "totProbBtGtBave",
+                          "ProbGtBave-prod",
+                          "minProbBtGtBave-prod",
+                          "totProbBtGtBave-prod" )
 
 
 objTable <- as.data.frame(objTable)
@@ -71,12 +77,18 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,"minProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "minProbBtGt.3B0" ]
     objTable[tabRow,"totProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.3B0" ]
     objTable[tabRow,"ProbGt.6B0"] <- subPerf[subPerf$Period == "Med", "medProbGt.6B0" ]
-    objTable[tabRow,"ProbGtLTA"] <- subPerf[subPerf$Period == "Med", "medProbGtLTA" ]
-    objTable[tabRow,"ProbGtrefB"] <- subPerf[subPerf$Period == "Med", "medProbGtrefB" ]
+    objTable[tabRow,"minProbBtGt.6B0"] <- subPerf[subPerf$Period == "Med", "minProbBtGt.6B0" ]
+    objTable[tabRow,"totProbBtGt.6B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.6B0" ]
+    objTable[tabRow,"ProbGtBave"] <- subPerf[subPerf$Period == "Med", "medProbGtBave" ]
+    objTable[tabRow,"minProbBtGtBave"] <- subPerf[subPerf$Period == "Med", "minProbBtGtBave" ]
+    objTable[tabRow,"totProbBtGtBave"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave" ]
+    objTable[tabRow,"ProbGtBave-prod"] <- subPerf[subPerf$Period == "Med", "medProbGtBave.prod" ]
+    objTable[tabRow,"minProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Med", "minProbBtGtBave.prod" ]
+    objTable[tabRow,"totProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave.prod" ]
     objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
     objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
 
   }
 
 
-write.csv( objTable, file = "SOG_HerringObjectiveTable.csv")
+write.csv( objTable, file = "./mserproject/statistics/SOG_HerringObjectiveTable.csv")
