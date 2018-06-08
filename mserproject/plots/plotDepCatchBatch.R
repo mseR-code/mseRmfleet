@@ -27,10 +27,13 @@ MPs <- c( "NoFish",
 
 currMPs <- c( "NoFish",
               "minE18.8_HR.2",
+              "minE18.8_HR.1",
               "minE18.8_HR.1_cap2" )
 
 bestMP <- c(  "NoFish",
-              "minE.5B0_HR.1_cap2")
+              "minE.5B0_HR.1_cap2",
+              "minE18.8_HR.1_cap2",
+              "HS30-60_HR.1_cap2")
 
 # checkMPs <- c(  "NoFish",
 #                 "minE.5B0_HR.1",
