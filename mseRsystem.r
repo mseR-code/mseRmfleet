@@ -241,7 +241,9 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   
   ctlPars <- .readParFile( ctlFile )
   ctlList <- .createList( ctlPars )
-  cat( "\nMSG (runMSE) Parameter list created.\n" )
+
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (runMSE) Parameter list created.\n" )
  
   # Start timer.
   t1 <- proc.time()[3]
@@ -255,17 +257,20 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   opMod <- ctlList$opMod
   
   # Calculate life history schedules and OM equilibrium reference points.  
-  cat( "\nMSG (.createMP) Calculating reference points...\n ")
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.createMP) Calculating reference points...\n ")
   tmp <- calcRefPoints( as.ref(opMod) )
   refPts <- deref( tmp )
-  cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
 
   if( !is.null(opMod$posteriorSamples) )
   {
     # Set seed and draw random sample of replicates here.
     mcmcParPath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
     mcmcPar       <- read.csv( mcmcParPath, header =T ) 
-    samples       <- .quantileStratSample(  post = mcmcPar,
+    samples       <- .quantileStratSample(  seed  = ctlList$opMod$postSampleSeed,
+                                            post = mcmcPar,
                                             par1 = "m", par2 = "sbo",
                                             nBreaks = 10 )
     ctlList$opMod$posteriorDraws <- samples
@@ -295,7 +300,8 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   # Make the simulation folder.
   simFolder <- paste( "sim", stamp, sep="" )
   dir.create( file.path( .PRJFLD, simFolder ) )
-  cat( "\nMSG (runMSE) Created simulation folder ",simFolder,"in",.PRJFLD,"\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (runMSE) Created simulation folder ",simFolder,"in",.PRJFLD,"\n" )
 
   # Save the simXXX.Rdata version of the blob to the simulation folder.
   blobFilePath <- file.path( .PRJFLD,simFolder,blobFileName )
@@ -607,10 +613,12 @@ ageLenOpMod <- function( objRef, t )
     {
       repFile   <- ctlList$opMod$repFile
       avgR      <- repFile$rbar   
-      inputFtg  <- repFile$ft
+      inputFtg  <- t(repFile$ft)
       inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)
+
+      Rt[1:66] <- inputRt[1:66]
 
     }
     if( !is.null( ctlList$opMod$posteriorSamples ) )
@@ -622,11 +630,11 @@ ageLenOpMod <- function( objRef, t )
       # Use rep file for Na1 until MCMC output is obtained
       inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)      
+      Rt[1:67]  <- inputRt[1:67]
     }  
 
     # Now overwrite OM values with input values
     Ftg[1:67,]    <- inputFtg[1:67,]
-    Rt[1:66]      <- inputRt[1:66]
   }
   
   # What to do in year 68?? I feel like ISCAM predicts this..
@@ -646,6 +654,7 @@ ageLenOpMod <- function( objRef, t )
     Ntot[t] <- sum( Nalt[,,t] )
     Bt[t]   <- sum( Balt[,,t] * Ma )
     Nt[t]   <- sum( Nalt[,,t] * Ma )
+
   } # end "if(t==1)"
   else  # t>1
   {
@@ -657,7 +666,7 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) ) omegat[t] <- Rt[t] / tmpR
+      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
@@ -694,6 +703,7 @@ ageLenOpMod <- function( objRef, t )
       if( Bt[t] < pulseLim ) 
       {
         Mt[t] <- obj$om$pulseMt[t]
+
       }
     }
 
@@ -703,39 +713,98 @@ ageLenOpMod <- function( objRef, t )
 
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
+
         
   # Solve catch equation for this year's Ftg based on tac allocated among gears
-  # if (t >= tMP) browser()
+  # Add test fishery catch in projection
+  if(t >= tMP)
+  {
+    testFishery <- ctlList$opMod$testFishery
+    # Calculate test fishery catch based on the minimum harvest rate
+    # of the test fishery over the historical period
+    minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
+    minFtest <- log( 1 / (1 - minUtest) )
+
+    # reduce to a small F if needed
+    Ftest <- max(0.01, minFtest)
+    # Calculate assuming a discrete fishery 
+    Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
+
+    testCatch <- min(Ctest, sum(testFishery))
+    testFishery[2] <- testCatch
+
+    Ctg[t,] <- Ctg[t,] + testFishery
+  }
   
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
 
     if( t < tMP ) initF <- c( obj$ctlList$opMod$repFile$ft[,t])
-    else initF <- c(rep(0.223,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
+    else initF <- c(rep(0.01,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
     idx0  <- which(Ctg[t,] < 0)
     Ctg[t,idx0] <- 0.
     baranovTime <<- t
     #if(t>17) browser()
 
-    # browser()
+    solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
+                                        nIter = ctlList$opMod$baranovIter,
+                                        fisheryTiming = 0 ) )
 
-    solveF <- .solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                    C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
-                                    nIter = ctlList$opMod$baranovIter )
 
-    solveF[ solveF > 10 ] <- 10
+    if(any(!is.finite(solveF))) 
+    {
+      cat( "Warning: non finite Ftg... t = ", t, "\n" ) 
+      cat( "Reducing step size by half and trying again.\n" ) 
+
+      solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                        nIter = ctlList$opMod$baranovIter,
+                                        fisheryTiming = 0 ) )
+
+      cat( solveF, "\n" )
+
+      if( class(solveF) == "try-error" ) browser()
+
+      solveF[!is.finite(solveF)] <- 0
+    }
+
     if( any( solveF < 0 ) )
     {
+      
         cat("Warning: negative Ftg... t = ", t, "\n")
+        cat( "Reducing step size by half and trying again.\n" ) 
+
+        solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
+                                            C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
+                                            nIter = ctlList$opMod$baranovIter,
+                                            fisheryTiming = 0 ) )
+
         cat( solveF, "\n" )
+
+        if( class(solveF) == "try-error" ) browser()
+
         solveF[ solveF < 0. ] <- 0.
     }
+
+    if( class(solveF) == "try-error" ) browser()
+
+    solveF[ solveF > 10 ] <- 10
+
     Ftg[t,] <- solveF
+
+    if(t > 1)
+      if(SBt < sum(ctlList$opMod$testFishery) ) browser()
   }
 
+
+  # Add an F based test fishery if biomass is below the threshold
+  # if( Bt[t] <= 0.2 ) Ftg[t,] <- Ftg[t,] + c(0.0,0.01,0.0,0.0,0.0)
+  
+
   # Compute total mortality by summing M and Fg over gear types
-  Zalt[,,t] <- matrix(Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
+  Zalt[,,t] <- matrix( Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
   for( g in 1:(nGear-2) )
     Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]
 
@@ -759,6 +828,8 @@ ageLenOpMod <- function( objRef, t )
     legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
   }
+
+  # if(t > tMP )browser()
 
   # Calculate spawning biomass at spawn time (post F and M)
   SBt <- sum(Balt[,nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
@@ -1267,7 +1338,7 @@ callProcedureSP <- function( obj, t )
   # Exploitable and spawning biomass are the same for the production model.
   assessment$exploitBt <- assessment$Bt
   assessment$spawnBt   <- assessment$Bt
-											 	  
+                          
   # ARK (17-Nov-10) Just get this back to updatePop and store by gear type there.
   #assessment$ItScaled <- assessment$ItScaled
 
@@ -1885,7 +1956,8 @@ iscamWrite <- function ( obj )
   cat ( file=topDat, ctlFile, "\n", append = T)
   cat ( file=topDat, pfcFile, "\n", append = T)
 
-  cat ("\nMSG (writeISCAM) EM dat and ctl files created.\n", sep = "")
+  # if( !ctlList$gui$quiet )
+  #   cat ("\nMSG (writeISCAM) EM dat and ctl files created.\n", sep = "")
   return()
 }
 
@@ -2242,13 +2314,14 @@ iscamWrite <- function ( obj )
       gearTimes <- times[gears == g]
       om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
     }
-
-    cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
     .CATCHSERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating catch from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating catch from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2280,13 +2353,15 @@ iscamWrite <- function ( obj )
     #      probably determine this on the fly, or else make sure it is
     #      always done this way. I suppose that ncol>nrow could be used
     #      to test whether transpose is needed, except in very data-limited case.
-
-    cat( "\nMSG (.createMP) Read stock abundance indices from file.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read stock abundance indices from file.\n" )
+    
     .INDEXSERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating indices from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating indices from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2321,13 +2396,14 @@ iscamWrite <- function ( obj )
     }
 
     
-    
-    cat( "\nMSG (.createMP) Read age data from file.\n" )    
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read age data from file.\n" )    
     .AGESERIESINPUT <<- TRUE
   }
   else
   {
-    cat( "\nMSG (.createMP) Calculating ages from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Calculating ages from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2339,13 +2415,15 @@ iscamWrite <- function ( obj )
     other <- ctlObj$opModData$other
     print( other )
     print( names(other) )
-    
-    cat( "\nMSG (.createMP) Read other data from file.\n" )    
+
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) Read other data from file.\n" )    
     scan()
   }
   else
   {
-    cat( "\nMSG (.createMP) No other calculations from operating model.\n" )
+    if( !ctlObj$gui$quiet )
+      cat( "\nMSG (.createMP) No other calculations from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -2395,57 +2473,57 @@ iscamWrite <- function ( obj )
   if ( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
   {
     mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus ) )
   }
   
   if ( ctlObj$mp$assess$methodId == .DDMOD )
   {
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
   }  
 
   if ( ctlObj$mp$assess$methodId == .PMOD )
   {
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
-	  mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
+    mp$assess$pdfPars <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=25 ) )
 
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )
   }
   
-	# Stock assessment outputs.
-	if( ctlObj$mp$assess$methodId == .PERFECT )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=4 ) )
-	  
-	  # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
-	  # reliable parameter status etc.
-	  mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )	  
-	}  
+  # Stock assessment outputs.
+  if( ctlObj$mp$assess$methodId == .PERFECT )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=4 ) )
+    
+    # runStatus will hold ADMB convergence stats, Hessian status, DEADFLAG,
+    # reliable parameter status etc.
+    mp$assess$runStatus <- data.frame( matrix( NA,nrow=(nT-tMP+1), ncol=nColRunStatus) )    
+  }  
 
   mp$assess$Ftg <- matrix( NA,nrow=nT,ncol=nGear )
 
   #----------------------------------------------------------------------------#
-	#-- Biomass control points                                                 --#
-	#----------------------------------------------------------------------------#
+  #-- Biomass control points                                                 --#
+  #----------------------------------------------------------------------------#
 
-	# Case 1: Bmsy is basis for HCR control points; equilibrium value is used.
+  # Case 1: Bmsy is basis for HCR control points; equilibrium value is used.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseBmsy" & ctlObj$mp$hcr$statusSource=="statusSrceEquil" )
   {
     # Set statusBase to Bmsy for all nT years.
     mp$hcr$Bref <- rep( refPtsObj$ssbFmsy, nT )
   }
   
-	# Case 2: B0 is basis for HCR control points; equilibrium value is used.
+  # Case 2: B0 is basis for HCR control points; equilibrium value is used.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseB0" & ctlObj$mp$hcr$statusSource=="statusSrceEquil" )
   {
     # Set statusBase to B0 for all nT years.  
@@ -2459,7 +2537,7 @@ iscamWrite <- function ( obj )
     mp$hcr$Bref <- rep( NA, nT )
   }
   
-	# Case 4: B0 is basis for HCR control points; estimated from assessment model.
+  # Case 4: B0 is basis for HCR control points; estimated from assessment model.
   if ( ctlObj$mp$hcr$statusBase == "statusBaseB0" & ctlObj$mp$hcr$statusSource=="statusSrceEst" )
   {
     # Create a vector to be filled each annual estimate.  
@@ -2467,31 +2545,31 @@ iscamWrite <- function ( obj )
   }
   
   #----------------------------------------------------------------------------#
-	#-- Fishery rate control points                                            --#
-	#----------------------------------------------------------------------------#
-	
+  #-- Fishery rate control points                                            --#
+  #----------------------------------------------------------------------------#
+  
   # Case 1: Reference removal rate input directly from simCtlFile.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFinput" )
   {
     mp$hcr$remRate <- rep( ctlObj$mp$hcr$inputF, nT )
   }
   
-	# Case 2: Reference removal rate based on Fmsy; equilibrium value is used.
+  # Case 2: Reference removal rate based on Fmsy; equilibrium value is used.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFmsy" & ctlObj$mp$hcr$remRefSource == "rrSrceEquil" )
   {
     mp$hcr$remRate <- rep( refPtsObj$refPts$Fmsy, nT )
   }
   
-	# Case 3: Reference removal rate based on Fmsy; estimated from assessment model.
+  # Case 3: Reference removal rate based on Fmsy; estimated from assessment model.
   if ( ctlObj$mp$hcr$remRefBase == "rrBaseFmsy" & ctlObj$mp$hcr$remRefSource == "rrSrceEst" )
   {
     # Create Fmsy vector to be filled with annual estimates.
     mp$hcr$remRate <- rep( NA, nT )
   }
 
-	# Case 4: Reference removal rate is set to F0.1.
-	if ( ctlObj$mp$hcr$remRefBase == "rrBaseF01" ) 
-	{
+  # Case 4: Reference removal rate is set to F0.1.
+  if ( ctlObj$mp$hcr$remRefBase == "rrBaseF01" ) 
+  {
     mp$hcr$remRate <- rep( refPtsObj$F01, nT )
   }
 
@@ -2507,7 +2585,7 @@ iscamWrite <- function ( obj )
   if ( ctlObj$mp$hcr$remRefSource == "rrSrceEst" | ctlObj$mp$hcr$statusSource == "statusSrceEst" )
   {
     mp$hcr$idxCtlPts <- tmpTimes$idxCtlPts
-  }	
+  } 
 
   # Create vectors for lower and upper control point bounds on Bref scale.
   mp$hcr$lowerBound <- rep( NA, nT )
@@ -2531,25 +2609,25 @@ iscamWrite <- function ( obj )
       mp$hcr$nThin <- 1
     }
   }
-	
-	if( ctlObj$mp$assess$methodId == .PMOD )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}
-	
-	if( ctlObj$mp$assess$methodId == .DDMOD )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}	
-	
-	if( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
-	{
-	  mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )	  
-	}
-	
+  
+  if( ctlObj$mp$assess$methodId == .PMOD )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  }
+  
+  if( ctlObj$mp$assess$methodId == .DDMOD )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  } 
+  
+  if( ctlObj$mp$assess$methodId == .CAAMOD | ctlObj$mp$assess$methodId == .ISCAMRW )
+  {
+    mp$assess$mpdPars <- data.frame( matrix( NA,nrow=(nT-tMP+1),ncol=25 ) )   
+  }
+  
   # Retrospective biomass estimates and recruitment.
-	mp$assess$retroExpBt <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
-	mp$assess$retroRt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroExpBt <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroRt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
   mp$assess$retroMt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
 
   # Build the return object.
@@ -2660,54 +2738,54 @@ iscamWrite <- function ( obj )
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
       mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
 
       mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )
   }
-	
+  
   if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW  )
   {
     # This is for blob - needs to be 1 more column than createMP version for iRep.
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
-	  mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+    mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
     
     mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )
   }
-	
+  
   if( ctlList$mp$assess$methodId == .DDMOD )
   {
     # This is for blob - needs to be 1 more column than createMP version for iRep.
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$mpdPars)+1 ) )
                                        
-	  mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
-                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )	  
+    mp$assess$pdfPars   <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
+                                       ncol=ncol(obj$mp$assess$pdfPars)+1 ) )   
     
     mp$assess$runStatus <- data.frame( matrix( NA, nrow=nReps*(nT-tMP+1),
                                        ncol=ncol(obj$mp$assess$runStatus)+1 ) )      
-  }	
-	
+  } 
+  
   if( ctlList$mp$assess$methodId == .MOVAVG | ctlList$mp$assess$methodId == .KALMAN )
   {
      mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=2))
      mp$assess$pdfPars <- mp$assess$mpdPars
- 	  
- 	  # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
-    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )  	  
+    
+    # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
+    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )      
   }
-	
-	# Perfect information.
+  
+  # Perfect information.
   if( ctlList$mp$assess$methodId == .PERFECT )
   { 
-	  mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=5 ) ) 
+    mp$assess$mpdPars   <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=5 ) ) 
 
- 	  # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
-    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )  	  
+    # These methods can have DEADFLAG, perhaps other things so just make runStatus the same.
+    mp$assess$runStatus <- data.frame( matrix( NA, nrow=(nReps*(nT-tMP+1)), ncol=1 ) )      
   }
 
   # Retrospective statistics.
@@ -2730,8 +2808,9 @@ iscamWrite <- function ( obj )
   
   # Loop over simulation replicates.
   .LASTSOLUTION <<- NULL
-  
-  cat( "\nMSG (.mgmtProc) Running feedback loop...\n" ) 
+  if(!obj$ctlList$gui$quiet)
+    cat( "\nMSG (.mgmtProc) Running feedback loop...\n" ) 
+
   for ( i in 1:nReps )
   {
     # Initialize .DEADFLAG and .FISHERYCLOSED
@@ -2752,29 +2831,30 @@ iscamWrite <- function ( obj )
     # Initialise simulation object for t=1,2,...tMP-1 pre-MP period.
     obj <- deref( .initPop( as.ref(obj) ) )
 
-    cat( "\nMSG (.mgmtProc) Elapsed time in .initPop = ", proc.time()[3]-t1, "\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.mgmtProc) Elapsed time in .initPop = ", proc.time()[3]-t1, "\n" )
     
     # Initialize annual biomass assessments and target F
     #obj$mp$hcr$targetFt <- rep( NA,nT )
     obj$mp$hcr$precautionaryFt <- rep( NA,nT )
 
     # Initialize stock assessment model outputs (K.Holt; 07-Aug-09)
-	if ( ctlList$mp$assess$methodId == .PERFECT )
-	{
-	    obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
-  	}
-  	
+  if ( ctlList$mp$assess$methodId == .PERFECT )
+  {
+      obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
+    }
+    
     if ( ctlList$mp$assess$methodId == .MOVAVG )
     {
         obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=4 ) )
     }
 
-	if ( ctlList$mp$assess$methodId == .PMOD )
-	{
-	    obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=25 ) )
-  	}
-  	
-	  if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
+  if ( ctlList$mp$assess$methodId == .PMOD )
+  {
+      obj$mp$assess$mpdPars <- data.frame( matrix( NA, nrow=(nT-tMP+1), ncol=25 ) )
+    }
+    
+    if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
     {
       obj$mp$assess$mpdPars <- data.frame( matrix(NA,nrow=(nT-tMP+1), ncol=25 ) )
       obj$mp$assess$Rt      <- matrix( NA, nrow=(nT-tMP+1), ncol=(nT+1) )
@@ -2787,7 +2867,7 @@ iscamWrite <- function ( obj )
       # If "NoFish" or "PerfectInfo", skip the assessment feedback
       # loop and use a projection function
       if( ctlList$gui$mpLabel %in% c("NoFish", "PerfectInfo") |
-      	  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
+          substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
       {
         obj <- .projPopNoAssess( obj )
       }
@@ -2861,8 +2941,12 @@ iscamWrite <- function ( obj )
     blob$mp$assess$retroExpBt[ startRow:endRow, ]   <- cbind( reps, obj$mp$assess$retroExpBt )
     
     diffTime <- proc.time()[3] - startTime
-    writeProgress( i, nReps )
-    cat( "Elapsed time = ", diffTime, "\n" )
+    if(!obj$ctlList$gui$quiet)
+    {
+      writeProgress( i, nReps )
+      cat( "Elapsed time = ", diffTime, "\n" )  
+    }
+    
   
   }     # End simulation loop.
   
@@ -3007,7 +3091,7 @@ iscamWrite <- function ( obj )
     # 0. Project population forward 1 time step
     # with no catch, skip to next time step if
     # no fishing is occuring
-    obj$om$Ctg[t+1,] <- obj$ctlList$opMod$testFishery
+    obj$om$Ctg[t+1,] <- rep(0.0,5)
     obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
 
     if( obj$ctlList$gui$mpLabel == "NoFish" ) next
@@ -3054,8 +3138,9 @@ iscamWrite <- function ( obj )
 
     newCatch <- targetHarv * obj$ctlList$opMod$allocProp
 
+
     # Save catch in om, adding in test fishery
-    obj$om$Ctg[t+1,] <- newCatch + obj$ctlList$opMod$testFishery
+    obj$om$Ctg[t+1,] <- newCatch
 
     # 3. Rerun operating model for next time step
     # with new catch
@@ -3095,8 +3180,9 @@ iscamWrite <- function ( obj )
 
   if( !is.null(ctlList$opMod$posteriorSamples) ) 
   {
-    cat(  "\nMSG (.initPop) Sampling posterior for historical period, \n",
-          "\nMSG (.initPop) Initialisation may take longer than usual.\n", sep = "" )
+    if(!obj$ctlList$gui$quiet)
+      cat(  "\nMSG (.initPop) Sampling posterior for historical period, \n",
+            "\nMSG (.initPop) Initialisation may take longer than usual.\n", sep = "" )
 
     # Get posterior sample number
     repNo     <- ctlList$opMod$rep
@@ -3106,12 +3192,14 @@ iscamWrite <- function ( obj )
     mcmcMpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcMt.csv")
     mcmcFpath     <- file.path(ctlList$opMod$posteriorSamples,"mcmcFt.csv")
     mcmcRtpath    <- file.path(ctlList$opMod$posteriorSamples,"mcmcRt.csv")
+    mcmcSBpath    <- file.path(ctlList$opMod$posteriorSamples,"mcmcSBt.csv")
     mcmcParpath   <- file.path(ctlList$opMod$posteriorSamples,"mcmcPar.csv")
 
     mcmcM         <- read.csv( mcmcMpath, header = T, stringsAsFactors = FALSE)
     mcmcF         <- read.csv( mcmcFpath, header = T, stringsAsFactors = FALSE)
     mcmcRt        <- read.csv( mcmcRtpath, header = T, stringsAsFactors = FALSE)
     mcmcPar       <- read.csv( mcmcParpath, header = T, stringsAsFactors = FALSE)
+    mcmcSBt       <- read.csv( mcmcSBpath, header = T, stringsAsFactors = FALSE)
 
     # Create a new inputF matrix
     inputFtg  <- matrix( nrow = nT, ncol = 5 )
@@ -3150,6 +3238,8 @@ iscamWrite <- function ( obj )
         obj$ctlList$opMod$endM        <- 0.5 * mean( as.numeric( mcmcM[postDraw, ] ) )
       if( obj$ctlList$opMod$endMrule == "0.75jump" )
         obj$ctlList$opMod$endM        <- 0.75 * mean( as.numeric( mcmcM[postDraw, ] ) )
+      if( obj$ctlList$opMod$endMrule == "0.25pctile" )
+        obj$ctlList$opMod$endM        <- quantile(as.numeric( mcmcM[postDraw, ] ), prob = 0.25 )
     }
 
     # Will need to recalculate Salg from here, rather than re-calling refPts
@@ -3202,6 +3292,7 @@ iscamWrite <- function ( obj )
     times <- years - .INITYEAR + 1
     gears <- catch[,2]
 
+
     gearNums <- unique(gears)
     for( g in gearNums )
     {
@@ -3210,14 +3301,15 @@ iscamWrite <- function ( obj )
     }
 
     obj$om$Ctg[is.na(obj$om$Ctg)] <- 0
-
-    cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Extracted catch and converted units.\n" )     
     .CATCHSERIESINPUT <<- TRUE         
   }
   
   if ( is.null( ctlList$mp$data$inputCatch ) )
   {
-    cat( "\nMSG (.initPop) Calculating catch from operating model.\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Calculating catch from operating model.\n" )
   }
 
   #----------------------------------------------------------------------------#
@@ -3357,7 +3449,9 @@ iscamWrite <- function ( obj )
     # Finally replace recruitment deviations from file in the omegat.
     omegat[(1+recDevsOffset):(length(recDevs)+recDevsOffset)] <- exp( recDevs )
 
-    cat( "\nMSG (.initPop) Read recruitment deviations from file...\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Read recruitment deviations from file...\n" )
+
     .RECSERIESINPUT <<- TRUE
   }
   # Input numbers-at-age and length for the historical period
@@ -3369,7 +3463,8 @@ iscamWrite <- function ( obj )
   
   if ( is.null( ctlList$opMod$estRecDevs ) )
   {
-    cat( "\nMSG (.initPop) Calculating recruitment deviations from operating model.\n" )
+    if(!obj$ctlList$gui$quiet)
+      cat( "\nMSG (.initPop) Calculating recruitment deviations from operating model.\n" )
   }  
   
   #----------------------------------------------------------------------------#
@@ -3452,20 +3547,20 @@ iscamWrite <- function ( obj )
 
 .fnBaranov <- function( fPars, B, S, P, D, M, C, nIter=50, lam=0.35, quiet=TRUE )
 {
-	F <- exp( fPars ) # input values are log-scale to contrain > 0
-	nGear  <- length(F)
-	f      <- 0.
-	J      <- rep( 0., nGear^2 )
-	dim(J) <- c( nGear,nGear )
+  F <- exp( fPars ) # input values are log-scale to contrain > 0
+  nGear  <- length(F)
+  f      <- 0.
+  J      <- rep( 0., nGear^2 )
+  dim(J) <- c( nGear,nGear )
   nTimes <- 0
-	falg <- array( data=NA, dim=dim(S) )
+  falg <- array( data=NA, dim=dim(S) )
   for( g in 1:nGear )
     falg[,,g] <- S[,,g]*F[g]*(D[g]*P[,,g] - P[,,g] + 1.)
-	Z <- M + matrixsum( falg )
-	for( g in 1:nGear )
-	{
+  Z <- M + matrixsum( falg )
+  for( g in 1:nGear )
+  {
     # compute function fg(F) <- C - Cg(F)
-		Bprime <- B*S[,,g]*(1.-P[,,g])
+    Bprime <- B*S[,,g]*(1.-P[,,g])
     tmp  <- Bprime*F[g]*(1.-exp(-Z))/Z
     f[g] <- (C[g] - sum(tmp))^2. 
   }
@@ -3540,11 +3635,15 @@ iscamWrite <- function ( obj )
 
 
 .solveBaranovMfleet <- function(  B, S, F, M, C, nIter = 5, lam = rep(.5,3), 
-                                  quiet = TRUE )
+                                  quiet = TRUE, fisheryTiming = 0 )
 {
   # Follow other functions, but use new derivation of J
+  B <- B * exp(-fisheryTiming*M)
+
   nGear <- length(F)
-  Znew  <- M
+  Znew  <- (1 - fisheryTiming)*M
+
+
 
   for( g in 1:(nGear-2) )
   {    
@@ -3635,17 +3734,17 @@ iscamWrite <- function ( obj )
             tmp    <- Bprime*F[g]*(1.-exp(-Z))/Z
             f      <- C[g] - sum(tmp); tmp <- 0
             tmp    <- S[,,g]*( D[g]*P[,,g]-P[,,g]+1. )*( exp(-Z)-F[g]/Z^2 )*Bprime -
-                      ( 1.-exp(-Z) )*Bprime/Z				
+                      ( 1.-exp(-Z) )*Bprime/Z       
             J      <- sum(tmp); tmp <- 0.
             F[g]   <- F[g] - f/J
             Znew   <- Znew + S[,,g]*F[g]*(D[g]*P[,,g] - P[,,g] + 1.)
             #if( baranovTime > 20 ) browser()
         }
-    }	
+    } 
     #F[ F > 1.0 ] <- 1.0 
     # could also return Z so it only needs to be computed once.
     #browser()
-    return(F)	
+    return(F) 
 }     # END function .solveBaranov1
 
 
@@ -3725,7 +3824,7 @@ iscamWrite <- function ( obj )
   #----------------------------------------------------------------------------#
 
   # Begin solveInitPop
-  obj <- deref( objRef )  
+  obj <- deref( objRef )
   
   # Determine if catch series has already been input
   if ( !.CATCHSERIESINPUT )
@@ -3868,7 +3967,7 @@ iscamWrite <- function ( obj )
   if ( ctlList$mp$assess$methodId == .PMOD )
   {
     # need to assemble and fill in the data required by PMOD assessment
-	  # If t == tMP, use init values of 0 for ln omega.
+    # If t == tMP, use init values of 0 for ln omega.
     tmp$spMsy           <- ctlList$mp$assess$spMsy
     tmp$spFmsy          <- ctlList$mp$assess$spFmsy
     tmp$sp_initB        <- ctlList$mp$assess$sp_initB
@@ -4284,8 +4383,9 @@ iscamWrite <- function ( obj )
   # Set catch limit for the year
   om$Ctg[ t, ]  <- rep( 0, ncol(om$Ctg) )
   om$Ctg[t,]    <- ctlList$opMod$allocProp * min(tmpCatch)
-  # Add test fishery catch
-  om$Ctg[t,]    <- om$Ctg[t,] + ctlList$opMod$testFishery
+
+  # Add test fishery catch - maybe we move this inside the OM
+  # om$Ctg[t,]    <- om$Ctg[t,] + ctlList$opMod$testFishery
 
  
   mp$assess$runStatus[ tRow, "deadFlag" ]      <- .DEADFLAG
@@ -4301,10 +4401,10 @@ iscamWrite <- function ( obj )
   obj$mp$hcr$precautionaryFt[t] <- targetHarv$precautionaryF # target F prescribed by control rule
   obj <- deref( ageLenOpMod( as.ref(obj),t ) )
 
-  #if ( obj$om$Bt[t] < (0.05*ctlList$opMod$B0) )
-  #{
+  if ( obj$om$Bt[t] < (0.05*ctlList$opMod$B0) )
+  {
     .DEADFLAG <<- FALSE
-  #}
+  }
  
   return( obj )
 }     # END function .updatePop
@@ -4650,10 +4750,12 @@ iscamWrite <- function ( obj )
   
   # Calculate life history schedules and OM equilibrium reference points.
   t1 <- proc.time()[3]
-  cat( "\nMSG (.writePinDat) Calculating reference points, please wait...\n" )
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.writePinDat) Calculating reference points, please wait...\n" )
   tmp <- calcRefPoints( as.ref(opMod) )
   refPts <- deref( tmp )
-  cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )  
+  if( !ctlList$gui$quiet )
+    cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )  
 
   nFisheries <- opMod$nGear
   nGrps      <- opMod$nGrps
@@ -5053,4 +5155,47 @@ tsBoot <- function ( seed = NULL, x = histData, length = nT,
     lSim <- lSim + segLen
   }
   return ( Yt )  
+}
+
+# Try a sampling system for h and SSB
+.quantileStratSample <- function( seed = NULL,
+                                  post = SOGtvMpost, par1 = "m", par2 = "sbo",
+                                  nBreaks = 10 )
+{
+  if( !is.null(seed) )
+    set.seed(seed)
+
+  pctiles <- seq(1/nBreaks,1,length = nBreaks)
+
+  par1Quant <- quantile( x = post[,par1], probs = pctiles )
+
+  par1Breaks <- c(0,par1Quant)
+
+  samples <- numeric(length = length(pctiles)^2 )
+
+  for( k in 1:nBreaks )
+    {
+      LB <- par1Breaks[k]
+      UB <- par1Breaks[k+1]
+
+      rowIdx1 <- which(post[,par1] > LB & post[,par1] <= UB  )
+      par2CondQuants <- quantile( x = post[rowIdx1,par2], probs = pctiles )
+      
+      par2CondBreaks <- c( 0, par2CondQuants )
+
+      for( j in 1:nBreaks )
+      {
+        condLB <- par2CondBreaks[j]
+        condUB <- par2CondBreaks[j+1]
+
+        rowIdx2 <- which( post[,par2] > condLB & post[,par2] <= condUB )
+
+        rowIdx <- intersect(rowIdx1, rowIdx2)
+        if(length(rowIdx) == 0) browser()
+        samples[j + (k-1)*nBreaks ] <- sample( x = rowIdx, size = 1 )
+      }
+
+    }  
+
+  samples
 }

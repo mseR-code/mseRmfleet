@@ -12,50 +12,40 @@ source("../../mseRoptions.R")
 source("../../mseRplots.R")
 source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
+source("../../mseRrefPoints.R")
 source("plotBioFunctions.R")
 
 MPs <- c( "NoFish",
-          "minE18.8_HR.2",
-          "minE18.8_HR.1",
-          "minE18.8_HR.1_cap2",
+
+          "minE21.2_HR.2",
+          "minE21.2_HR.1",
+          "minE21.2_HR.1_cap30",
           "minE.5B0_HR.2",
           "minE.5B0_HR.1",
-          "minE.5B0_HR.1_cap2",
+          "minE.5B0_HR.1_cap30",
           "HS30-60_HR.2",
           "HS30-60_HR.1",
-          "HS30-60_HR.1_cap2" )
-          # "PerfectInfo_minE18.8_HR.2",
-          # "PerfectInfo_minE18.8_HR.2_cap5",
-          # "PerfectInfo_minE18.8_HR.1",
-          # "PerfectInfo_minE18.8_HR.1_cap5",
-          # "PerfectInfo_minE.5B0_HR.2",
-          # "PerfectInfo_minE.5B0_HR.2_cap5",
-          # "PerfectInfo_minE.5B0_HR.1",
-          # "PerfectInfo_minE.5B0_HR.1_cap5",
-          # "PerfectInfo_HS30-60_HR.2",
-          # "PerfectInfo_HS30-60_HR.2_cap5",
-          # "PerfectInfo_HS30-60_HR.1",
-          # "PerfectInfo_HS30-60_HR.1_cap5" )
+          "HS30-60_HR.1_cap30" )
 
-# currMPs <- c( "NoFish",
-#               "minE18.8_HR.2",
-#               "PerfectInfo_minE18.8_HR.2",
-#               "minE18.8_HR.2_cap5",
-#               "PerfectInfo_minE18.8_HR.2_cap5" )
+MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",
+              "PerfectInfo_minE21.2_HR.1",
+              "PerfectInfo_minE21.2_HR.1_cap30",
+              "PerfectInfo_minE.5B0_HR.2",
+              "PerfectInfo_minE.5B0_HR.1",
+              "PerfectInfo_minE.5B0_HR.1_cap30",
+              "PerfectInfo_HS30-60_HR.2",
+              "PerfectInfo_HS30-60_HR.1",
+              "PerfectInfo_HS30-60_HR.1_cap30" )
 
-# bestMP <- c(  "NoFish",
-#               "minE.5B0_HR.1_cap5")
+currMPs <- c( "NoFish",
+              "minE21.2_HR.2",
+              "minE21.2_HR.1",
+              "minE21.2_HR.1_cap30" )
 
-# checkMPs <- c(  "NoFish",
-#                 "minE.5B0_HR.1",
-#                 "minE.5B0_HR.1_cap5")
-
-
-# whatWeLike_minE18.8 <- 3:5
-# whatWeLike_minE.5B0 <- 6:9
-# whatWeLike_.HS30.60 <- 11:13
-
-# base3HCRs <- c(2,6,10)
+bestMPs <- c( "NoFish",
+              "minE.5B0_HR.1_cap30",
+              "minE.5B0_HR.1",
+              "HS30-60_HR.1_cap30" )
 
 
 
@@ -97,21 +87,15 @@ yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
 
 # now plot the depCatch multi panels we want
-# plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "DepCatch",
-#                           scenarios = scenList, df = info.df)
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs_DepCatch",
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
-plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
-                          scenarios = scenList, df = info.df)
+plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs_DepCatch",
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
-# plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",
-#                           scenarios = scenList, df = info.df)
-
-# plotDepCatchMultiPanels(  MPnames = currMP_proxy, plotNameRoot = "currMP_proxy",
-#                           scenarios = scenList, df = info.df)
-
-# plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE18.8], 
-#                           plotNameRoot = "minE18.8_bestMPs",
-#                           scenarios = scenList, df = info.df)
+plotDepCatchMultiPanels(  MPnames = bestMPs, 
+                          plotNameRoot = "bestMPs_DepCatch",
+                          scenarios = scenList, df = info.df, gfx = gfx)
 
 # plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_minE.5B0], 
 #                           plotNameRoot = "minE.5B0_bestMPs",
@@ -120,6 +104,7 @@ plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
 # plotDepCatchMultiPanels(  MPnames = MPs[whatWeLike_.HS30.60], 
 #                           plotNameRoot = "HS30-60_bestMPs",
 #                           scenarios = scenList, df = info.df)
+
 
 # plotDepCatchMultiPanels(  MPnames = MPs[base3HCRs], 
 #                           plotNameRoot = "baseHCRs",

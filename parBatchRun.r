@@ -1,8 +1,8 @@
 library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
-# batchFiles <- 1:8
-batchFiles <- c(9:12,21:24)
+batchFiles <- c(1:24)
+# batchFiles <- c(9:12,21:24)
 nBatchFiles <- length(batchFiles)
 batchFolderNames <- paste("mseRBat",batchFiles,sep = "")
 
@@ -67,25 +67,28 @@ tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 stopCluster(cl)
 
 require(stringr)
-for (i in 1:nBatchFiles)
+for (idx in (1:length(batchFiles)))
 {
+  i <- batchFiles[idx]
   # Find the sim output folder in the project file
-  batchProjDir <- file.path(batchFolderNames[i],"mseRproject")
+  batchProjDir <- file.path(batchFolderNames[idx],"mseRproject")
   dirContents <- list.dirs(batchProjDir, full.names=FALSE,
                                   recursive=FALSE)
-  simFolder <- dirContents[grep(pattern="sim",x=dirContents)]
+  simFolder <- try(dirContents[grep(pattern="sim",x=dirContents)])
+  if(class(simFolder ) == "try-error" ) next
   simFolderAppend <- paste(simFolder,i,sep = "")
 
   # Source folder:
   simFolderDir     <- file.path(batchProjDir,simFolder)
   simFolderAppDir  <- file.path(batchProjDir,simFolderAppend)
-  file.rename ( simFolderDir, simFolderAppDir )
-  infoRData <- grep ( pattern = simFolder, x = list.files(simFolderAppDir ))
+  try(file.rename ( simFolderDir, simFolderAppDir ))
+  infoRData <- try( grep ( pattern = simFolder, x = list.files(simFolderAppDir )) )
+  if( class( infoRData ) == "try-error" ) next
   infoRData <- list.files ( simFolderAppDir, full.names = FALSE)[infoRData]
-  file.rename(file.path(simFolderAppDir,infoRData[1]),
-              file.path(simFolderAppDir,paste(simFolderAppend,".info",sep = "")))
-  file.rename(file.path(simFolderAppDir,infoRData[2]),
-              file.path(simFolderAppDir,paste(simFolderAppend,".RData",sep = "")))
+  try(file.rename(file.path(simFolderAppDir,infoRData[1]),
+              file.path(simFolderAppDir,paste(simFolderAppend,".info",sep = ""))) )
+  try(file.rename(file.path(simFolderAppDir,infoRData[2]),
+              file.path(simFolderAppDir,paste(simFolderAppend,".RData",sep = ""))))
   source <- simFolderAppDir
 
   # Set up the destination
@@ -95,9 +98,9 @@ for (i in 1:nBatchFiles)
         destination,"\n", sep="")
 
   # Now copy the completed simulation
-  file.copy(from=source,to=destination,recursive=TRUE)
+  try(file.copy(from=source,to=destination,recursive=TRUE))
 
-  cat("Removing folder ", batchFolderNames[i], "\n", sep="")
+  cat("Removing folder ", batchFolderNames[idx], "\n", sep="")
   system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
   options(warn=1)
 }

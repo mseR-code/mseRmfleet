@@ -73,9 +73,13 @@ library(dplyr)
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
-                    "medProbGtLTA","Q1ProbGtLTA","Q2ProbGtLTA",
-                    "medProbGtrefB","Q1ProbGtrefB","Q2ProbGtrefB",
-                    "medPropClosure","Q1PropClosure","Q2PropClosure")
+                    "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
+                    "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
+                    "medPropClosure","Q1PropClosure","Q2PropClosure",
+                    "minProbBtGt.3B0","totProbBtGt.3B0",
+                    "minProbBtGt.6B0","totProbBtGt.6B0",
+                    "minProbBtGtBave","totProbBtGtBave",
+                    "minProbBtGtBave-prod","totProbBtGtBave-prod" )
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -200,6 +204,16 @@ library(dplyr)
         Dt   <- apply( blob$om$Dt,c(1,2),sum )
         Dept <- Bt / blob$ctlList$opMod$B0
 
+        if( !is.null(blob$ctlList$opMod$posteriorDraws) )
+        {
+          mcmcPar     <- blob$ctlList$opMod$mcmcPar
+          postDraws   <- blob$ctlList$opMod$posteriorDraws  
+          SB0         <- mcmcPar[postDraws,"sbo"]
+          for( repIdx in 1:nrow(Dept) )
+            Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
+        }
+        
+
         noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
         noFishBt <- noFishBt[,2:ncol(noFishBt)]
 
@@ -260,18 +274,7 @@ library(dplyr)
         result[ iRow, "Q1HighCatch" ]  <- tmp$qVals[2]
         result[ iRow, "Q2HighCatch" ]  <- tmp$qVals[4]
       }
-      
-      
-      
-      
-      #--- Discard Statistics                                               ---#
-      if ( validSim )
-      {
-        tmp <- .calcStatsDiscard( Dt[,tdx], quantVals )
-        result[ iRow, "medAvgDiscard" ] <- tmp$medAvgDiscard
-        result[ iRow, "Q1AvgDiscard" ]  <- tmp$qVals[2]
-        result[ iRow, "Q2AvgDiscard" ]  <- tmp$qVals[4]
-      }
+    
 
       #--- AAV Catch Statistics                                             ---#
       if ( validSim )
@@ -314,62 +317,104 @@ library(dplyr)
       # --- MSE objective statistics, hard coded by SDNJ May 10, 2018
       if( validSim )
       { 
-        LTA <- mean(Bt[1,1:67])
-        refB <- mean(Bt[1,38:46])
-
-        #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .75, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGt.75B0" ] <- tmp[3]
-        result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
-        result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
-
-        #Hard code ProbGt.75NoFish over tdx (NCN Goal 1)
-        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGt.75NoFish" ] <- tmp[3]
-        result[ iRow, "Q1ProbGt.75NoFish" ] <- tmp[1]
-        result[ iRow, "Q2ProbGt.75NoFish" ] <- tmp[5]
-
-  
-        # MedProb NCN Goal 2 (.76B0 over 2 gens)
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .76, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
-        result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
-        result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
-
-        # MedProb NCN Goal 2 (.76NoFish over 2 gens)
-        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbNCNGoal2NoFish" ] <- tmp[3]
-        result[ iRow, "Q1ProbNCNGoal2NoFish" ] <- tmp[1]
-        result[ iRow, "Q2ProbNCNGoal2NoFish" ] <- tmp[5]
-
+        LTA <- apply(X = Bt[ ,1:67], FUN = mean, MARGIN = 1)
+        refB <- apply(X = Bt[ ,38:66], FUN = mean, MARGIN = 1)
 
         # We should add the other USR candidates here
-        # .6B0 over 2 gens
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .6, refProb = 1, probs = quantVals )
+        # LTA
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = SB0, targMult = .6,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
         result[ iRow, "medProbGt.6B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
 
     
-        # LTA over 2 gens
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = LTA, targMult = 1, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGtLTA" ] <- tmp[3]
-        result[ iRow, "Q1ProbGtLTA" ] <- tmp[1]
-        result[ iRow, "Q2ProbGtLTA" ] <- tmp[5]
+        # LTA
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = LTA, targMult = 1,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
+        result[ iRow, "medProbGtBave" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtBave" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtBave" ] <- tmp[5]
 
-        # refB over 2 gens
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = refB, targMult = 1, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGtrefB" ] <- tmp[3]
-        result[ iRow, "Q1ProbGtrefB" ] <- tmp[1]
-        result[ iRow, "Q2ProbGtrefB" ] <- tmp[5]
+        # LTA
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
+        result[ iRow, "medProbGtBave-prod" ] <- tmp[3]
+        result[ iRow, "Q1ProbGtBave-prod" ] <- tmp[1]
+        result[ iRow, "Q2ProbGtBave-prod" ] <- tmp[5]
 
         # average biomass over productive period
         
         # Limit reference point
-        tmp <- .calcQuantsRefPoints( Bt[,tdx], target = B0, targMult = .3, refProb = 1, probs = quantVals )
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = SB0, targMult = .3,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
         result[ iRow, "medProbGt.3B0" ] <- tmp[3]
         result[ iRow, "Q1ProbGt.3B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.3B0" ] <- tmp[5]
+
+
+
+
+        # Vertical integration of probability Dt > .3
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .3, targMult = 1,
+                                              calcProbAcross = "replicates", 
+                                              summaryFun = "min" )
+        # tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .3 )
+        result[ iRow, "minProbBtGt.3B0" ] <- tmp
+
+        # total prob (mass of cloud) Dt > .3
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .3, targMult = 1,
+                                              calcProbAcross = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGt.3B0" ] <- tmp
+
+        # Vertical integration of probability Dt > .6
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .6, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "min" )
+        # tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .6 )
+        result[ iRow, "minProbBtGt.6B0" ] <- tmp
+
+        # total prob (mass of cloud) Dt > .6
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .6, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGt.6B0" ] <- tmp
+
+        # Vertical integration of probability Bt > LTA
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = LTA, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "min" )
+        # tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .6 )
+        result[ iRow, "minProbBtGtBave" ] <- tmp
+
+        # total prob (mass of cloud) Bt > LTA
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = LTA, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGtBave" ] <- tmp
+
+        # Vertical integration of probability Bt > refB
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "min" )
+        result[ iRow, "minProbBtGtBave-prod" ] <- tmp
+
+        # tmp <- .calcStatsMinProbGtX( Dept[,tdx], X = .6 )
+
+        # total prob (mass of cloud) Bt > refB
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGtBave-prod" ] <- tmp
       }
       #--- Objective Statistics from GUI.
 
@@ -524,6 +569,56 @@ library(dplyr)
 
   return( list( summary1=summary1, summary2=summary2,
                 perResult=perResult ) )
+}
+
+
+# .calcStatsMinProbGtX (Calculate the minimum probability of depletion > X)
+# Purpsoe:      Calculate the minimum probability over reps of being above 
+#               X year to year
+# Parameters:   Dt    - catch biomass as an nRep by nT matrix.
+#               X     - Value to be compared to
+# Returns:      val, a numeric of the minimum (over years) probability (within
+#               years/over reps) of Dt > X
+# Notes:        Differs from .calcQunatsRefPoints type calcs as it
+#               integrates over reps (vertically) first, then
+#               takes the min of the yearly probability within tdx
+# Source:       S. D. N. Johnson
+.calcStatsMinProbGtX <- function( Dt, X = .3 )
+{
+  # Updated depletion values with 1s (success) or 0s (failure)
+  Dt[Dt > X] <- 1
+  Dt[Dt <= X] <- 0
+
+  # Calculate yearly prob (mean of successes)
+  yearlyProbs <- apply(X = Dt, FUN = mean, MARGIN = 2 )
+
+  # Return min value
+  val <- min(yearlyProbs)
+  val
+}
+
+# .calcStatsTotProbGtX (Calculate the total probability of depletion > X)
+# Purpsoe:      Calculate the probability over reps and time of being above 
+#               X year to year
+# Parameters:   Dt    - catch biomass as an nRep by nT matrix.
+#               X     - Value to be compared to
+# Returns:      val, a numeric of the total probability (over years and 
+#               reps) of Dt > X
+# Notes:        Differs from .calcQunatsRefPoints type calcs as it
+#               integrates over reps and time simultaneously
+# Source:       S. D. N. Johnson
+.calcStatsTotProbGtX <- function( Dt, X = .3 )
+{
+  # Updated depletion values with 1s (success) or 0s (failure)
+  Dt[Dt > X] <- 1
+  Dt[Dt <= X] <- 0
+
+  # Calculate yearly prob (mean of successes)
+  totProb <- sum(Dt) / (nrow(Dt) * ncol(Dt))
+
+  # Return min value
+  val <-  totProb
+  val
 }
 
 
@@ -863,6 +958,63 @@ library(dplyr)
   }
   
 }
+# .calcStatsRefPointsMCMC_flex 
+# Purpose:      Calculate comparisons to reference points (either stationary
+#               fractions of given Dep/biomass or a full vector of
+#               targets from MCMC drawn history). Allows probabilities
+#               to be calculated vertically (across replicates) or 
+#               horizontally (over time) first, then will apply the 
+#               summaryFun given to produce result (i.e. flexible)
+# Parameters:   Bt         - matrix of biomass (or depletion)
+#               target     - reference biomass value (or vector of values)
+#               targMult   - multiplier of reference biomass value
+#               calcProb   - margin over which to calculate probs first
+#               summaryFun - character name of function to be applied after calcProsb to 
+#                             produce final result, e.g. "mean" 
+#               ...        - arguments for summaryFun, e.g. probs arg
+#                             for summaryFun = "quantile" 
+# Returns:      result     - a numeric (length varies) of the output of 
+#                             summaryFun
+# Source:       S.D.N. Johnson
+.calcStatsRefPointsMCMC_flex <- function(   Bt, target, targMult,
+                                            summaryFun = "median",
+                                            calcProbAcross = "replicates",
+                                            ... )
+{
+  refPt <- targMult * target
+
+  if(class(Bt) == "numeric" ) Bt <- matrix( Bt, ncol = 1)
+
+  # Find all years in period where Bt > refPt.
+  # refPt may be a vector of MCMC draw values or a number (fraction), 
+  # depending on the input.
+  if(length(refPt) == 1) refPt <- rep(refPt, nrow(Bt))
+  tmp <- matrix( 0, nrow=nrow(Bt), ncol=ncol(Bt) )
+  for( i in 1:nrow(Bt))
+    tmp[i, Bt[i,] >= refPt[i] ] <- 1
+
+  if(ncol(tmp) == 1) 
+  {
+    pVal <- mean(tmp)
+    return(pVal)
+  }
+
+  # browser()
+
+  if( calcProbAcross == "replicates" ) margin = 2
+  if( calcProbAcross == "time" ) margin = 1
+
+  # Caculate prob distribution
+  probDist <- apply(X = tmp, FUN = mean, MARGIN = margin)
+  probDist <- matrix(probDist, ncol = 1)
+
+  # Now compute output using summaryFun, and add in ... args
+  result <- apply(  X = probDist, FUN = as.symbol(summaryFun),
+                    MARGIN = 2,
+                    na.rm = T, ... )
+    
+  return( result )
+} # End function .calcStatsRefPointsMCMC_flex()
 
 # .calcStatsTarget (Calculate target statistics WRT dep, time, certainty)
 # Purpose:         Calculate statistics for depletion, year and probability
@@ -1160,7 +1312,7 @@ library(dplyr)
   if ( OStype=="windows" )
   {
     fName <- "mseRsimStats.xls"
-	  if ( file.exists(fName) )
+    if ( file.exists(fName) )
       fileGone <- file.remove( fName )
 
     conn <- RODBC::odbcConnectExcel( fName, readOnly=FALSE )
@@ -1226,7 +1378,7 @@ library(dplyr)
       tmp$Itg <- t( tmp$Itg )
 
       # SPC 19June2010: need to assemble and fill in the data required by pMod assessment
-	    # If t == tMP, use init values of 0 for Omega and user inputs for Bo and r
+      # If t == tMP, use init values of 0 for Omega and user inputs for Bo and r
       #tmp$initMSY         <- mp$assess$initMSY
       #tmp$initFmsy        <- mp$assess$initFmsy
       tmp$lnOmega         <- rep(0,(tIndex-3-1))

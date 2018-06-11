@@ -419,7 +419,7 @@ calcRefPoints <- function( opModList )
   lifeScheds$Salg  <- .calcSalg( salgPars=salgPars, A=A, Lal=lifeScheds$Lal )
   lifeScheds$Palg  <- .calcPalg( palgPars=palgPars, A=A, Lal=lifeScheds$Lal )
   lifeScheds$genTime <- .calcGenTime( M=obj$recM, A50=A50,A95=A95,A=A )
-  cat("Generation time for M =",obj$recM," is: ", lifeScheds$genTime, "\n", sep = "" )
+  # cat("Generation time for M =",obj$recM," is: ", lifeScheds$genTime, "\n", sep = "" )
   lifeScheds
 }
 
