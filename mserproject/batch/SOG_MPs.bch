@@ -2,10 +2,10 @@
 #
 parameter value
 #
-# Scenario 1: SOG_PulseM_1.5x6
+# Scenario 1: SOG_DDM
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "SOG_PulseM_1.5x16"
+scenario$scenario1$gui$scenarioLabel "SOG_DDM"
 scenario$scenario1$opMod$pulseMfrac 0.3
 scenario$scenario1$opMod$pulseMFrq 16
 scenario$scenario1$opMod$pulseMSize 1.5
@@ -13,10 +13,10 @@ scenario$scenario1$opMod$endMrule "mean"
 scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
 scenario$scenario1$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
 #
-# Scenario 1: SOG_Mbar10
+# Scenario 1: SOG_DIM
 #
 scenario$scenario2$gui$nReps 100
-scenario$scenario2$gui$scenarioLabel "SOG_Mbar10"
+scenario$scenario2$gui$scenarioLabel "SOG_DIM"
 scenario$scenario2$opMod$kYearsMbar 10
 scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
 scenario$scenario2$opMod$repFileName 'mserproject/history/iscamSOG2017.rep'
@@ -31,12 +31,11 @@ mp$mp1$mp$hcr$herringCutoffVal 21.2
 mp$mp1$mp$hcr$herringCutoffType "absolute"
 mp$mp1$mp$hcr$rule "herring"
 #
-## Management Procedure 2: minE21.2_HR.2_cap30
+## Management Procedure 2: minE21.2_HR.1
 #
-mp$mp2$gui$mpLabel "minE21.2_HR.2_cap30"
-mp$mp2$mp$hcr$targHRHerring .2
+mp$mp2$gui$mpLabel "minE21.2_HR.1"
+mp$mp2$mp$hcr$targHRHerring .1
 mp$mp2$mp$hcr$herringCutoffVal 21.2
-mp$mp2$mp$hcr$catchCeiling 30.0
 mp$mp2$mp$hcr$herringCutoffType "absolute"
 mp$mp2$mp$hcr$rule "herring"
 #
@@ -57,12 +56,11 @@ mp$mp4$mp$hcr$herringCutoffVal .5
 mp$mp4$mp$hcr$herringCutoffType "relative"
 mp$mp4$mp$hcr$rule "herring"
 #
-## Management Procedure 5: minE.5B0_HR.2_cap30
+## Management Procedure 5: minE.5B0_HR.1
 #
-mp$mp5$gui$mpLabel "minE.5B0_HR.2_cap30"
-mp$mp5$mp$hcr$targHRHerring .2
+mp$mp5$gui$mpLabel "minE.5B0_HR.1"
+mp$mp5$mp$hcr$targHRHerring .1
 mp$mp5$mp$hcr$herringCutoffVal .5
-mp$mp5$mp$hcr$catchCeiling 30.0
 mp$mp5$mp$hcr$herringCutoffType "relative"
 mp$mp5$mp$hcr$rule "herring"
 #
@@ -83,12 +81,11 @@ mp$mp7$mp$hcr$rule "linear"
 mp$mp7$mp$hcr$lowerBoundMult .3
 mp$mp7$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 8: HS30-60_HR.2_cap30
+## Management Procedure 8: HS30-60_HR.1
 #
-mp$mp8$gui$mpLabel "HS30-60_HR.2_cap30"
-mp$mp8$mp$hcr$targHRHerring .2
+mp$mp8$gui$mpLabel "HS30-60_HR.1"
+mp$mp8$mp$hcr$targHRHerring .1
 mp$mp8$mp$hcr$rule "linear"
-mp$mp8$mp$hcr$catchCeiling 30.0
 mp$mp8$mp$hcr$lowerBoundMult .3
 mp$mp8$mp$hcr$upperBoundMult .6
 #
