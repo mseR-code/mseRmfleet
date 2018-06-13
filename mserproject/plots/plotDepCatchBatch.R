@@ -46,6 +46,11 @@ bestMP <- c(  "minE.5B0_HR.1_cap2",
               "HS30-60_HR.1_cap2",
               "NoFish" )
 
+bestMPs_PI <- c(  "minE.5B0_HR.1_cap2",
+                  "PerfectInfo_minE.5B0_HR.1_cap2",
+                  "minE18.8_HR.1_cap2",
+                  "PerfectInfo_minE18.8_HR.1_cap2" )
+
 # checkMPs <- c(  "NoFish",
 #                 "minE.5B0_HR.1",
 #                 "minE.5B0_HR.1_cap5")
@@ -101,15 +106,23 @@ nT <- 92
 #                           scenarios = scenList, df = info.df)
 
 plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
-                          scenarios = scenList, df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
                           gfx = gfx )
 
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
-                          scenarios = scenList, df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
                           gfx = gfx )
 
 plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
-                          scenarios = scenList, df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
+                          gfx = gfx )
+
+plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
+                          gfx = gfx )
+
+plotDepCatchMultiPanels(  MPnames = bestMPs_PI, plotNameRoot = "bestMPs_PI",
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
                           gfx = gfx )
 
 # plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",

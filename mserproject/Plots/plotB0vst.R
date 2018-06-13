@@ -15,7 +15,7 @@ source("../../mseRrefPoints.R")
 source("plotBioFunctions.R")
 
 
-MPs <- c( "minE21.2_HR.2" )
+MPs <- c( "minE18.8_HR.2" )
 
 gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,
           showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )
@@ -44,7 +44,8 @@ info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df ) %>%
             arrange(scenarioLabel,mpLabel)
 
-scenList <- unique( info.df$scenarioLabel )
+# scenList <- unique( info.df$scenarioLabel )
+scenList <- c("WCVI_DDM", "WCVI_DIM")
 
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
@@ -80,6 +81,7 @@ for( scenIdx in 1:length(scenList) )
       SSB0mat[i,1:67]  <- blob$ctlList$opMod$mcmcPar[postDraws[i],"sbo"]
       SSB0mat[i,68:92] <- B0estimates[1:25 + (i-1)*25]
     }
+    browser()
 
     SSB0dist <- apply(  X = SSB0mat, FUN = quantile, probs = c(.025, .5, .975),
                         MARGIN = 2)
