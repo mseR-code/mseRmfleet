@@ -522,11 +522,10 @@ ageLenOpMod <- function( objRef, t )
   Wal   <- obj$refPtList$Wal
   Wal[1] <- 0
 
-  if( ctlList$opMod$obsWtAge == "repFile" & t <= tMP )
+  if( ctlList$opMod$obsWtAge == "repFile" )
   {
     Wal[2:A] <- obj$om$Wta[t,2:A]
   }
-
   
   
   
@@ -657,6 +656,7 @@ ageLenOpMod <- function( objRef, t )
     numAgeYr1 <- inputNa1
     Nalt[,1:nGrps,t] <- numAgeYr1
 
+
     Balt[,,t] <- Nalt[,,t]*Wal
   
     # Total biomass and number
@@ -726,27 +726,34 @@ ageLenOpMod <- function( objRef, t )
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
 
         
-  # Solve catch equation for this year's Ftg based on tac allocated among gears
   # Add test fishery catch in projection
-  if(t >= tMP)
+  if(t >= tMP )
   {
+
+    # browser()
     testFishery <- ctlList$opMod$testFishery
     # Calculate test fishery catch based on the minimum harvest rate
     # of the test fishery over the historical period
-    minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
-    minFtest <- log( 1 / (1 - minUtest) )
 
-    # reduce to a small F if needed
-    Ftest <- max(0.01, minFtest)
-    # Calculate assuming a discrete fishery 
-    Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
+    if(sum(testFishery) > 0)
+    {
+      minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
+      minFtest <- log( 1 / (1 - minUtest) )
 
-    testCatch <- min(Ctest, sum(testFishery))
-    testFishery[2] <- testCatch
+      # reduce to a small F if needed
+      Ftest <- max(0.01, minFtest)
+      # Calculate assuming a discrete fishery 
+      Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
+
+      testCatch <- min( Ctest, sum(testFishery) )
+      testFishery[2] <- testCatch
+    }
 
     Ctg[t,] <- Ctg[t,] + testFishery
   }
-  
+
+
+  # Solve catch equation for this year's Ftg based on tac allocated among gears
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
@@ -809,6 +816,8 @@ ageLenOpMod <- function( objRef, t )
       if(SBt < sum(ctlList$opMod$testFishery) ) browser()
   }
 
+  if( t >= tMP & sum(Ctg[t,1:3]) == 0 ) Ftg[t,] <- rep(0,5)
+
 
   # Add an F based test fishery if biomass is below the threshold
   # if( Bt[t] <= 0.2 ) Ftg[t,] <- Ftg[t,] + c(0.0,0.01,0.0,0.0,0.0)
@@ -843,10 +852,10 @@ ageLenOpMod <- function( objRef, t )
   # if(t > tMP )browser()
 
   # Calculate spawning biomass at spawn time (post F and M)
-  SBt <- sum(Balt[,nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
+  SBt <- sum(Balt[,1:nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
 
   # Calculate spawning biomass before fishing (post M, pre F)
-  FBt <- sum(Balt[,nGrps,t]*Ma*exp(-Mt[t]))
+  FBt <- sum(Balt[,1:nGrps,t]*Ma*exp(-Mt[t]))
 
   # Total landings and harvest rates.
   legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
@@ -3288,7 +3297,7 @@ iscamWrite <- function ( obj )
     rSteepness <- mcmcOpMod$rSteepness
 
     # overwrite recruitment pars
-    obj$refPtList$R0    <- as.numeric(mcmcPar[postDraw, "ro"])
+    obj$refPtList$R0    <- as.numeric(mcmcPar[postDraw, "ro"])*exp(mean( as.numeric( mcmcM[postDraw, ] ) ))
     obj$refPtList$rec.a <- 4.*rSteepness*obj$refPtList$R0 / ( B0*(1.-rSteepness) )
     obj$refPtList$rec.b  <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
 
@@ -3420,7 +3429,8 @@ iscamWrite <- function ( obj )
     obsWtAge <- obsWtAge$d3_wt_avg
     obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
 
-    # Need to update how this is done...
+    # Now populate future with average of history
+
     for(tIdx in tMP:nT)
       obj$om$Wta[tIdx,2:nAges]   <- apply( X = obj$om$Wta[1:(tMP-1),2:nAges],
                                            FUN = mean, MARGIN = 2 )
