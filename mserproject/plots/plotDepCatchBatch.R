@@ -14,8 +14,7 @@ source("../../mseRstats.R")
 source("../../mseRrefPoints.R")
 source("plotBioFunctions.R")
 
-MPs <- c( "NoFish",
-          "minE18.8_HR.2",
+MPs <- c( "minE18.8_HR.2",
           "minE18.8_HR.1",
           "minE18.8_HR.1_cap2",
           "minE.5B0_HR.2",
@@ -23,17 +22,18 @@ MPs <- c( "NoFish",
           "minE.5B0_HR.1_cap2",
           "HS30-60_HR.2",
           "HS30-60_HR.1",
-          "HS30-60_HR.1_cap2" )
+          "HS30-60_HR.1_cap2",
+          "NoFish" )
 
-currMPs <- c( "NoFish",
-              "minE18.8_HR.2",
+currMPs <- c( "minE18.8_HR.2",
               "minE18.8_HR.1",
-              "minE18.8_HR.1_cap2" )
-
-bestMP <- c(  "NoFish",
-              "minE.5B0_HR.1_cap2",
               "minE18.8_HR.1_cap2",
-              "HS30-60_HR.1_cap2")
+              "NoFish" )
+
+bestMP <- c(  "minE.5B0_HR.1_cap2",
+              "minE18.8_HR.1_cap2",
+              "HS30-60_HR.1_cap2",
+              "NoFish" )
 
 # checkMPs <- c(  "NoFish",
 #                 "minE.5B0_HR.1",
