@@ -25,6 +25,17 @@ MPs <- c( "minE18.8_HR.2",
           "HS30-60_HR.1_cap2",
           "NoFish" )
 
+
+MPs_PI <- c(  "PerfectInfo_minE18.8_HR.2",
+              "PerfectInfo_minE18.8_HR.1",
+              "PerfectInfo_minE18.8_HR.1_cap2",
+              "PerfectInfo_minE.5B0_HR.2",
+              "PerfectInfo_minE.5B0_HR.1",
+              "PerfectInfo_minE.5B0_HR.1_cap2",
+              "PerfectInfo_HS30-60_HR.2",
+              "PerfectInfo_HS30-60_HR.1",
+              "PerfectInfo_HS30-60_HR.1_cap2" )
+
 currMPs <- c( "minE18.8_HR.2",
               "minE18.8_HR.1",
               "minE18.8_HR.1_cap2",
