@@ -23,7 +23,7 @@ mp$assess$chkMethod2 FALSE
 mp$assess$idxMethod1 "seq(68,54,1)"
 mp$assess$idxMethod2 "seq(68,54,1)"
 mp$assess$t1Method 68
-mp$assess$t2Method 87
+mp$assess$t2Method 82
 mp$assess$ddAlphaG 1.4054
 mp$assess$ddB0 20
 mp$assess$ddkAge 2
@@ -78,8 +78,8 @@ mp$data$chkAges1 FALSE
 mp$data$chkAges2 FALSE
 mp$data$chkIndex1 FALSE
 mp$data$chkIndex2 FALSE
-mp$data$idxAges1 "seq(68,87,1)"
-mp$data$idxAges2 "c(68,87)"
+mp$data$idxAges1 "seq(68,82,1)"
+mp$data$idxAges2 "c(68,82)"
 mp$data$indexType "c(1,1)"
 mp$data$inputAges read.rep('mserproject/history/iscamWCVI2017.rep')
 mp$data$inputCatch read.rep('mserproject/history/iscamWCVI2017.rep')
@@ -199,7 +199,7 @@ opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
 opMod$obsWtAge "repFile"
-opMod$nT 87
+opMod$nT 82
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMfrac 0
 opMod$pulseMFrq 0

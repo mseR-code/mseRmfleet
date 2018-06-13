@@ -1769,6 +1769,8 @@
   
   # Panel 3: Plot fishing mortality by gear.
 
+  .FtgCOL <- brewer.pal(n = ncol(Ft), name = "Dark2")
+
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
   lines( x = 1:nT, y = Mt, col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
   for ( g in 1:ncol(Ft) )
@@ -1803,7 +1805,7 @@
   # Stock status zone boundaries.
   Bmsy      <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$SBt)) ]
+  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
@@ -1819,7 +1821,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .USRHerring
+  TRP <- .TRPHerring
   
 
   # X-axis limits.
@@ -1863,6 +1865,9 @@
 
   lines( c(1:nT), Ct, col=.CtCOL, lty=.CtLTY, lwd=.CtLWD )
   points( c(1:nT), Ct, bg=.CtBG, cex=.CtCEX, col=.CtCOL, pch=.CtPCH )
+
+  lines( c(1:nT), Dt, col=.DtCOL, lty=.DtLTY, lwd=.DtLWD )
+  points( c(1:nT), Dt, bg=.DtBG, cex=.DtCEX, col=.DtCOL, pch=.DtPCH )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
@@ -1920,7 +1925,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  TRP <- .USRHerring
   
 
   # X-axis limits.
@@ -2433,7 +2438,30 @@
                       doLegend=TRUE, xLim=NULL, yLim=NULL ) )
 {
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+
+  if( !is.null(obj$ctlList$opMod$posteriorDraws) )
+  {
+    postDraw    <- obj$ctlList$opMod$posteriorDraws[iRep]
+    B0          <- obj$ctlList$opMod$mcmcPar[postDraw,"sbo"]
+    rSteepness  <- obj$ctlList$opMod$mcmcPar[postDraw,"h"]
+
+    # Read in mcmcM to rescale R0
+    mcmcM       <- read.csv(paste(obj$ctlList$opMod$posteriorSamples,"/mcmcMt.csv",sep = ""), header =T )
+    Mbar        <- mean(as.numeric(mcmcM[postDraw,]))
+
+    # Rescale R0 and recalc rec.a
+    R0          <- obj$ctlList$opMod$mcmcPar[postDraw,"ro"] * exp(Mbar)
+    rec.a       <- 4.*rSteepness*R0 / ( B0*(1.-rSteepness) )
+    rec.b       <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
+
+    ssb         <- seq(0,4*B0, length = 100)
+    recruits    <- rec.a * ssb / (1 + rec.b*ssb)
+  } else {
+    ssb      <- refPtList$ssb
+    recruits <- refPtList$recruits
+  }
+
 
   nT  <- length( Rt )
   tMP <- obj$ctlList$opMod$tMP
@@ -2462,9 +2490,8 @@
 
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
   points( Bt, Rt, cex=.CEXSYM4, bg=colVec, pch=pchVec )
-  
-  ssb      <- refPtList$ssb
-  recruits <- refPtList$recruits
+
+
   lines( ssb[ssb >= 0.0], recruits[ssb>=0.0], lty=1, lwd=.LWD2 )
   
   axis( side=1, cex.axis=.CEXAXIS2 )
@@ -12211,7 +12238,7 @@ plotRefPts <- function( obj )
   yLimB <- gfx$yLimB
   if ( is.null(yLimB) )
   {
-    yLim <- c( 0, max(c(omBt,assessBt,legalB),na.rm=TRUE) )
+    yLim <- c( 0, max(c(omBt,assessBt),na.rm=TRUE) )
   }
   
   nGear <- dim( It )[2]
