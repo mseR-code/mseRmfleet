@@ -604,6 +604,16 @@ ageLenOpMod <- function( objRef, t )
   epsilontg  <- obj$om$errors$epsilontg  # std normal error in log-indices
   epsilongat <- obj$om$errors$epsilongat # std normal error in age-proportions
 
+
+  ## HACK ##
+  # Re-scale recruitment deviations using the realised
+  # recruitment deviation sd from the historical period
+  if(t == tMP)
+  {
+    newSigmaR <- sd(log(omegat[1:(t-1)]))
+    omegat[tMP:nT] <- exp(deltat[tMP:nT]*newSigmaR - newSigmaR^2/2)
+  }
+
   # Compute pulse limit
   pulseLim <- ctlList$opMod$pulseMfrac * B0
 
@@ -666,7 +676,8 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
+      if( !is.na(Rt[t]) & t < tMP ) 
+        omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
@@ -2701,6 +2712,9 @@ iscamWrite <- function ( obj )
               Itg        = array( data=NA,dim=c(nReps,nT,nGear) )
             )
   
+  om$errors <-  list( omegat     = matrix( NA,nrow=nReps,ncol=(nT+1) ),
+                      deltat     = matrix( NA,nrow=nReps,ncol=(nT+1) ) )
+
   # Management procedure object to be attached to blob list. 
   mp                  <- list(   data=NULL, assess=NULL, hcr=NULL )
   
@@ -2902,6 +2916,9 @@ iscamWrite <- function ( obj )
     blob$om$legalC[i,]     <- c(i,obj$om$legalC)
     blob$om$legalD[i,]     <- c(i,obj$om$legalD)
     blob$om$sublegalD[i,]  <- c(i,obj$om$sublegalD)
+
+    blob$om$errors$deltat[i,] <- c(i,obj$om$errors$deltat)
+    blob$om$errors$omegat[i,] <- c(i,obj$om$errors$omegat)
     
     # Fill current row of the blob for mp components. 
     blob$mp$data$Itg[i,,]  <- obj$mp$data$Itg
@@ -3404,8 +3421,9 @@ iscamWrite <- function ( obj )
     obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
 
     # Need to update how this is done...
-    obj$om$Wta[(tMP):nT,]   <- matrix(  obj$refPtList$Wal, nrow = (nT - tMP + 1), 
-                                        ncol = nAges, byrow = T )
+    for(tIdx in tMP:nT)
+      obj$om$Wta[tIdx,2:nAges]   <- apply( X = obj$om$Wta[1:(tMP-1),2:nAges],
+                                           FUN = mean, MARGIN = 2 )
   }
 
 
