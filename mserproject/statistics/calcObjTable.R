@@ -39,10 +39,10 @@ objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 10 )
 colnames(objTable) <- c(  "Scenario","MP",
                           "ProbBtGt.3B0",
                           "ProbBtGt.6B0",
-                          "medAveCatch",
-                          "medAAV",
                           "NCN1_ProbGt.75B0",
-                          "NCN2_ProbGt.76B0_2Gen",
+                          "NCN2_ProbGtB90s",
+                          "medAAV",
+                          "medAveCatch",
                           "ProbBtGtBave",
                           "ProbBtGtBave-prod" )
 
@@ -68,10 +68,10 @@ for( sIdx in 1:length(scenarios) )
     
     objTable[tabRow,"ProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.3B0" ]
     objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.6B0" ]
-    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
     objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Med", "medProbGt.75B0" ]
-    objTable[tabRow,"NCN2_ProbGt.76B0_2Gen"] <- subPerf[subPerf$Period == "Short", "medProbNCNGoal2" ]
+    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Med", "totProbGt.75B0" ]
+    objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Short", "totProbGtB90s" ]
     objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave" ]
     objTable[tabRow,"ProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave.prod" ]
     

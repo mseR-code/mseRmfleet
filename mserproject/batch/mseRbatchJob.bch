@@ -21,11 +21,19 @@ scenario$scenario2$gui$scenarioLabel "WCVI_Mbar10"
 scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
 scenario$scenario2$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
+# Scenario 3: WCVI_.25histM
+#
+scenario$scenario3$gui$nReps 100
+scenario$scenario3$gui$scenarioLabel "WCVI_.25histM"
+scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
+scenario$scenario3$opMod$endMrule "0.25pctile"
+#
 ## Management Procedures
 #
 ## Management Procedure 1: minE18.8_HR.2
 #
-mp$mp1$gui$mpLabel "minE18.8_HR.2"
+mp$mp1$gui$mpLabel "PerfectInfo_minE18.8_HR.2"
 mp$mp1$mp$hcr$targHRHerring .2
 mp$mp1$mp$hcr$herringCutoffVal 18.8
 mp$mp1$mp$hcr$herringCutoffType "absolute"
@@ -33,7 +41,7 @@ mp$mp1$mp$hcr$rule "herring"
 #
 ## Management Procedure 2: minE18.8_HR.1
 #
-mp$mp2$gui$mpLabel "minE18.8_HR.1"
+mp$mp2$gui$mpLabel "PerfectInfo_minE18.8_HR.1"
 mp$mp2$mp$hcr$targHRHerring .1
 mp$mp2$mp$hcr$herringCutoffVal 18.8
 mp$mp2$mp$hcr$herringCutoffType "absolute"
@@ -41,7 +49,7 @@ mp$mp2$mp$hcr$rule "herring"
 #
 ## Management Procedure 3: minE18.8_HR.1_cap2
 #
-mp$mp3$gui$mpLabel "minE18.8_HR.1_cap2"
+mp$mp3$gui$mpLabel "PerfectInfo_minE18.8_HR.1_cap2"
 mp$mp3$mp$hcr$targHRHerring .1
 mp$mp3$mp$hcr$herringCutoffVal 18.8
 mp$mp3$mp$hcr$catchCeiling 2.0
@@ -50,7 +58,7 @@ mp$mp3$mp$hcr$rule "herring"
 #
 ## Management Procedure 4: minE.5B0_HR.2
 #
-mp$mp4$gui$mpLabel "minE.5B0_HR.2"
+mp$mp4$gui$mpLabel "PerfectInfo_minE.5B0_HR.2"
 mp$mp4$mp$hcr$targHRHerring .2
 mp$mp4$mp$hcr$herringCutoffVal .5
 mp$mp4$mp$hcr$herringCutoffType "relative"
@@ -58,7 +66,7 @@ mp$mp4$mp$hcr$rule "herring"
 #
 ## Management Procedure 5: minE.5B0_HR.1
 #
-mp$mp5$gui$mpLabel "minE.5B0_HR.1"
+mp$mp5$gui$mpLabel "PerfectInfo_minE.5B0_HR.1"
 mp$mp5$mp$hcr$targHRHerring .1
 mp$mp5$mp$hcr$herringCutoffVal .5
 mp$mp5$mp$hcr$herringCutoffType "relative"
@@ -66,7 +74,7 @@ mp$mp5$mp$hcr$rule "herring"
 #
 ## Management Procedure 6: minE.5B0_HR.1_cap2
 #
-mp$mp6$gui$mpLabel "minE.5B0_HR.1_cap2"
+mp$mp6$gui$mpLabel "PerfectInfo_minE.5B0_HR.1_cap2"
 mp$mp6$mp$hcr$targHRHerring .1
 mp$mp6$mp$hcr$herringCutoffVal .5
 mp$mp6$mp$hcr$herringCutoffType "relative"
@@ -75,7 +83,7 @@ mp$mp6$mp$hcr$rule "herring"
 #
 ## Management Procedure 7: HS30-60_HR.2
 #
-mp$mp7$gui$mpLabel "HS30-60_HR.2"
+mp$mp7$gui$mpLabel "PerfectInfo_HS30-60_HR.2"
 mp$mp7$mp$hcr$targHRHerring .2
 mp$mp7$mp$hcr$rule "linear"
 mp$mp7$mp$hcr$lowerBoundMult .3
@@ -83,7 +91,7 @@ mp$mp7$mp$hcr$upperBoundMult .6
 #
 ## Management Procedure 8: HS30-60_HR.1
 #
-mp$mp8$gui$mpLabel "HS30-60_HR.1"
+mp$mp8$gui$mpLabel "PerfectInfo_HS30-60_HR.1"
 mp$mp8$mp$hcr$targHRHerring .1
 mp$mp8$mp$hcr$rule "linear"
 mp$mp8$mp$hcr$lowerBoundMult .3
@@ -91,15 +99,11 @@ mp$mp8$mp$hcr$upperBoundMult .6
 #
 ## Management Procedure 9: HS30-60_HR.1_cap2
 #
-mp$mp9$gui$mpLabel "HS30-60_HR.1_cap2"
+mp$mp9$gui$mpLabel "PerfectInfo_HS30-60_HR.1_cap2"
 mp$mp9$mp$hcr$targHRHerring .1
 mp$mp9$mp$hcr$rule "linear"
 mp$mp9$mp$hcr$catchCeiling 2.0
 mp$mp9$mp$hcr$lowerBoundMult .3
 mp$mp9$mp$hcr$upperBoundMult .6
 #
-## Management Procedure 10: NoFish
-#
-mp$mp10$gui$mpLabel "NoFish"
-#
-# File Ends <not run>.
+# File Ends

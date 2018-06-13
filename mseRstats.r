@@ -316,13 +316,14 @@ library(dplyr)
       { 
         LTA <- apply(X = Bt[ ,1:67], FUN = mean, MARGIN = 1)
         refB <- apply(X = Bt[ ,38:46], FUN = mean, MARGIN = 1)
+        B90s <- apply(X = Bt[ ,40:49], FUN = mean, MARGIN = 1)
 
         #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
-        tmp <- .calcQuantsRefPoints( Dept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbGt.75B0" ] <- tmp[3]
-        result[ iRow, "Q1ProbGt.75B0" ] <- tmp[1]
-        result[ iRow, "Q2ProbGt.75B0" ] <- tmp[5]
-
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = 1, targMult = .75, 
+                                              calcProbAcross = "time", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbGt.75B0" ] <- tmp
+        
         #Hard code ProbGt.75NoFish over tdx (NCN Goal 1)
         tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
         result[ iRow, "medProbGt.75NoFish" ] <- tmp[3]
@@ -330,11 +331,11 @@ library(dplyr)
         result[ iRow, "Q2ProbGt.75NoFish" ] <- tmp[5]
 
   
-        # MedProb NCN Goal 2 (.76B0 over 2 gens)
-        tmp <- .calcQuantsRefPoints( Dept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
-        result[ iRow, "medProbNCNGoal2" ] <- tmp[3]
-        result[ iRow, "Q1ProbNCNGoal2" ] <- tmp[1]
-        result[ iRow, "Q2ProbNCNGoal2" ] <- tmp[5]
+        # MedProb NCN Goal 2 ()
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = B90s, targMult = 1,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbGtB90s" ] <- tmp
 
         # MedProb NCN Goal 2 (.76NoFish over 2 gens)
         tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
