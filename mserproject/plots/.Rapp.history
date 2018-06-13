@@ -1,0 +1,259 @@
+source("herringM.R")
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroMt()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroMt()
+nE
+blob$em$Mt
+blob$retroMt
+names(blob)
+names(blob$proj)
+blob$em$Mat
+dim(emMat)
+dim(blob$em$Mat)
+emMat     <- blob$em$Mat
+emRetroMt <- emMat[,1,]
+nE        <- nrow(emRetoMt)         # number of Ms estimated
+nE        <- nrow(emRetroMt)         # number of Ms estimated
+nE
+c
+c
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroMt()
+plotRetroSSBt()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroMt()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroSSBt()
+runSimProj()
+plotRetroSSBt(2)
+plotRetroSSBt(1)
+plotRetroSSBt(2)
+runSimProj()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/simulation.R")
+runSimProj()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+plotRetroSSBM()
+panelRetroSSBM()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM()
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM()
+panelRetroSSBM(1:2)
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM(1:2)
+par("mfg")
+?par
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM(1:2)
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM(1:2)
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM(1:2)
+source("/Users/sdnjohnson/Work/code/models/HerringM/revisedModel/plots.R")
+panelRetroSSBM(1:2)
+source("mser.r")
+guiPerf()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/renameMPs.R")
+guiPerf()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+guiView()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRplots.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRstats.r")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mseRstats.r")
+guiPerf()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/statistics/calcObjTable.R")
+source("mser.r")
+guiBatch()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+traceback()
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs_DepCatch",#
+                          scenarios = scenList, df = info.df, gfx = gfx)
+info.df
+sims <- list.files("../")
+sims
+sims <- sims[grepl("sim",sims)]
+readInfoFile <- function( sim )#
+{#
+  infoPath <- file.path("..",sim,paste(sim, ".info", sep = "") ) #
+  info <- lisread(infoPath)#
+  info.df <- as.data.frame(info)#
+  info.df$simLabel <- sim#
+#
+  info.df#
+}
+info.df <- lapply( X = sims, FUN = readInfoFile )
+?file.rename
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+newInfoPath
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+sims
+infopath
+files
+infoFile
+newInfoFile
+newInfoPath
+file.copy(infoFile,newInfoFile)
+file.copy(infoFile,newInfoFile)
+newInfoFile
+file.copy(infoFile,newInfoPath)
+file.rename(infoFile,newInfoPath)
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+plotDepCatchMultiPanels(  MPnames = MPs_PI, #
+                          plotNameRoot = "allMPs_PI",#
+                          scenarios = scenList, df = info.df, gfx = gfx)
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+plotDepCatchMultiPanels(  MPnames = MPs_PI, #
+                          plotNameRoot = "allMPs_PI",#
+                          scenarios = scenList, df = info.df, gfx = gfx)
+info.df
+MPs_PI
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+newRdataPath
+c
+c
+c
+c
+Q
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/renameInfo.R")
+# External script to plot some mseR perf plots #
+# and some cleveland plots#
+#
+require(RColorBrewer)#
+require(dplyr)#
+require(ref)#
+#
+# Leverages some mseR functions#
+source("../../mseRtools.R")#
+source("../../mseRglobals.R")#
+source("../../mseRoptions.R")#
+source("../../mseRplots.R")#
+source("../../mseRstats.R")#
+source("../../mseRrefPoints.R")#
+source("../../mseRrefPoints.R")#
+source("plotBioFunctions.R")#
+#
+MPs <- c( "minE21.2_HR.2",#
+          "minE21.2_HR.1",#
+          "minE21.2_HR.1_cap30",#
+          "minE.5B0_HR.2",#
+          "minE.5B0_HR.1",#
+          "minE.5B0_HR.1_cap30",#
+          "HS30-60_HR.2",#
+          "HS30-60_HR.1",#
+          "HS30-60_HR.1_cap30",#
+          "NoFish" )#
+#
+MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",#
+              "PerfectInfo_minE21.2_HR.1",#
+              "PerfectInfo_minE21.2_HR.1_cap30",#
+              "PerfectInfo_minE.5B0_HR.2",#
+              "PerfectInfo_minE.5B0_HR.1",#
+              "PerfectInfo_minE.5B0_HR.1_cap30",#
+              "PerfectInfo_HS30-60_HR.2",#
+              "PerfectInfo_HS30-60_HR.1",#
+              "PerfectInfo_HS30-60_HR.1_cap30" )#
+#
+currMPs <- c( "minE21.2_HR.2",#
+              "minE21.2_HR.1",#
+              "minE21.2_HR.1_cap30",#
+              "NoFish" )#
+#
+bestMPs <- c( "minE.5B0_HR.1_cap30",#
+              "minE.5B0_HR.1",#
+              "HS30-60_HR.1_cap30",#
+              "NoFish" )#
+#
+bestMPs_PI <- c(  "minE.5B0_HR.1_cap30",#
+                  "PerfectInfo_minE.5B0_HR.1_cap30",#
+                  "minE.5B0_HR.1",#
+                  "PerfectInfo_minE.5B0_HR.1" )#
+# MPs <- MPs2#
+#
+gfx=list( annotate=TRUE, doLegend=TRUE, grids=FALSE,#
+          showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )#
+#
+# List sims#
+sims <- list.files("../")#
+sims <- sims[grepl("sim",sims)]#
+#
+readInfoFile <- function( sim )#
+{#
+  infoPath <- file.path("..",sim,paste(sim, ".info", sep = "") ) #
+  info <- lisread(infoPath)#
+  info.df <- as.data.frame(info)#
+  info.df$simLabel <- sim#
+#
+  info.df#
+}#
+#
+qProbs <- c( 0.025, 0.25, 0.5, 0.75, 0.975 )#
+short <- c(68,73)#
+med   <- c(74,86)#
+long  <- c(87,92)#
+#
+# Read in info files, sort by  scenarios#
+info.df <- lapply( X = sims, FUN = readInfoFile )#
+info.df <- do.call( "rbind", info.df ) %>%#
+            arrange(scenarioLabel,mpLabel)#
+#
+scenList <- unique( info.df$scenarioLabel )#
+# MPs       <- unique( info.df$mpLabel )#
+#
+yrs <- seq(1951,by = 1, length = 92)#
+nT <- 92
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+graphics.off()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+traceback()
+plotDepCatchMultiPanels(  MPnames = MPs_PI, #
+                          plotNameRoot = "allMPs_PI",#
+                          scenarios = scenList, df = info.df, gfx = gfx)
+graphics.off()
+plotDepCatchMultiPanels(  MPnames = bestMPs_PI, #
+                          plotNameRoot = "bestMPs_PI",#
+                          scenarios = scenList, df = info.df, gfx = gfx)
+graphics.off()
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/renameMPs.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/renameMPs.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotDepCatchBatch.R")
+plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",#
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,#
+                          gfx = gfx )
+plotDepCatchMultiPanels(  MPnames = bestMPs_PI, plotNameRoot = "bestMPs_PI",#
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,#
+                          gfx = gfx )
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",#
+                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,#
+                          gfx = gfx )
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotB0vst.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotB0vst.R")
+info.df
+scenList
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotB0vst.R")
+source("/Users/sdnjohnson/Work/code/models/mseR-ISCAM/mserproject/plots/plotB0vst.R")
+SSB0mat
+postDraws
+blob$ctlList$opMod$mcmcPar
+nrow(blob$ctlList$opMod$mcmcPar)
+length(postDraws)
+blob$ctlList$opMod$mcmcPar[postDraws[i],]
+blob$ctlList$opMod$mcmcPar[postDraws,]
+length(blob$ctlList$opMod$mcmcPar[postDraws,])
+nrow(blob$ctlList$opMod$mcmcPar[postDraws,])
