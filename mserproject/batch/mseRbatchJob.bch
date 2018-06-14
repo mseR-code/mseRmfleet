@@ -8,7 +8,7 @@ scenario$scenario1$gui$nReps 100
 scenario$scenario1$gui$scenarioLabel "WCVI_conM"
 scenario$scenario1$opMod$pulseMfrac 0
 scenario$scenario1$opMod$pulseMFrq 0
-scenario$scenario1$opMod$sigmaM 0.1
+scenario$scenario1$opMod$sigmaM 0.
 scenario$scenario1$opMod$endMrule "mean"
 scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
 scenario$scenario1$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
