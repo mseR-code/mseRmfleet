@@ -117,13 +117,13 @@ plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
                           scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
                           gfx = gfx )
 
-plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",
-                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
-                          gfx = gfx )
+# plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",
+#                           scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
+#                           gfx = gfx )
 
-plotDepCatchMultiPanels(  MPnames = bestMPs_PI, plotNameRoot = "bestMPs_PI",
-                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
-                          gfx = gfx )
+# plotDepCatchMultiPanels(  MPnames = bestMPs_PI, plotNameRoot = "bestMPs_PI",
+#                           scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
+#                           gfx = gfx )
 
 # plotDepCatchMultiPanels(  MPnames = checkMPs, plotNameRoot = "checkMPs",
 #                           scenarios = scenList, df = info.df)

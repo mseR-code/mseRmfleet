@@ -176,11 +176,11 @@ guiPerf <- function()
     
     # Revised:
     guiChanges$pfShort1  <- tMP
-    guiChanges$pfShort2  <- tMP+9
+    guiChanges$pfShort2  <- tMP+4
     guiChanges$pfMed1    <- tMP
-    guiChanges$pfMed2    <- tMP+14
+    guiChanges$pfMed2    <- tMP+9
     guiChanges$pfLong1   <- tMP
-    guiChanges$pfLong2   <- tMP+19
+    guiChanges$pfLong2   <- tMP+14
     
     # =========================================================================
 

@@ -66,14 +66,14 @@ for( sIdx in 1:length(scenarios) )
 
     objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
     
-    objTable[tabRow,"ProbBtGt.3B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.3B0" ]
-    objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Med", "totProbBtGt.6B0" ]
-    objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Med", "medAAV" ]
-    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Med", "medAvgCatch" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Med", "totProbGt.75B0" ]
-    objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Short", "totProbGtB90s" ]
-    objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave" ]
-    objTable[tabRow,"ProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Med", "totProbBtGtBave.prod" ]
+    objTable[tabRow,"ProbBtGt.3B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.3B0" ]
+    objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ]
+    objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Long", "medAAV" ]
+    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
+    objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Long", "totProbGt.75B0" ]
+    objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Med", "totProbGtB90s" ]
+    objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave" ]
+    objTable[tabRow,"ProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave.prod" ]
     
   }
 

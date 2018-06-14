@@ -1,6 +1,40 @@
-# Functions for plotting OM outputs
 
-plotMtBtFitUt <- function(  )
+
+plotMtTulip <- function(  df = info.df, mp = "NoFish", traces = 3 )
+{
+
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  df %>%
+            filter(mpLabel == mp )
+
+  par(mfrow =c(nrow(subDF),1), mar = c(0,0,0,0), oma = c(3,3,3,1) )
+
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,1.3),
+               grids = FALSE, refPts = FALSE )
+
+  for( i in 1:nrow(subDF) )
+  {
+    simID   <- subDF[i,"simLabel"]
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path("..",simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    .plotTulipF( obj = blob, gfx = gfx, traces = traces, refPts = FALSE )
+
+    lab <- paste("(",letters[i],")",sep = "")
+
+    panLab( x = 0.02, y = 0.95, txt = lab)
+  }
+  mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)
+}
+
+
+
+# Functions for plotting OM outputs
+plotMtBtFitUt <- function( )
 {
   gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
                showProj = FALSE, bygears = FALSE, yLim = c(0,1) )

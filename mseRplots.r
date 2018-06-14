@@ -134,7 +134,7 @@
     if ( side==1 )
     {  
       axis( side=1, at=xSeq, cex.axis=cexAxis, labels=xLabs )
-      axis( side=3, at=xSeq, labels=FALSE )
+      # axis( side=3, at=xSeq, labels=FALSE )
     }
     if ( side==3 )
       axis( side=3, at=xSeq, cex.axis=cexAxis, labels=xLabs )
@@ -13739,7 +13739,7 @@ plotRefPts <- function( obj )
 
   # X-axis (bottom): panel is in the last row.
   if ( mfg[1]==mfg[3] )
-    #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
+    # axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
     .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
  # else
   #  #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
@@ -13760,7 +13760,7 @@ plotRefPts <- function( obj )
     abline( h=seq(yLim[1], yLim[2],length=10), lty=.GRIDLTY, lwd=.GRIDLWD, col=.GRIDCOL )
   }
   
-  axis( side=4, labels=FALSE )
+  # axis( side=4, labels=FALSE )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
