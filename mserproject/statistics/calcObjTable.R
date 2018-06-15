@@ -28,7 +28,7 @@ MPs <- c( "minE18.8_HR.2",
           "HS30-60_HR.1_cap2",
           "NoFish" )
 
-scenarios <- c( "WCVI_DIM", "WCVI_DDM" )
+scenarios <- c( "WCVI_DDM", "WCVI_DIM", "WCVI_conM" )
 
 Periods   <- unique( perfTable$Period )
 
