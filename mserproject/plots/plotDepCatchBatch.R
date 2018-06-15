@@ -106,15 +106,15 @@ nT <- 92
 #                           scenarios = scenList, df = info.df)
 
 plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
-                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
                           gfx = gfx )
 
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
-                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
                           gfx = gfx )
 
 plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
-                          scenarios = c("WCVI_DDM","WCVI_DIM"), df = info.df,
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
                           gfx = gfx )
 
 # plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",

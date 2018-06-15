@@ -5151,10 +5151,6 @@
     abline( h=seq(yLim[1], yLim[2], length=10),   col=.GRIDCOL, lty=.GRIDLTY, lwd=.GRIDLWD )
   }
 
-  if( .ISCAMFLAG )
-  {
-    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
-  }
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
@@ -13619,7 +13615,7 @@ plotRefPts <- function( obj )
     abline( h = depUSR, lty = 2, col = "darkgreen", lwd = 2 )
 
     if( gfx$doLegend )
-      panLegend(  x = .2, y =.5, bty = "n",
+      panLegend(  x = .3, y =.8, bty = "n",
                   legTxt = c( expression(.3*B[0]),
                               expression(.6*B[0])),
                   lty = 2, lwd = 2,
@@ -13673,10 +13669,10 @@ plotRefPts <- function( obj )
 {
 
   .plotTulipDepletion( obj, xLim=NULL, yLim=yLimD, ... )
-  panLab(x = 0.4, y = .9, txt = obj$ctlList$gui$mpLabel )
+  mtext(side = 3, text = obj$ctlList$gui$mpLabel, cex = .6, line = 3 )
   mfg <- par( "mfg" )
   if ( mfg[2]==1 )
-    mtext( side=2, line=2.5, cex=1, DepLab )
+    mtext( side=2, line=2.5, cex=1, expression(B[t]/B[0]) )
   .plotTulipCatch( obj, xLim=NULL, yLim = yLimC, ... )
   mfg <- par( "mfg" )  
   if( mfg[2]==1 ) 

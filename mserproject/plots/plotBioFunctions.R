@@ -1504,7 +1504,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
     mpListIdx <- 1
 
     pdf( file = depCatchPlot, width = length(MPnames)*2, height = 6 )
-    par( mfcol = c(2,length(MPnames)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+    par( mfcol = c(2,length(MPnames)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
 
     for( mpIdx in 1:length(MPnames) )
     {
@@ -1522,7 +1522,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       if(mpIdx == 1) gfx$doLegend <- TRUE
       else gfx$doLegend <- FALSE
 
-      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,15),
+      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,5),
                         refPts = FALSE, traces = traces )
 
       # Now rescale blob$Bt if
@@ -1542,14 +1542,14 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
       }
     }
 
-    mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
+    # mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
 
     dev.off()
 
     if(is.na(noFishID)) next
     if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
     pdf( file = depCatch_noFish, width = (lenMPlist)*3, height = 6 )
-    par( mfcol = c(2,lenMPlist), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+    par( mfcol = c(2,lenMPlist), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
 
     for( idx in 1:length(mpList) )
     {
@@ -1560,7 +1560,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
       if( is.null(mpList[[idx]]) ) next
 
-      .plotTulipDepCat( obj = mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,15),
+      .plotTulipDepCat( obj = mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,5),
                         refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]),
                         traces = traces )
     }
