@@ -75,9 +75,8 @@ library(dplyr)
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
                     "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
                     "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
-                    "medPropClosure","Q1PropClosure","Q2PropClosure",
-                    "meanPropClosure",
-                    "minProbBtGt.3B0" )
+                    "medProbClosure","Q1ProbClosure","Q2ProbClosure",
+                    "meanProbClosure","minProbBtGt.3B0" )
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -509,9 +508,9 @@ library(dplyr)
         # lost fishing opportunities.
         tmp <- .calcPropFloor( Ct[,tdx], floor = .5 )
         tmp <- quantile( 1-tmp, probs = quantVals )
-        result[iRow,"medPropClosure"] <- tmp[3]
-        result[iRow,"Q1PropClosure"] <- tmp[1]
-        result[iRow,"Q2PropClosure"] <- tmp[5]
+        result[iRow,"medProbClosure"] <- tmp[3]
+        result[iRow,"Q1ProbClosure"] <- tmp[1]
+        result[iRow,"Q2ProbClosure"] <- tmp[5]
 
         # HACK: Hijack the ref points stats function
         # to calculate the mean probability that fishery is
@@ -521,7 +520,7 @@ library(dplyr)
                                               calcProb = "replicates", 
                                               summaryFun = "mean" )
 
-        result[iRow,"meanPropClosure"] <- 1 - tmp
+        result[iRow,"meanProbClosure"] <- 1 - tmp
 
       }
 

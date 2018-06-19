@@ -35,7 +35,7 @@ Periods   <- unique( perfTable$Period )
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 10 )
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 11 )
 colnames(objTable) <- c(  "Scenario","MP",
                           "ProbBtGt.3B0",
                           "ProbBtGt.6B0",
@@ -43,7 +43,7 @@ colnames(objTable) <- c(  "Scenario","MP",
                           "NCN2_ProbGtB90s",
                           "medAAV",
                           "medAveCatch",
-                          "propClosure",
+                          "probClosure",
                           "ProbBtGtBave",
                           "ProbBtGtBave-prod" )
 
@@ -71,7 +71,7 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ]
     objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Long", "medAAV" ]
     objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
-    objTable[tabRow,"propClosure"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
+    objTable[tabRow,"probClosure"] <- subPerf[subPerf$Period == "Long", "meanProbClosure" ]
     objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Long", "totProbGt.75B0" ]
     objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Med", "totProbGtB90s" ]
     objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave" ]

@@ -2296,7 +2296,8 @@
 
 
 .plotMt <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE, doLegend=TRUE,
-                     showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ) )
+                     showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ),
+                     lab = TRUE )
 {
   M   <- obj$ctlList$opMod$M
   Mt  <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
@@ -2335,7 +2336,7 @@
     
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
   
-  abline( h=M, col=.MCOL, lty=.MLTY, lwd=.MLWD )
+  # abline( h=M, col=.MCOL, lty=.MLTY, lwd=.MLWD )
 
   #Plot retroMt values
   for( r in 1:nrow(retroMt) )
@@ -2344,8 +2345,9 @@
     lines( x = (1:nT), y = retroMt[r,2:(nT+1)], col = Mcol ) 
   }
 
-  lines( x = (1:nT), y = retroMt[1,2:(nT+1)], col = "darkgreen", lwd = 3 ) 
-  lines( x = (1:nT), y = retroMt[nrow(retroMt),2:(nT+1)], col = "red", lwd = 3 ) 
+  lines( x = (1:nT), y = retroMt[1,2:(nT+1)], col = "green", lwd = 3 ) 
+  lines( x = (1:nT), y = retroMt[2,2:(nT+1)], col = "darkgreen", lwd = 3 ) 
+  # lines( x = (1:nT), y = retroMt[nrow(retroMt),2:(nT+1)], col = "red", lwd = 3 ) 
    
   lines( c(1:nT), Mt, col=.MtCOL, lty=.MtLTY, lwd=.MtLWD )
 
@@ -2358,8 +2360,11 @@
   axis( side=4, labels=FALSE )
     
   box()
-  mtext( side=1, line=.INLINE3, cex=.CEXLAB4, "Year" )
-  mtext( side=2, line=.INLINE3, cex=.CEXLAB4, "Natural Mortality" )
+  if(lab)
+  { 
+    mtext( side=1, line=.INLINE3, cex=.CEXLAB4, "Year" )
+    mtext( side=2, line=.INLINE3, cex=.CEXLAB4, "Natural Mortality" )
+  }
 
   if ( gfx$annotate )
     mtext( side=3, line=0, cex=.CEXTITLE4, outer=TRUE, "Natural Mortality" )
@@ -12194,7 +12199,7 @@ plotRefPts <- function( obj )
 # Source:       K.Holt (17-Aug-09), Modified A.R. Kronlund (07-Jul-10)
 .plotBtFit <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE,
                         bygears=FALSE, doLegend=FALSE, xLim=NULL, yLim=NULL,
-                        useYears=FALSE ) )
+                        useYears=FALSE ), lab = TRUE )
 {
   # What stock assessment method?
 
@@ -12231,8 +12236,8 @@ plotRefPts <- function( obj )
       xLim <- c( 1,nT )
 
   # Y-axis limits.
-  yLimB <- gfx$yLimB
-  if ( is.null(yLimB) )
+  yLim <- gfx$yLim
+  if ( is.null(yLim) )
   {
     yLim <- c( 0, max(c(omBt,assessBt),na.rm=TRUE) )
   }
@@ -12274,8 +12279,13 @@ plotRefPts <- function( obj )
           pch=c(     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
       }
     }
-    mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
-    mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Biomass" )
+    if(lab)
+    {
+      mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
+      mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Biomass" )  
+    }
+
+    
   }
   else
   {
@@ -12302,8 +12312,7 @@ plotRefPts <- function( obj )
   
     if ( gfx$useYears )
     {
-      
-      .addXaxis( xLim=xLim, initYear=.INITYEAR, gfx$useYears )
+      .addXaxis( xLim=xLim, initYear=.INITYEAR, years = gfx$useYears )
       axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
       axis( side=4, labels=FALSE )      
     }
@@ -12316,8 +12325,11 @@ plotRefPts <- function( obj )
     }
     
     box()
-    mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
+    if(lab)
+    {
+      mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Year" )
+      mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Biomass" )  
+    }
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12357,7 +12369,7 @@ plotRefPts <- function( obj )
 # Returns:      NULL (invisibly).
 .plotUt <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE,
                      bygears=FALSE, doLegend=FALSE, xLim=NULL, yLim=NULL,
-                     useYears=FALSE ) )
+                     useYears=FALSE ), lab = TRUE )
 {
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
@@ -12434,14 +12446,14 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
-      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
+      panLegend( 0.5,0.95, legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
         lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
         col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
-    targetHR <- blob$ctlList$mp$hcr$targHRHerring
+    targetHR <- obj$ctlList$mp$hcr$targHRHerring
 
     abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
@@ -12452,8 +12464,11 @@ plotRefPts <- function( obj )
     axis( side=4, labels=FALSE )
     
     box()
-    mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
+    if( lab )
+    {
+      mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
+      mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
+    }
 
     if ( gfx$annotate )
     {   

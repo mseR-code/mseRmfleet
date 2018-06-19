@@ -255,8 +255,8 @@ library(RColorBrewer)
 #
 # Settings for .M 
 #
-.MBG <- "purple" 
-.MCOL <- "purple" 
+.MBG <- "red" 
+.MCOL <- "red" 
 .MFG <- "black" 
 .MLTY <- 4 
 .MLWD <- 2 
@@ -267,8 +267,8 @@ library(RColorBrewer)
 #
 # Settings for .Mt 
 #
-.MtBG <- "purple" 
-.MtCOL <- "purple" 
+.MtBG <- "red" 
+.MtCOL <- "red" 
 .MtFG <- "black" 
 .MtLTY <- 1 
 .MtLWD <- 2 
@@ -386,8 +386,7 @@ library(RColorBrewer)
 .DeptBLIM <- .3
 .DeptBUPPER <- 0.525
 #.DeptLAB  <- "Female spawning biomass (000s t)" # Using biomass for Atl Hal
-.DeptLAB  <- "SSB (post-fishing)" 
-if( .FBt_Perf ) .DeptLAB <- "SSB (pre-fishing)"
+.DeptLAB  <- "Spawning Biomass" 
 .DeptUNIT <- "" 
 #
 # Settings for .Gear 
