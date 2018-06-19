@@ -76,6 +76,7 @@ library(dplyr)
                     "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
                     "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
                     "medPropClosure","Q1PropClosure","Q2PropClosure",
+                    "meanPropClosure",
                     "minProbBtGt.3B0" )
 
   colNames    <- c( headerNames, statNames )
@@ -511,6 +512,16 @@ library(dplyr)
         result[iRow,"medPropClosure"] <- tmp[3]
         result[iRow,"Q1PropClosure"] <- tmp[1]
         result[iRow,"Q2PropClosure"] <- tmp[5]
+
+        # HACK: Hijack the ref points stats function
+        # to calculate the mean probability that fishery is
+        # open (Ct > .14), then subtract that from 1
+        # for meanPropClosure
+        tmp <- .calcStatsRefPointsMCMC_flex(  Ct[,tdx], target = .14, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "mean" )
+
+        result[iRow,"meanPropClosure"] <- 1 - tmp
 
       }
 

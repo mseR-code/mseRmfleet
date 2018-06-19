@@ -1,4 +1,47 @@
 
+# plotMPDepCatchTulips()
+# Plots the depletion and catch simulation envelopes for
+# a single MP, comparing performance across scenarios.
+plotMPDepCatchTulips <- function( df = info.df, 
+                                  mp = "minE18.8_HR.2", traces = 3,
+                                  scenOrder = c("WCVI_DDM","WCVI_DIM","WCVI_conM"),
+                                  yLimC = c(0,40), yLimD = c(0,1.6),
+                                  stock = "WCVI" )
+{
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  df %>%
+            filter(mpLabel == mp )
+
+  pdf( file = paste( stock, "_", mp, ".pdf", sep = "" ), width = 11, height = 8 )
+
+  par( mfcol = c(2,nrow(subDF)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
+
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = TRUE, bygears = FALSE, yLim = c(0,1.3),
+               grids = FALSE, refPts = FALSE )
+
+  for( scenLabel in scenOrder )
+  {
+    scenDF  <- subDF %>% filter( scenarioLabel == scenLabel )
+    simID   <- scenDF[,"simLabel"]
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path("..",simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    .plotTulipDepCat( obj = blob, gfx = gfx, traces = traces, refPts = FALSE,
+                      colHeader = blob$ctlList$gui$scenarioLabel,
+                      yLimC = yLimC, yLimD = yLimD )
+
+    # lab <- paste("(",letters[i],")",sep = "")
+
+    # panLab( x = 0.02, y = 0.95, txt = lab)
+  }
+
+  dev.off()
+  # mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)  
+} # END plotMPDepCatchTulips()
 
 plotMtTulip <- function(  df = info.df, mp = "NoFish", traces = 3 )
 {
@@ -31,6 +74,126 @@ plotMtTulip <- function(  df = info.df, mp = "NoFish", traces = 3 )
   mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)
 }
 
+
+plotMPsMtBtFitUt <- function( iRep = 1,
+                              simFolder = "../WCVI_allScenarios_MCMC",
+                              scenario = "WCVI_DIM",
+                              MPs = c("minE18.8_HR.2","minE18.8_HR.1","minE18.8_HR.1_cap2"),
+                              saveFileRoot = "minE18.8",
+                              saveFile = FALSE,
+                              yLimB = c(0,100),
+                              yLimM = c(0,1.3),
+                              yLimHR = c(0,1.2) )
+{
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+  info.df <-  info.df %>%
+              filter( scenarioLabel == scenario,
+                      mpLabel %in% MPs )
+
+  # Set up saving options
+  savePath <- file.path( ".","BtFitMtUt", scenario, saveFileRoot)
+  saveName <- paste("BtFitMtUt_rep", iRep, ".pdf", sep = "" )
+  savePath <- file.path(savePath,saveName)
+
+
+  if(saveFile)
+    pdf(file = savePath, width = 11, height = 8 )
+
+  # Set up plot environment
+  par(mfcol = c(3,length(MPs) ), mar = c(1.5,1.5,1.5,1.5), oma = c( 3,3,2,1 )  )
+
+  # Loop over MPs
+  for( mp in MPs )
+  {
+    subDF <-  info.df %>%
+              filter( mpLabel == mp )
+
+    simID <- subDF[1,"simLabel"]
+
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path(simFolder,simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                 showProj = FALSE, bygears = FALSE,
+                 yLim = yLimB )
+
+    .plotBtFit(blob, gfx = gfx, iRep = iRep, lab = FALSE  )
+
+    mtext(side = 3, text = mp, line = 1, cex = .8 )
+
+    mfg <- par("mfg")
+
+    if(mfg[2] == 1 )
+    {
+      panLegend(  x = 0.5, y = 0.95, bty = "n",
+                  legTxt = c( "SSB", expression(.3*B[0]), "1st Fit", "2nd Fit" ),
+                  col = c("red","orange","green","darkgreen" ),
+                  lty =c(1,3,1,1),
+                  lwd = c(2,2,2,2))
+      mtext( side = 2, text = "Biomass (kt)", line = 2.5 )
+    }
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                showProj = FALSE, bygears = FALSE, yLim = yLimM )
+
+    
+    .plotMt(blob, gfx = gfx, iRep = iRep, lab = FALSE )
+
+    mfg <- par("mfg")
+
+    if(mfg[2] == 1 )
+    {
+      panLegend(  x = 0.4, y = 0.3, bty = "n",
+                  legTxt = c( expression(M[t]), "1st Fit", "2nd Fit"),
+                  col = c("red","green","darkgreen" ),
+                  lwd = c(2,2,2))
+      mtext( side = 2, text = "Natural Mortality (/yr)", line = 2.5 )
+    }
+
+    
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                 showProj = FALSE, bygears = FALSE, yLim = yLimHR)
+
+
+
+    .plotUt(blob, gfx = gfx, iRep = iRep, lab = FALSE )  
+
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+    {
+      panLegend(  x = 0.4, y = 0.95, 
+                  legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
+                  lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+                  col = c("black", .BmsyCOL) )  
+      mtext( side = 2, text = "Harvest Rate (/yr)", line = 2.5 ) 
+    }
+  }
+  mtext( outer = TRUE, text = "Year", side = 1, line = 2 )
+
+  if(saveFile)
+    dev.off()
+}
 
 
 # Functions for plotting OM outputs

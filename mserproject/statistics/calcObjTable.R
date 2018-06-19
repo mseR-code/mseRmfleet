@@ -43,6 +43,7 @@ colnames(objTable) <- c(  "Scenario","MP",
                           "NCN2_ProbGtB90s",
                           "medAAV",
                           "medAveCatch",
+                          "propClosure",
                           "ProbBtGtBave",
                           "ProbBtGtBave-prod" )
 
@@ -70,6 +71,7 @@ for( sIdx in 1:length(scenarios) )
     objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ]
     objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Long", "medAAV" ]
     objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
+    objTable[tabRow,"propClosure"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
     objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Long", "totProbGt.75B0" ]
     objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Med", "totProbGtB90s" ]
     objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave" ]
