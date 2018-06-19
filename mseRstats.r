@@ -516,7 +516,7 @@ library(dplyr)
         # to calculate the mean probability that fishery is
         # open (Ct > .14), then subtract that from 1
         # for meanPropClosure
-        tmp <- .calcStatsRefPointsMCMC_flex(  Ct[,tdx], target = .14, targMult = 1,
+        tmp <- .calcStatsRefPointsMCMC_flex(  Ct[,tdx], target = .65, targMult = 1,
                                               calcProb = "replicates", 
                                               summaryFun = "mean" )
 

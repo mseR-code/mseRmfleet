@@ -35,8 +35,8 @@ Periods   <- unique( perfTable$Period )
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 11 )
-colnames(objTable) <- c(  "Scenario","MP",
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 12 )
+colnames(objTable) <- c(  "Scenario","MP","Label",
                           "ProbBtGt.3B0",
                           "ProbBtGt.6B0",
                           "NCN1_ProbGt.75B0",
@@ -65,17 +65,17 @@ for( sIdx in 1:length(scenarios) )
                 filter( Scenario == scenario,
                         Procedure == mp )
 
-    objTable[tabRow,c("Scenario","MP")] <- c(scenario,mp)
+    objTable[tabRow,c("Scenario","MP","Label")] <- c(scenario,mIdx,mp)
     
-    objTable[tabRow,"ProbBtGt.3B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.3B0" ]
-    objTable[tabRow,"ProbBtGt.6B0"] <- subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ]
-    objTable[tabRow,"medAAV"] <- subPerf[subPerf$Period == "Long", "medAAV" ]
-    objTable[tabRow,"medAveCatch"] <- subPerf[subPerf$Period == "Long", "medAvgCatch" ]
-    objTable[tabRow,"probClosure"] <- subPerf[subPerf$Period == "Long", "meanProbClosure" ]
-    objTable[tabRow,"NCN1_ProbGt.75B0"] <- subPerf[subPerf$Period == "Long", "totProbGt.75B0" ]
-    objTable[tabRow,"NCN2_ProbGtB90s"] <- subPerf[subPerf$Period == "Med", "totProbGtB90s" ]
-    objTable[tabRow,"ProbBtGtBave"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave" ]
-    objTable[tabRow,"ProbBtGtBave-prod"] <- subPerf[subPerf$Period == "Long", "totProbBtGtBave.prod" ]
+    objTable[tabRow,"ProbBtGt.3B0"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGt.3B0" ],2)
+    objTable[tabRow,"ProbBtGt.6B0"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ],2)
+    objTable[tabRow,"medAAV"] <- round(subPerf[subPerf$Period == "Long", "medAAV" ],2)
+    objTable[tabRow,"medAveCatch"] <- round(subPerf[subPerf$Period == "Long", "medAvgCatch" ],2)
+    objTable[tabRow,"probClosure"] <- round(subPerf[subPerf$Period == "Long", "meanProbClosure" ],2)
+    objTable[tabRow,"NCN1_ProbGt.75B0"] <- round(subPerf[subPerf$Period == "Long", "totProbGt.75B0" ],2)
+    objTable[tabRow,"NCN2_ProbGtB90s"] <- round(subPerf[subPerf$Period == "Med", "totProbGtB90s" ],2)
+    objTable[tabRow,"ProbBtGtBave"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGtBave" ],2)
+    objTable[tabRow,"ProbBtGtBave-prod"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGtBave.prod" ],2)
     
   }
 
