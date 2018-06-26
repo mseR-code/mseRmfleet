@@ -460,7 +460,8 @@ calcRefPoints <- function( opModList )
   nGear <- obj$nGear
 
   # HACK to use average M over history for ssbpr at initialisation
-  Mta <- obj$repFile$M
+  repFile <- read.rep(obj$repFileName)
+  Mta <- repFile$M
   Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
   M <- Mbar[1]
   
@@ -609,7 +610,7 @@ calcRefPoints <- function( opModList )
     equil$legal    <- recruits*tmp$yprLeg
     equil$sublegal <- recruits*tmp$yprSubLeg
     equil$fg       <- obj$fg
-    equil$legalHR  <- equil$landed/equil$legb
+    equil$legalHR  <- equil$landed/(equil$legb + equil$landed)
 
   if(!is.finite(equil$sublegb)) browser()
     
@@ -649,7 +650,7 @@ calcRefPoints <- function( opModList )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
 
-  optF <- optim( par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+  optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
   for( i in 1:length(f) )
@@ -669,7 +670,7 @@ calcRefPoints <- function( opModList )
     discarded[i] <- tmp$discarded
     legal[i]     <- tmp$legal
     sublegal[i]  <- tmp$sublegal
-    legalHR[i]   <- tmp$legal/tmp$legb
+    legalHR[i]   <- tmp$legal/(tmp$legb + tmp$legal)
     
 
     if( tmp$sublegb > 0. )

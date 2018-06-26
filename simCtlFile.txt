@@ -1,12 +1,12 @@
-# mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
+# mseRguiSim GUI parameters written Mon Jun 25 14:23:50 2018 
 parameter value
-gui$mpLabel "NoFish"
-gui$nReps 20
+gui$mpLabel "ISCAM"
+gui$nReps 3
 gui$quiet FALSE
 gui$scenarioLabel "WCVI_conM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
-gui$simPlotType "simSpecs"
+gui$simPlotType "simRefPtsU"
 gui$simSetXaxis FALSE
 gui$simSetYaxis FALSE
 mp$assess$avgPoints 3
@@ -218,7 +218,7 @@ opMod$sigmaLinf 0.12
 opMod$sigmaM 0.
 opMod$sigmaR 0.705998
 opMod$sizeLim c(1,1,1,1,1)
-opMod$sizeLimFuture c(1,1,1,1,1)
+opMod$sizeLim Future c(1,1,1,1,1)
 opMod$testFishery c(0,0.136078,0,0,0)
 opMod$useBoot FALSE
 opMod$kBoot 10
@@ -239,9 +239,9 @@ refPts$Fmsy 0.352392428361543
 refPts$ssbFmsy 10.3351330893833
 refPts$yieldFmsy 13.4974666775765
 refPts$U0 0
-refPts$U01 0.23539809697471
-refPts$U40 0.153922809101815
-refPts$Ucra 0.23539809697471
-refPts$Umax 0.23539809697471
-refPts$Umsy 0.1938396172684
-refPts$legalHRFmsy 0.193839617221515
+refPts$U01 0.190544325388846
+refPts$U40 0.133390906133682
+refPts$Ucra 0.190544325388846
+refPts$Umax 0.190544325388846
+refPts$Umsy 0.162366547799825
+refPts$legalHRFmsy 0.16236654775509

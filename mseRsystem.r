@@ -1647,6 +1647,7 @@ callProcedureISCAM <- function( obj, t )
   wtAge               <- cbind( seq(from = .INITYEAR, length = t), wtAge )
   caObj$wtAge         <- wtAge
 
+  browser()
 
   # other stuff to make the model run
   caObj$nMclass       <- 1
