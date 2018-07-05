@@ -2,7 +2,7 @@ library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
 # batchFiles <- 1:8
-batchFiles <- c(1:18)
+batchFiles <- c(1:12)
 nBatchFiles <- length(batchFiles)
 batchFolderNames <- paste("mseRBat",batchFiles,sep = "")
 
