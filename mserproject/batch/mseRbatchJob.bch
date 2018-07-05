@@ -2,96 +2,166 @@
 #
 parameter value
 #
-# Scenario 1: WCVI_conM
+# Scenario 1: WCVI_DDM
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "WCVI_conM"
-scenario$scenario1$opMod$pulseMfrac 0
-scenario$scenario1$opMod$pulseMFrq 0
-scenario$scenario1$opMod$sigmaM 0.
+scenario$scenario1$gui$scenarioLabel "WCVI_DDM"
+scenario$scenario1$opMod$pulseMfrac 0.3
+scenario$scenario1$opMod$pulseMFrq 16
+scenario$scenario1$opMod$pulseMSize 1.5
 scenario$scenario1$opMod$endMrule "mean"
-scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM/"
-scenario$scenario1$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
+scenario$scenario1$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM"
+scenario$scenario1$opMod$repFileName "mserproject/history/iscamWCVI2017.rep"
+#
+# Scenario 2: WCVI_DIM
+#
+scenario$scenario2$gui$nReps 100
+scenario$scenario2$gui$scenarioLabel "WCVI_DIM"
+scenario$scenario2$opMod$kYearsMbar 10
+scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM"
+scenario$scenario2$opMod$repFileName "mserproject/history/iscamWCVI2017.rep"
+#
+# Scenario 2: WCVI_conM
+#
+scenario$scenario3$gui$nReps 100
+scenario$scenario3$gui$scenarioLabel "WCVI_conM"
+scenario$scenario3$opMod$kYearsMbar NULL
+scenario$scenario3$opMod$pulseMfrac 0.
+scenario$scenario3$opMod$pulseMFrq 0
+scenario$scenario3$opMod$pulseMSize 1.5
+scenario$scenario3$opMod$endMrule "mean"
+scenario$scenario3$opMod$sigmaM 0.
+scenario$scenario3$opMod$posteriorSamples "mserproject/history/localPost/WCVI/conM"
+scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
 ## Management Procedures
 #
-## Management Procedure 1: minE18.8_HR.2
+## Management Procedure 1: minE18.8_HR.2_slowUp2
 #
-mp$mp1$gui$mpLabel "minE18.8_HR.2"
+mp$mp1$gui$mpLabel "minE18.8_HR.2_slowUp2"
 mp$mp1$mp$hcr$targHRHerring .2
 mp$mp1$mp$hcr$herringCutoffVal 18.8
 mp$mp1$mp$hcr$herringCutoffType "absolute"
 mp$mp1$mp$hcr$rule "herring"
+mp$mp1$mp$hcr$nYearsAboveCutoff 2
+mp$mp1$mp$assess$iscam$unfished 0
+mp$mp1$mp$assess$iscam$minAgeProp 0.02
+mp$mp1$mp$assess$iscam$mDevPhz 3
+mp$mp1$mp$assess$iscam$mDevNodes 12
+mp$mp1$mp$assess$iscam$minAge 2
+mp$mp1$mp$assess$iscam$cutoff 0.25
+mp$mp1$mp$assess$iscam$targHR 0.2
+mp$mp1$mp$assess$iscam$fixCutoff 18.8
+mp$mp1$mp$assess$iscam$selxRenorm 2
+mp$mp1$mp$assess$iscam$priors$meanInitM -0.798
+mp$mp1$mp$assess$iscam$priors$sdInitM 0.4
+mp$mp1$mp$assess$iscam$priors$steepnessBeta1 10
+mp$mp1$mp$assess$iscam$priors$steepnessBeta2 4.92
+mp$mp1$mp$assess$iscam$priors$logqdensity c(0,1)
+mp$mp1$mp$assess$iscam$priors$logqPrior1 c(0,1)
+mp$mp1$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
+mp$mp1$mp$assess$iscam$initPar$logR0 7.28
+mp$mp1$mp$assess$iscam$initPar$h .8
+mp$mp1$mp$assess$iscam$initPar$logm -0.6918
+mp$mp1$mp$assess$iscam$initPar$logRbar 7.09
+mp$mp1$mp$assess$iscam$initPar$logRinit 5.97
+mp$mp1$mp$assess$iscam$initPar$rho 0.413297
+mp$mp1$mp$assess$iscam$initPar$kappa 1.22062
 #
-## Management Procedure 2: minE18.8_HR.1
+## Management Procedure 1: minE18.8_HR.2_slowUp3
 #
-mp$mp2$gui$mpLabel "minE18.8_HR.1"
-mp$mp2$mp$hcr$targHRHerring .1
+mp$mp2$gui$mpLabel "minE18.8_HR.2_slowUp3"
+mp$mp2$mp$hcr$targHRHerring .2
 mp$mp2$mp$hcr$herringCutoffVal 18.8
 mp$mp2$mp$hcr$herringCutoffType "absolute"
 mp$mp2$mp$hcr$rule "herring"
+mp$mp2$mp$hcr$nYearsAboveCutoff 3
+mp$mp2$mp$assess$iscam$unfished 0
+mp$mp2$mp$assess$iscam$minAgeProp 0.02
+mp$mp2$mp$assess$iscam$mDevPhz 3
+mp$mp2$mp$assess$iscam$mDevNodes 12
+mp$mp2$mp$assess$iscam$minAge 2
+mp$mp2$mp$assess$iscam$cutoff 0.25
+mp$mp2$mp$assess$iscam$targHR 0.2
+mp$mp2$mp$assess$iscam$fixCutoff 18.8
+mp$mp2$mp$assess$iscam$selxRenorm 2
+mp$mp2$mp$assess$iscam$priors$meanInitM -0.798
+mp$mp2$mp$assess$iscam$priors$sdInitM 0.4
+mp$mp2$mp$assess$iscam$priors$steepnessBeta1 10
+mp$mp2$mp$assess$iscam$priors$steepnessBeta2 4.92
+mp$mp2$mp$assess$iscam$priors$logqdensity c(0,1)
+mp$mp2$mp$assess$iscam$priors$logqPrior1 c(0,1)
+mp$mp2$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
+mp$mp2$mp$assess$iscam$initPar$logR0 7.28
+mp$mp2$mp$assess$iscam$initPar$h .8
+mp$mp2$mp$assess$iscam$initPar$logm -0.6918
+mp$mp2$mp$assess$iscam$initPar$logRbar 7.09
+mp$mp2$mp$assess$iscam$initPar$logRinit 5.97
+mp$mp2$mp$assess$iscam$initPar$rho 0.413297
+mp$mp2$mp$assess$iscam$initPar$kappa 1.22062
 #
-## Management Procedure 3: minE18.8_HR.1_cap2
+## Management Procedure 1: minE18.8_HR.2_slowUp4
 #
-mp$mp3$gui$mpLabel "minE18.8_HR.1_cap2"
-mp$mp3$mp$hcr$targHRHerring .1
+mp$mp3$gui$mpLabel "minE18.8_HR.2_slowUp4"
+mp$mp3$mp$hcr$targHRHerring .2
 mp$mp3$mp$hcr$herringCutoffVal 18.8
-mp$mp3$mp$hcr$catchCeiling 2.0
 mp$mp3$mp$hcr$herringCutoffType "absolute"
 mp$mp3$mp$hcr$rule "herring"
+mp$mp3$mp$hcr$nYearsAboveCutoff 4
+mp$mp3$mp$assess$iscam$unfished 0
+mp$mp3$mp$assess$iscam$minAgeProp 0.02
+mp$mp3$mp$assess$iscam$mDevPhz 3
+mp$mp3$mp$assess$iscam$mDevNodes 12
+mp$mp3$mp$assess$iscam$minAge 2
+mp$mp3$mp$assess$iscam$cutoff 0.25
+mp$mp3$mp$assess$iscam$targHR 0.2
+mp$mp3$mp$assess$iscam$fixCutoff 18.8
+mp$mp3$mp$assess$iscam$selxRenorm 2
+mp$mp3$mp$assess$iscam$priors$meanInitM -0.798
+mp$mp3$mp$assess$iscam$priors$sdInitM 0.4
+mp$mp3$mp$assess$iscam$priors$steepnessBeta1 10
+mp$mp3$mp$assess$iscam$priors$steepnessBeta2 4.92
+mp$mp3$mp$assess$iscam$priors$logqdensity c(0,1)
+mp$mp3$mp$assess$iscam$priors$logqPrior1 c(0,1)
+mp$mp3$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
+mp$mp3$mp$assess$iscam$initPar$logR0 7.28
+mp$mp3$mp$assess$iscam$initPar$h .8
+mp$mp3$mp$assess$iscam$initPar$logm -0.6918
+mp$mp3$mp$assess$iscam$initPar$logRbar 7.09
+mp$mp3$mp$assess$iscam$initPar$logRinit 5.97
+mp$mp3$mp$assess$iscam$initPar$rho 0.413297
+mp$mp3$mp$assess$iscam$initPar$kappa 1.22062
 #
-## Management Procedure 4: minE.5B0_HR.2
+## Management Procedure 1: minE18.8_HR.2_slowUp5
 #
-mp$mp4$gui$mpLabel "minE.5B0_HR.2"
+mp$mp4$gui$mpLabel "minE18.8_HR.2_slowUp5"
 mp$mp4$mp$hcr$targHRHerring .2
-mp$mp4$mp$hcr$herringCutoffVal .5
-mp$mp4$mp$hcr$herringCutoffType "relative"
+mp$mp4$mp$hcr$herringCutoffVal 18.8
+mp$mp4$mp$hcr$herringCutoffType "absolute"
 mp$mp4$mp$hcr$rule "herring"
-#
-## Management Procedure 5: minE.5B0_HR.1
-#
-mp$mp5$gui$mpLabel "minE.5B0_HR.1"
-mp$mp5$mp$hcr$targHRHerring .1
-mp$mp5$mp$hcr$herringCutoffVal .5
-mp$mp5$mp$hcr$herringCutoffType "relative"
-mp$mp5$mp$hcr$rule "herring"
-#
-## Management Procedure 6: minE.5B0_HR.1_cap2
-#
-mp$mp6$gui$mpLabel "minE.5B0_HR.1_cap2"
-mp$mp6$mp$hcr$targHRHerring .1
-mp$mp6$mp$hcr$herringCutoffVal .5
-mp$mp6$mp$hcr$herringCutoffType "relative"
-mp$mp6$mp$hcr$catchCeiling 2.0
-mp$mp6$mp$hcr$rule "herring"
-#
-## Management Procedure 7: HS30-60_HR.2
-#
-mp$mp7$gui$mpLabel "HS30-60_HR.2"
-mp$mp7$mp$hcr$targHRHerring .2
-mp$mp7$mp$hcr$rule "linear"
-mp$mp7$mp$hcr$lowerBoundMult .3
-mp$mp7$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 8: HS30-60_HR.1
-#
-mp$mp8$gui$mpLabel "HS30-60_HR.1"
-mp$mp8$mp$hcr$targHRHerring .1
-mp$mp8$mp$hcr$rule "linear"
-mp$mp8$mp$hcr$lowerBoundMult .3
-mp$mp8$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 9: HS30-60_HR.1_cap2
-#
-mp$mp9$gui$mpLabel "HS30-60_HR.1_cap2"
-mp$mp9$mp$hcr$targHRHerring .1
-mp$mp9$mp$hcr$rule "linear"
-mp$mp9$mp$hcr$catchCeiling 2.0
-mp$mp9$mp$hcr$lowerBoundMult .3
-mp$mp9$mp$hcr$upperBoundMult .6
-#
-## Management Procedure 10: NoFish
-#
-mp$mp10$gui$mpLabel "NoFish"
+mp$mp4$mp$hcr$nYearsAboveCutoff 5
+mp$mp4$mp$assess$iscam$unfished 0
+mp$mp4$mp$assess$iscam$minAgeProp 0.02
+mp$mp4$mp$assess$iscam$mDevPhz 3
+mp$mp4$mp$assess$iscam$mDevNodes 12
+mp$mp4$mp$assess$iscam$minAge 2
+mp$mp4$mp$assess$iscam$cutoff 0.25
+mp$mp4$mp$assess$iscam$targHR 0.2
+mp$mp4$mp$assess$iscam$fixCutoff 18.8
+mp$mp4$mp$assess$iscam$selxRenorm 2
+mp$mp4$mp$assess$iscam$priors$meanInitM -0.798
+mp$mp4$mp$assess$iscam$priors$sdInitM 0.4
+mp$mp4$mp$assess$iscam$priors$steepnessBeta1 10
+mp$mp4$mp$assess$iscam$priors$steepnessBeta2 4.92
+mp$mp4$mp$assess$iscam$priors$logqdensity c(0,1)
+mp$mp4$mp$assess$iscam$priors$logqPrior1 c(0,1)
+mp$mp4$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
+mp$mp4$mp$assess$iscam$initPar$logR0 7.28
+mp$mp4$mp$assess$iscam$initPar$h .8
+mp$mp4$mp$assess$iscam$initPar$logm -0.6918
+mp$mp4$mp$assess$iscam$initPar$logRbar 7.09
+mp$mp4$mp$assess$iscam$initPar$logRinit 5.97
+mp$mp4$mp$assess$iscam$initPar$rho 0.413297
+mp$mp4$mp$assess$iscam$initPar$kappa 1.22062
 #
 # File Ends <not run>.

@@ -863,7 +863,7 @@ ageLenOpMod <- function( objRef, t )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
   legalHR    <- (legalC + legalD)/legalB
-  spawnHR    <- (legalC + legalD)/FBt
+  spawnHR    <- (legalC + legalD)/(SBt + legalC + legalD )
   # if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
   # else sublegalHR <- sublegalD/sublegalB
 
@@ -1647,7 +1647,8 @@ callProcedureISCAM <- function( obj, t )
   wtAge               <- cbind( seq(from = .INITYEAR, length = t), wtAge )
   caObj$wtAge         <- wtAge
 
-  browser()
+  # browser()
+
 
   # other stuff to make the model run
   caObj$nMclass       <- 1
@@ -1656,9 +1657,14 @@ callProcedureISCAM <- function( obj, t )
 
   caObj$iscamCtrl <- obj$ctlList$mp$assess$iscam
 
-  caObj$R0          <- obj$ref$R0
-  caObj$rSteepness  <- obj$ref$rSteepness
-  caObj$M           <- mean(obj$ctlList$opMod$M)
+
+  caObj$R0          <- exp(obj$ctlList$mp$assess$iscam$initPar$logR0)
+  caObj$Rbar        <- exp(obj$ctlList$mp$assess$iscam$initPar$logRbar)
+  caObj$Rinit       <- exp(obj$ctlList$mp$assess$iscam$initPar$logRinit)
+  caObj$h           <- obj$ctlList$mp$assess$iscam$initPar$h
+  caObj$M           <- exp(obj$ctlList$mp$assess$iscam$initPar$logm)
+  caObj$rho         <- obj$ctlList$mp$assess$iscam$initPar$rho
+  caObj$kappa       <- obj$ctlList$mp$assess$iscam$initPar$kappa
 
   caObj$nMCMC     <- obj$ctlList$mp$hcr$nMCMC
   caObj$nThin     <- obj$ctlList$mp$hcr$nThin
@@ -1785,15 +1791,17 @@ iscamWrite <- function ( obj )
   priorVars <- obj$iscamCtrl$priors
   recInitPhz <- ifelse( obj$iscamCtrl$unfished == 1, -1, 1)
 
+  initPars <- obj$iscamCtrl$initPar
+
   # Now write control file (code taken from RL's original)
   #              ival      lb   ubp  phz    prior       p1     p2            # parameter name
-  par_r0     <-c(log(obj$R0),  -5, 15   ,4     ,0           ,-5.0   ,15)        # log_r0
-  par_ste    <-c(  obj$rSteepness,   0.2, 1.0  ,4     ,3    ,priorVars$steepnessBeta1, priorVars$steepnessBeta2 )      # steepness
-  par_m      <-c(log(obj$M),-5.0, 5.0,3,1,priorVars$meanInitM, priorVars$sdInitM)       # log.m
-  par_avgrec <-c(log(obj$R0)  ,  -5.0, 15   ,1     ,0           ,-5.0   ,15 )       # log_avgrec
-  par_recini <-c(log(obj$R0),  -5.0, 15   ,recInitPhz     ,0           ,-5.0   ,15)        # log_recinit
-  par_rho    <-c(0.3043478 , 0.001, 0.999 ,3,3  ,17.08696  ,39.0559)     # rho
-  par_kappa  <-c(0.8695652 ,  0.01, 5.0  ,3,4 ,25.0   ,28.75)     # kappa
+  par_r0     <-c(  log(obj$R0),  -5, 15   ,4     ,0           ,-5.0   ,15)        # log_r0
+  par_ste    <-c(  obj$h,   0.2, 1.0  ,4     ,3    ,priorVars$steepnessBeta1, priorVars$steepnessBeta2 )      # steepness
+  par_m      <-c(  log(obj$M),-5.0, 5.0,3,1,priorVars$meanInitM, priorVars$sdInitM)       # log.m
+  par_avgrec <-c(  log(obj$Rbar) ,  -5.0, 15   ,1     ,0           ,-5.0   ,15 )       # log_avgrec
+  par_recini <-c(  log(obj$Rinit),  -5.0, 15   ,recInitPhz     ,0           ,-5.0   ,15)        # log_recinit
+  par_rho    <-c(  obj$rho, 0.001, 0.999 ,3,3  ,17.08696  ,39.0559)     # rho
+  par_kappa  <-c(  obj$kappa,  0.01, 5.0  ,3,4 ,25.0   ,28.75)     # kappa
 
   #OTHER MISCELLANEOUS CONTROLS
   ADMB_output<-0              ## 1 verbose ADMB output (0=off, 1=on)
@@ -1884,7 +1892,7 @@ iscamWrite <- function ( obj )
   cat( file=ctlFile, "## nits  #number of surveys\n", append=T )
   cat( file=ctlFile, obj$nSurv, "\n", append=T )
   cat( file=ctlFile, "## priors 0=uniform density   1=normal density\n", append=T )
-  cat( file=ctlFile, c(0,1), "\n", append=T )
+  cat( file=ctlFile, priorVars$logqdensity, "\n", append=T )
   cat( file=ctlFile, "## prior log(mean)\n", append=T )
   cat( file=ctlFile, priorVars$logqPrior1, "\n", append=T )
   cat( file=ctlFile, "## prior sd\n", append=T )
@@ -2009,21 +2017,40 @@ iscamWrite <- function ( obj )
   # ARK (13-Oct-13) Added catchFloor.
   catchFloor <- obj$catchFloor
 
-  # HCR as defined in Eqs H4.2 in Table 5 of main doc.
+ # Calculate the slow-up rule
+  slowUpYears  <- obj$slowUpYears
+  if( is.null(slowUpYears) )
+    slowUpYears <- 1
 
-  if( legalBiomass < lowerBound ) 
+  # Get indices for recent years
+  recentYears <- (t - slowUpYears + 1):(t)
+
+  # Change for slow up rule: overwrite legal biomass (3+ fish in year t)
+  # with the spawning biomass estimate in years 1:t from the AM
+  legalBiomass <- c(obj$sbt)[recentYears]
+  # Overwrite the sbt estimate with the 3+ fish for the last year
+  legalBiomass[slowUpYears] <- obj$biomass
+
+  # Calculate hockey-stock legal harvest rule, with slow up
+  # rule enforced (normal rule is if slowUpYears = 1)
+  if( any(legalBiomass < lowerBound ) ) 
     adjF <- 0.
-  if( legalBiomass >= lowerBound & legalBiomass < upperBound )
-    adjF <- remRate*(legalBiomass-lowerBound)/(upperBound-lowerBound)
-  if( legalBiomass >= upperBound ) 
+  if( all(legalBiomass >= lowerBound ) )
+  {
+    if( legalBiomass[slowUpYears] < upperBound )
+    adjF <- remRate*(legalBiomass[slowUpYears]-lowerBound)/(upperBound-lowerBound)
+  if( legalBiomass[slowUpYears] >= upperBound ) 
     adjF <- remRate 
-  
+  }
+   
+
+
   # If the assessment failed, limit F to maxF
   if( fail==TRUE & adjF > maxF )
     adjF <- maxF
 
   # Final catch limit
-  catchLim <- adjF*legalBiomass
+  catchLim <- adjF*legalBiomass[slowUpYears]
 
   result                <-list()
   result$precautionaryF <- adjF
@@ -2046,7 +2073,21 @@ iscamWrite <- function ( obj )
   remRate      <- obj$remRate[t]       # Instantaneous fishing mortality rate reference
   lowerBound   <- obj$lowerBound[t]    # Lower control point, where remRate=0
   upperBound   <- obj$upperBound[t]    # Upper control point, where remRate
-  
+    
+  # Calculate the slow-up rule
+  slowUpYears  <- obj$slowUpYears
+  if( is.null(slowUpYears) )
+    slowUpYears <- 1
+
+  # Get indices for recent years
+  recentYears <- (t - slowUpYears + 1):(t)
+
+  # Change for slow up rule: overwrite legal biomass (3+ fish in year t)
+  # with the spawning biomass estimate in years 1:t from the AM
+  legalBiomass <- c(obj$sbt)[recentYears]
+  # Overwrite the sbt estimate with the 3+ fish for the last year
+  legalBiomass[slowUpYears] <- obj$biomass
+
   # convert remRate to U
 
   remRate <- obj$targHR
@@ -2054,11 +2095,13 @@ iscamWrite <- function ( obj )
   # Safeguards to limit F in case assessment failed in a particular year
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- 1 - exp( - obj$maxF) # Maximum allowable F in case estimation fails.
-  
 
-  if( legalBiomass < lowerBound ) 
+
+  if( any(legalBiomass < lowerBound ) ) 
+  {
     adjF <- 0.
-  if( legalBiomass >= lowerBound )
+  }
+  if( all(legalBiomass >= lowerBound ) )
     adjF <- remRate
   
   # If the assessment failed, limit F to maxF
@@ -2066,8 +2109,7 @@ iscamWrite <- function ( obj )
     adjF <- maxF
 
   # Final catch limit treating adjF as a harvest rate
-  catchLim <- min( adjF*legalBiomass, max(legalBiomass - lowerBound,0) )
-
+  catchLim <- min( adjF*legalBiomass[slowUpYears], max(legalBiomass[slowUpYears] - lowerBound,0) )
 
 
   result                <-list()
@@ -2647,9 +2689,10 @@ iscamWrite <- function ( obj )
   }
   
   # Retrospective biomass estimates and recruitment.
-  mp$assess$retroExpBt <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
-  mp$assess$retroRt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
-  mp$assess$retroMt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroExpBt    <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroRt       <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroMt       <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
+  mp$assess$retroBio3plus <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
 
   # Build the return object.
   obj <- list( ctlList=ctlObj, om=om, mp=mp, refPtList=refPtsObj ) 
@@ -2813,14 +2856,17 @@ iscamWrite <- function ( obj )
   }
 
   # Retrospective statistics.
-  mp$assess$retroExpBt   <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
-  mp$assess$retroSpawnBt <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
-  mp$assess$retroRt      <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
-  mp$assess$retroMt      <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
+  mp$assess$retroExpBt     <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
+  mp$assess$retroSpawnBt   <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
+  mp$assess$retroRt        <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
+  mp$assess$retroMt        <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
   
   # Not strictly assessment values, but if Decline Risk HCR have to store this...
-  mp$assess$trendBio     <- matrix( NA, nrow=nReps, ncol=(nT+1) )
-  mp$assess$trendVal     <- matrix( NA, nrow=nReps, ncol=(nT+1) )
+  mp$assess$trendBio       <- matrix( NA, nrow=nReps, ncol=(nT+1) )
+  mp$assess$trendVal       <- matrix( NA, nrow=nReps, ncol=(nT+1) )
+  # Not strictly assessment values, but if slowUpRule is being used we need
+  # to draw on this
+  mp$assess$retroBio3plus  <- matrix( NA, nrow=(nReps*(nT-tMP+1)),  ncol=(nT+2) )
 
   #----------------------------------------------------------------------------#
   #-- Initialize the blob object to hold all simulation results.             --#
@@ -2880,9 +2926,9 @@ iscamWrite <- function ( obj )
     
     if ( ctlList$mp$assess$methodId == .CAAMOD |  ctlList$mp$assess$methodId == .ISCAMRW )
     {
-      obj$mp$assess$mpdPars <- data.frame( matrix(NA,nrow=(nT-tMP+1), ncol=25 ) )
-      obj$mp$assess$Rt      <- matrix( NA, nrow=(nT-tMP+1), ncol=(nT+1) )
-      obj$mp$assess$pat     <- matrix( NA, nrow=nAges, ncol=nT )
+      obj$mp$assess$mpdPars     <- data.frame( matrix(NA,nrow=(nT-tMP+1), ncol=25 ) )
+      obj$mp$assess$Rt          <- matrix( NA, nrow=(nT-tMP+1), ncol=(nT+1) )
+      obj$mp$assess$pat         <- matrix( NA, nrow=nAges, ncol=nT )
     }
  
     # Loop over years tMP:nT projecting feedback management strategy
@@ -2963,6 +3009,8 @@ iscamWrite <- function ( obj )
         blob$mp$assess$retroSpawnBt[ startRow:endRow, ] <- cbind( reps, obj$mp$assess$retroSpawnBt )
         blob$mp$assess$retroRt[ startRow:endRow, ]      <- cbind( reps, obj$mp$assess$retroRt )        
         blob$mp$assess$retroMt[ startRow:endRow, ]      <- cbind( reps, obj$mp$assess$retroMt )        
+
+        blob$mp$assess$retroBio3plus[startRow:endRow, ] <- cbind( reps, obj$mp$assess$retroBio3plus )        
     }
 
     blob$mp$assess$retroExpBt[ startRow:endRow, ]   <- cbind( reps, obj$mp$assess$retroExpBt )
@@ -3060,6 +3108,9 @@ iscamWrite <- function ( obj )
 
       tmpNames <- paste( "retroMt", c(1:nT), sep="" )
       colnames( blob$mp$assess$retroMt )<-c("iRep", "tStep", tmpNames ) 
+
+      tmpNames <- paste( "retroBio3plus", c(1:nT), sep="" )
+      colnames( blob$mp$assess$retroBio3plus )<-c("iRep", "tStep", tmpNames ) 
       
       tmpNames <- paste("retroSpawnBt",c(1:nT),sep="")
       colnames( blob$mp$assess$retroSpawnBt )<-c("iRep", "tStep", tmpNames )    
@@ -3125,6 +3176,7 @@ iscamWrite <- function ( obj )
 
     # 1. Pull out biomass post M next year (this is fihsing with
     # perfect info)
+    FBt   <- obj$om$FBt
     Bt    <- obj$om$FBt[t+1]
 
     # browser()
@@ -3133,6 +3185,12 @@ iscamWrite <- function ( obj )
     # mpLabel
     # Base assumption of 0
     targetHarv <- 0
+    nYears <- obj$ctlList$mp$hcr$nYearsAboveCutoff
+
+    if( is.null(nYears) ) nYears <- 1
+
+    recentYears <- ( t + 1 ):( t - nYears + 2 )
+
     # If PerfectInfo, calculate based on spawning biomass
     if(  substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
     {
@@ -3142,7 +3200,7 @@ iscamWrite <- function ( obj )
         cutoff      <- obj$ctlList$mp$hcr$herringCutoffVal
         cutoffType  <- obj$ctlList$mp$hcr$herringCutoffType
         if( cutoffType == "relative" ) cutoff <- cutoff*B0
-        if( Bt > cutoff )
+        if( all(FBt[recentYears] > cutoff ) )
         { 
             targetHarv <- min( targetHR * Bt, Bt - cutoff )
         }
@@ -3151,7 +3209,7 @@ iscamWrite <- function ( obj )
       {
         lowerBound <- obj$ctlList$mp$hcr$lowerBoundMult * B0
         upperBound <- obj$ctlList$mp$hcr$upperBoundMult * B0
-        if( Bt > lowerBound )
+        if( all(FBt[recentYears] > lowerBound) )
         {
           if( Bt <= upperBound )
             targetHarv <- targetHR * (Bt - lowerBound)/(upperBound - lowerBound) * Bt
@@ -3279,8 +3337,8 @@ iscamWrite <- function ( obj )
     # Recalculate variance parameters from EIV pars
     varTheta  <- as.numeric(mcmcPar[postDraw, "vartheta"])
     varRho    <- as.numeric(mcmcPar[postDraw, "rho"])
-    tau2      <- varRho * varTheta
-    sigma2R   <- (1 - varRho) * varTheta
+    tau2      <- varRho * 1/varTheta
+    sigma2R   <- (1 - varRho) * 1/varTheta
 
     obj$ctlList$opMod$tauIndexg <- c(sqrt(tau2), sqrt(tau2)/1.167)
     obj$ctlList$opMod$sigmaR    <- sqrt(sigma2R)
@@ -4117,7 +4175,12 @@ iscamWrite <- function ( obj )
 
     # Get logMdevs
     val <- c(t,0, stockAssessment$log_m_devs )
-    mp$assess$retroMt[tRow, c(1:length(val))] <- val      
+    mp$assess$retroMt[tRow, c(1:length(val))] <- val  
+
+    # Get retrospective 3+ biomass
+    mp$assess$retroBio3plus[tRow,1:(t+1)] <- c(t,stockAssessment$sbt)
+    mp$assess$retroBio3plus[tRow,t+1] <- stockAssessment$mpdPars$projExpBio
+
 
 
   }     # ENDIF methodId=.CAAMOD.
@@ -4300,7 +4363,9 @@ iscamWrite <- function ( obj )
     {
       rule                  <- mp$hcr
       rule$assessMethod     <- ctlList$mp$assess$methodId
+      rule$slowUpYears      <- ctlList$mp$hcr$nYearsAboveCutoff
       rule$t                <- t
+      rule$sbt              <- stockAssessment$sbt
       rule$biomass          <- stockAssessment$mpdPars$projExpBio
       rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
       rule$targHR           <- ctlList$mp$hcr$targHRHerring
@@ -4315,7 +4380,9 @@ iscamWrite <- function ( obj )
     {
       rule                  <- mp$hcr
       rule$assessMethod     <- ctlList$mp$assess$methodId
+      rule$slowUpYears      <- ctlList$mp$hcr$nYearsAboveCutoff
       rule$t                <- t
+      rule$sbt              <- stockAssessment$sbt
       rule$biomass          <- stockAssessment$mpdPars$projExpBio
       rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
       rule$targHR           <- ctlList$mp$hcr$targHRHerring
