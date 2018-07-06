@@ -680,7 +680,7 @@ calcRefPoints <- function( opModList )
 
   browser()
 
-  optF <- optim(  par=optF$par, fn=.getYPRvals, method="BFGS", 
+  optF <- optim(  par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", 
                   control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
