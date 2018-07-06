@@ -126,6 +126,7 @@ mp$hcr$deltaTACcType "absolute"
 mp$hcr$nMCMC 1
 mp$hcr$nProjYears 5
 mp$hcr$nThin 1
+mp$hcr$nYearsAboveCutoff 1
 mp$hcr$optRefPt "useSnow"
 mp$hcr$paAdj FALSE
 mp$hcr$qIndex 0.5

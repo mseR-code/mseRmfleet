@@ -127,6 +127,7 @@ mp$hcr$deltaTACcType "absolute"
 mp$hcr$nMCMC 1
 mp$hcr$nProjYears 5
 mp$hcr$nThin 1
+mp$hcr$nYearsAboveCutoff 1
 mp$hcr$optRefPt "useSnow"
 mp$hcr$paAdj FALSE
 mp$hcr$qIndex 0.5
@@ -218,7 +219,7 @@ opMod$sigmaLinf 0.12
 opMod$sigmaM 0.
 opMod$sigmaR 0.705998
 opMod$sizeLim c(1,1,1,1,1)
-opMod$sizeLim Future c(1,1,1,1,1)
+opMod$sizeLimFuture c(1,1,1,1,1)
 opMod$testFishery c(0,0.136078,0,0,0)
 opMod$useBoot FALSE
 opMod$kBoot 10

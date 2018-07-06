@@ -107,6 +107,8 @@ calcRefPoints <- function( opModList )
   obj$legalHRF0     <- tmp$legalHR
   obj$sublegalHRF0  <- tmp$sublegalHR
 
+  cat("(mseRrefPts.R) OK after F0 \n")
+
   # F0.1
   tmp               <- .getF01( obj )
   obj$F01           <- tmp$F01
@@ -124,6 +126,8 @@ calcRefPoints <- function( opModList )
   obj$legbprF01     <- tmp$legbprF01
   obj$legalHRF01    <- tmp$legalHRF01
   obj$sublegalHRF01 <- tmp$sublegalHRF01
+
+  cat("(mseRrefPts.R) OK after F0.1 \n")
 
   # Fmsy
   tmp               <- .getFmsy( obj )
@@ -143,6 +147,8 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmsy    <- tmp$legalHRFmsy
   obj$sublegalHRFmsy <- tmp$sublegalHRFmsy
 
+  cat("(mseRrefPts.R) OK after Fmsy \n")
+
   # F40%
   tmp               <- .getF40( obj )
   obj$F40           <- tmp$F40
@@ -160,6 +166,8 @@ calcRefPoints <- function( opModList )
   obj$legbprF40     <- tmp$legbprF40
   obj$legalHRF40    <- tmp$legalHRF40
   obj$sublegalHRF40 <- tmp$sublegalHRF40
+
+  cat("(mseRrefPts.R) OK after F40% \n")
 
   # Fmax
   tmp                <- .getFmax( obj )
@@ -179,6 +187,8 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmax    <- tmp$legalHRFmax
   obj$sublegalHRFmax <- tmp$sublegalHRFmax
 
+  cat("(mseRrefPts.R) OK after Fmax \n")
+
   # Fcrash
   tmp               <- .getFcra( obj )
   obj$Fcra          <- tmp$Fcra
@@ -196,6 +206,10 @@ calcRefPoints <- function( opModList )
   obj$legbprFcra      <- tmp$legbprFcra
   obj$legalHRFcra     <- tmp$legalHRFcra
   obj$sublegalHRFcra  <- tmp$sublegalHRFcra
+
+  cat("(mseRrefPts.R) OK after Fcrash \n")
+
+  cat("(mseRrefPts.R) OK after RefPts \n")
   
   #cat("calcRefPoints took ",proc.time()-t1," seconds\n")
   return( as.ref(obj) )
@@ -761,6 +775,8 @@ calcRefPoints <- function( opModList )
   L <- as.vector(obj$landed)
   tmp1 <- data.frame( cbind(F=F,L=L) )
   tmp  <- subset( tmp1, L>0, select=c(F,L) )
+
+  browser()
 
   maxF              <- max( tmp$F )
   fySplineFun       <- splinefun( x=tmp$F,y=tmp$L )

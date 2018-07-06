@@ -67,7 +67,7 @@ tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 stopCluster(cl)
 
 require(stringr)
-for (i in 1:nBatchFiles)
+for (i in 6:8)
 {
   # Find the sim output folder in the project file
   batchProjDir <- file.path(batchFolderNames[i],"mseRproject")
@@ -97,8 +97,8 @@ for (i in 1:nBatchFiles)
   # Now copy the completed simulation
   file.copy(from=source,to=destination,recursive=TRUE)
 
-  cat("Removing folder ", batchFolderNames[i], "\n", sep="")
-  system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
+  # cat("Removing folder ", batchFolderNames[i], "\n", sep="")
+  # system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
   options(warn=1)
 }
 elapsed <- (proc.time() - tBegin)[ "elapsed" ]
