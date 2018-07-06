@@ -157,7 +157,7 @@ mp$hcr$upperTrendPct 0.9
 mp$hcr$useDLL FALSE
 mp$hcr$useMLE TRUE
 mp$hcr$useSnow TRUE
-opMod$allocProp c(0,0.7687,0.2313,0,0)
+opMod$allocProp c(0.001,0.7687,0.2303,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158

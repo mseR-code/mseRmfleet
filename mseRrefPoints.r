@@ -57,7 +57,13 @@ calcRefPoints <- function( opModList )
   obj <- .calcSchedules( obj )
   # Add SPR and YPR.
 
+  cat("(mseRrefPts.R) OK after calcSchedules \n")
+
   obj <- deref( .calcPerRecruit( f=0, objRef=as.ref(obj) ) )
+
+  cat("(mseRrefPts.R) OK after calcPerRecruit \n")
+
+
 
   # Add Beverton-Holt stock-recruit parameters.
   B0         <- obj$B0              # Unfished female biomass.
@@ -80,6 +86,8 @@ calcRefPoints <- function( opModList )
   # Calculate reference curves.
   obj <- deref( .calcRefCurves( objRef=as.ref(obj) ) )
 
+  cat("(mseRrefPts.R) OK after calcRefCurves \n")
+
   # Recruitment calculations for reference points/steepness plot.
   B20  <- 0.2*B0
   R20  <- obj$rec.a*B20 / ( 1.+obj$rec.b*B20 )
@@ -91,6 +99,7 @@ calcRefPoints <- function( opModList )
   hrSplineFun <- splinefun( obj$F, obj$legalHR )
   # Unfished F0
   tmp               <- deref( .calcEquil( f=0, objRef=as.ref(obj) ) )
+  cat("(mseRrefPts.R) OK after calcEquil \n")
   
   obj$F0            <- 0
   obj$yprLF0        <- tmp$yprL
@@ -597,6 +606,9 @@ calcRefPoints <- function( opModList )
 {
   obj <- deref( objRef )
   obj$fg <- .FGINIT
+
+  cat("(mseRrefPts.R) Inside calcEquil \n")
+
   
   # Compute yield and biomass per recruit function values
   tmp <- deref( .calcPerRecruit( f=f,objRef=as.ref(obj) ) )
@@ -664,7 +676,12 @@ calcRefPoints <- function( opModList )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
 
-  optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+  # .getYPRvals(rep(-2, obj$nGear),f=obj$M, objRef=objRef )
+
+  browser()
+
+  optF <- optim(  par=optF$par, fn=.getYPRvals, method="BFGS", 
+                  control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
   for( i in 1:length(f) )
