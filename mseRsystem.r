@@ -2347,6 +2347,7 @@ iscamWrite <- function ( obj )
   # (2) BEGIN MANAGEMENT PROCEDURE SETUP - stored under mp list.               #
   #----------------------------------------------------------------------------#
 
+
   mp <- list( data=NULL, assess=NULL, hcr=NULL )
 
   mp$data$tMP   <- tMP

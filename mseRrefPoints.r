@@ -56,14 +56,7 @@ calcRefPoints <- function( opModList )
   # Add life history schedules to parameters.
   obj <- .calcSchedules( obj )
   # Add SPR and YPR.
-
-  cat("(mseRrefPts.R) OK after calcSchedules \n")
-
   obj <- deref( .calcPerRecruit( f=0, objRef=as.ref(obj) ) )
-
-  cat("(mseRrefPts.R) OK after calcPerRecruit \n")
-
-
 
   # Add Beverton-Holt stock-recruit parameters.
   B0         <- obj$B0              # Unfished female biomass.
@@ -86,7 +79,6 @@ calcRefPoints <- function( opModList )
   # Calculate reference curves.
   obj <- deref( .calcRefCurves( objRef=as.ref(obj) ) )
 
-  cat("(mseRrefPts.R) OK after calcRefCurves \n")
 
   # Recruitment calculations for reference points/steepness plot.
   B20  <- 0.2*B0
@@ -99,7 +91,6 @@ calcRefPoints <- function( opModList )
   hrSplineFun <- splinefun( obj$F, obj$legalHR )
   # Unfished F0
   tmp               <- deref( .calcEquil( f=0, objRef=as.ref(obj) ) )
-  cat("(mseRrefPts.R) OK after calcEquil \n")
   
   obj$F0            <- 0
   obj$yprLF0        <- tmp$yprL
@@ -116,7 +107,6 @@ calcRefPoints <- function( opModList )
   obj$legalHRF0     <- tmp$legalHR
   obj$sublegalHRF0  <- tmp$sublegalHR
 
-  cat("(mseRrefPts.R) OK after F0 \n")
 
   # F0.1
   tmp               <- .getF01( obj )
@@ -136,7 +126,6 @@ calcRefPoints <- function( opModList )
   obj$legalHRF01    <- tmp$legalHRF01
   obj$sublegalHRF01 <- tmp$sublegalHRF01
 
-  cat("(mseRrefPts.R) OK after F0.1 \n")
 
   # Fmsy
   tmp               <- .getFmsy( obj )
@@ -156,7 +145,6 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmsy    <- tmp$legalHRFmsy
   obj$sublegalHRFmsy <- tmp$sublegalHRFmsy
 
-  cat("(mseRrefPts.R) OK after Fmsy \n")
 
   # F40%
   tmp               <- .getF40( obj )
@@ -176,7 +164,6 @@ calcRefPoints <- function( opModList )
   obj$legalHRF40    <- tmp$legalHRF40
   obj$sublegalHRF40 <- tmp$sublegalHRF40
 
-  cat("(mseRrefPts.R) OK after F40% \n")
 
   # Fmax
   tmp                <- .getFmax( obj )
@@ -196,7 +183,6 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmax    <- tmp$legalHRFmax
   obj$sublegalHRFmax <- tmp$sublegalHRFmax
 
-  cat("(mseRrefPts.R) OK after Fmax \n")
 
   # Fcrash
   tmp               <- .getFcra( obj )
@@ -216,9 +202,7 @@ calcRefPoints <- function( opModList )
   obj$legalHRFcra     <- tmp$legalHRFcra
   obj$sublegalHRFcra  <- tmp$sublegalHRFcra
 
-  cat("(mseRrefPts.R) OK after Fcrash \n")
 
-  cat("(mseRrefPts.R) OK after RefPts \n")
   
   #cat("calcRefPoints took ",proc.time()-t1," seconds\n")
   return( as.ref(obj) )
@@ -483,8 +467,7 @@ calcRefPoints <- function( opModList )
   nGear <- obj$nGear
 
   # HACK to use average M over history for ssbpr at initialisation
-  repFile <- read.rep(obj$repFileName)
-  Mta <- repFile$M
+  Mta <- obj$repFile$M
   Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
   M <- Mbar[1]
   
@@ -607,7 +590,6 @@ calcRefPoints <- function( opModList )
   obj <- deref( objRef )
   obj$fg <- .FGINIT
 
-  cat("(mseRrefPts.R) Inside calcEquil \n")
 
   
   # Compute yield and biomass per recruit function values
@@ -675,10 +657,6 @@ calcRefPoints <- function( opModList )
   sublegal   <- rep( NA, length=.nFVALS )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
-
-  # .getYPRvals(rep(-2, obj$nGear),f=obj$M, objRef=objRef )
-
-  browser()
 
   optF <- optim(  par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", 
                   control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
@@ -792,8 +770,6 @@ calcRefPoints <- function( opModList )
   L <- as.vector(obj$landed)
   tmp1 <- data.frame( cbind(F=F,L=L) )
   tmp  <- subset( tmp1, L>0, select=c(F,L) )
-
-  browser()
 
   maxF              <- max( tmp$F )
   fySplineFun       <- splinefun( x=tmp$F,y=tmp$L )

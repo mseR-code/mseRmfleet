@@ -56,7 +56,6 @@ calcRefPoints <- function( opModList )
   # Add life history schedules to parameters.
   obj <- .calcSchedules( obj )
   # Add SPR and YPR.
-
   obj <- deref( .calcPerRecruit( f=0, objRef=as.ref(obj) ) )
 
   # Add Beverton-Holt stock-recruit parameters.
@@ -79,6 +78,7 @@ calcRefPoints <- function( opModList )
 
   # Calculate reference curves.
   obj <- deref( .calcRefCurves( objRef=as.ref(obj) ) )
+
 
   # Recruitment calculations for reference points/steepness plot.
   B20  <- 0.2*B0
@@ -107,6 +107,7 @@ calcRefPoints <- function( opModList )
   obj$legalHRF0     <- tmp$legalHR
   obj$sublegalHRF0  <- tmp$sublegalHR
 
+
   # F0.1
   tmp               <- .getF01( obj )
   obj$F01           <- tmp$F01
@@ -124,6 +125,7 @@ calcRefPoints <- function( opModList )
   obj$legbprF01     <- tmp$legbprF01
   obj$legalHRF01    <- tmp$legalHRF01
   obj$sublegalHRF01 <- tmp$sublegalHRF01
+
 
   # Fmsy
   tmp               <- .getFmsy( obj )
@@ -143,6 +145,7 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmsy    <- tmp$legalHRFmsy
   obj$sublegalHRFmsy <- tmp$sublegalHRFmsy
 
+
   # F40%
   tmp               <- .getF40( obj )
   obj$F40           <- tmp$F40
@@ -160,6 +163,7 @@ calcRefPoints <- function( opModList )
   obj$legbprF40     <- tmp$legbprF40
   obj$legalHRF40    <- tmp$legalHRF40
   obj$sublegalHRF40 <- tmp$sublegalHRF40
+
 
   # Fmax
   tmp                <- .getFmax( obj )
@@ -179,6 +183,7 @@ calcRefPoints <- function( opModList )
   obj$legalHRFmax    <- tmp$legalHRFmax
   obj$sublegalHRFmax <- tmp$sublegalHRFmax
 
+
   # Fcrash
   tmp               <- .getFcra( obj )
   obj$Fcra          <- tmp$Fcra
@@ -196,6 +201,8 @@ calcRefPoints <- function( opModList )
   obj$legbprFcra      <- tmp$legbprFcra
   obj$legalHRFcra     <- tmp$legalHRFcra
   obj$sublegalHRFcra  <- tmp$sublegalHRFcra
+
+
   
   #cat("calcRefPoints took ",proc.time()-t1," seconds\n")
   return( as.ref(obj) )
@@ -460,8 +467,7 @@ calcRefPoints <- function( opModList )
   nGear <- obj$nGear
 
   # HACK to use average M over history for ssbpr at initialisation
-  repFile <- read.rep(obj$repFileName)
-  Mta <- repFile$M
+  Mta <- obj$repFile$M
   Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
   M <- Mbar[1]
   
@@ -583,6 +589,8 @@ calcRefPoints <- function( opModList )
 {
   obj <- deref( objRef )
   obj$fg <- .FGINIT
+
+
   
   # Compute yield and biomass per recruit function values
   tmp <- deref( .calcPerRecruit( f=f,objRef=as.ref(obj) ) )
@@ -650,7 +658,8 @@ calcRefPoints <- function( opModList )
   sublegalHR <- rep( NA, length=.nFVALS )
   fg         <- matrix(NA, nrow=.nFVALS, ncol=obj$nGear )
 
-  optF <- optim( par=rep(-2,obj$nGear), fn=.getYPRvals, method="BFGS", control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
+  optF <- optim(  par=rep(-1,obj$nGear), fn=.getYPRvals, method="BFGS", 
+                  control=list(maxit=.MAXIT), f=obj$M, objRef=objRef )
   .FGINIT <<- exp( optF$par )
 
   for( i in 1:length(f) )
