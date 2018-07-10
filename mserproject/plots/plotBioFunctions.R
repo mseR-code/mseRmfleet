@@ -1636,99 +1636,87 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
-plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
-                                      scenarios = scenList, df = info.df, gfx,
-                                      traces = 3, yLimD = c(0,1.5), yLimC = c(0,15) )
+plotDepCatchHRMultiPanel <- function( simFolder = "../slowUp_MCMC_Jul8",
+                                      mps = c("minE18.8_HR.2_slowUp2","minE18.8_HR.2_slowUp3","minE18.8_HR.2_slowUp4","minE18.8_HR.2_slowUp5"), 
+                                      traces = 3,
+                                      scenario = c("WCVI_DIM"),
+                                      years = 1951:2032,
+                                      saveFile = FALSE,
+                                      yLimD = c(0,1.2),
+                                      yLimC = c(0,5),
+                                      yLimU = c(0,0.7) )
 {
 
-  if(!is.null(traces)) traces <- sample(1:100, size = traces)
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
 
-  for( scenIdx in 1:length(scenarios) )
+  readInfoFile <- function( sim )
   {
-    scen <- scenarios[scenIdx]
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
 
-    depCatchPlot    <- paste(scen, plotNameRoot, ".pdf", sep = "" )
-    depCatch_noFish <- paste(scen,plotNameRoot,"_noFish.pdf", sep = "" )
-
-    noFishID <- df[  which(df$mpLabel == "NoFish" & df$scenarioLabel == scen)[1],
-                          "simLabel"]
-    noFishPath  <- file.path("..",noFishID,paste(noFishID, ".RData", sep = "") )
-
-    if(!is.na(noFishID))
-    {
-      load(noFishPath)
-      noFishBlob <- blob
-    }
-
-    if( "NoFish" %in% MPnames ) lenMPlist <- length(MPnames) - 1
-    else lenMPlist <- length(MPnames)
-
-    mpList <- vector( mode = "list", length = lenMPlist )
-    mpListIdx <- 1
-
-    pdf( file = depCatchPlot, width = length(MPnames)*2, height = 6 )
-    par( mfcol = c(2,length(MPnames)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
-
-    for( mpIdx in 1:length(MPnames) )
-    {
-      mp <- MPnames[mpIdx]
-      df.sub <-   df %>%
-                  filter( scenarioLabel == scen,
-                          mpLabel == mp )
-
-      simID     <- df.sub[1,]$simLabel
-      if(is.na(simID)) next
-
-      simPath  <- file.path("..",simID,paste(simID, ".RData", sep = "") )
-      load(simPath)
-
-      if(mpIdx == 1) gfx$doLegend <- TRUE
-      else gfx$doLegend <- FALSE
-
-      .plotTulipDepCat( blob, gfx = gfx, yLimD = yLimD, yLimC = yLimC,
-                        refPts = FALSE, traces = traces )
-
-      # Now rescale blob$Bt if
-      if( mp != "NoFish" & !is.na(noFishID) )
-      {
-
-        for( i in 1:nrow(blob$om$SBt))
-          blob$om$SBt[i,] <- blob$om$SBt[i,] / noFishBlob$om$SBt[i,]
-        blob$ctlList$opMod$B0 <- 1
-
-        if( !is.null(blob$ctlList$opMod$mcmcPar) )
-          blob$ctlList$opMod$mcmcPar[,"sbo"] <- 1
-
-        mpList[[mpListIdx]] <- blob
-        names(mpList)[mpListIdx] <- mp
-        mpListIdx <- mpListIdx + 1
-      }
-    }
-
-    # mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
-
-    dev.off()
-
-    if(is.na(noFishID)) next
-    if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
-    pdf( file = depCatch_noFish, width = (lenMPlist)*3, height = 6 )
-    par( mfcol = c(2,lenMPlist), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
-
-    for( idx in 1:length(mpList) )
-    {
-      if(idx == 1) gfx$doLegend <- TRUE
-      else gfx$doLegend <- FALSE
-
-      # browser()
-
-      if( is.null(mpList[[idx]]) ) next
-
-      .plotTulipDepCat( obj = mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = yLimC,
-                        refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]),
-                        traces = traces )
-    }
-    dev.off()
+    info.df
   }
+
+  gfx <- list(  annotate=TRUE, doLegend=TRUE, grids=FALSE,
+                showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  info.df %>%
+            filter( mpLabel %in% mps, scenarioLabel %in% scenario )
+
+  depCatchPlot <- paste(scenario, "DepCatchHR.pdf" )
+
+  if( saveFile )
+    pdf( file = depCatchPlot, width = 11, height = 8 )
+
+  par( mfcol = c(3,length(mps)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
+
+  for( mpIdx in 1:length(mps) )
+  {
+    mp <- mps[mpIdx]
+    singleDF <- subDF %>%
+                filter( mpLabel == mp )
+    simID <- singleDF$simLabel
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path(simFolder,simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    tMP <- blob$ctlList$opMod$tMP
+    nT  <- blob$ctlList$opMod$nT
+
+    if( mpIdx > 1 )
+      gfx$doLegend <- FALSE
+
+    .plotTulipDepCat( blob, gfx = gfx, yLimD = yLimD, yLimC = yLimC,
+                      refPts = FALSE, traces = traces )
+
+    gfxHR <- gfx
+    gfxHR$yLim <- yLimU
+
+    .plotTulipHR( blob, gfx = gfxHR, refPts = FALSE, traces = traces,
+                  xLim = c(tMP-1,nT) )
+    
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+      mtext( side = 2, text = "Harvest Rate", line = 3)
+
+
+  }
+
+  if(saveFile)
+    dev.off()
+
 }
 
 

@@ -4164,7 +4164,7 @@ iscamWrite <- function ( obj )
     }
     
     # Fill next row of "stepwise" (i.e., retrospective) biomass estimates
-    val <- c( t,stockAssessment$bt )
+    val <- c( t,stockAssessment$sbt )
     mp$assess$retroExpBt[ tRow, c(1:length(val)) ] <- val
     val <- c( t,stockAssessment$sbt )
     if(is.null(mp$assess$retroSpawnBt)) 
