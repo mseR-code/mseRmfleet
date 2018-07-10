@@ -53,20 +53,6 @@ mp$mp1$mp$assess$iscam$cutoff 0.25
 mp$mp1$mp$assess$iscam$targHR 0.2
 mp$mp1$mp$assess$iscam$fixCutoff 18.8
 mp$mp1$mp$assess$iscam$selxRenorm 2
-mp$mp1$mp$assess$iscam$priors$meanInitM -0.798
-mp$mp1$mp$assess$iscam$priors$sdInitM 0.4
-mp$mp1$mp$assess$iscam$priors$steepnessBeta1 10
-mp$mp1$mp$assess$iscam$priors$steepnessBeta2 4.92
-mp$mp1$mp$assess$iscam$priors$logqdensity c(0,1)
-mp$mp1$mp$assess$iscam$priors$logqPrior1 c(0,1)
-mp$mp1$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
-mp$mp1$mp$assess$iscam$initPar$logR0 7.28
-mp$mp1$mp$assess$iscam$initPar$h .8
-mp$mp1$mp$assess$iscam$initPar$logm -0.6918
-mp$mp1$mp$assess$iscam$initPar$logRbar 7.09
-mp$mp1$mp$assess$iscam$initPar$logRinit 5.97
-mp$mp1$mp$assess$iscam$initPar$rho 0.413297
-mp$mp1$mp$assess$iscam$initPar$kappa 1.22062
 #
 ## Management Procedure 1: minE18.8_HR.2_slowUp3
 #
@@ -85,20 +71,6 @@ mp$mp2$mp$assess$iscam$cutoff 0.25
 mp$mp2$mp$assess$iscam$targHR 0.2
 mp$mp2$mp$assess$iscam$fixCutoff 18.8
 mp$mp2$mp$assess$iscam$selxRenorm 2
-mp$mp2$mp$assess$iscam$priors$meanInitM -0.798
-mp$mp2$mp$assess$iscam$priors$sdInitM 0.4
-mp$mp2$mp$assess$iscam$priors$steepnessBeta1 10
-mp$mp2$mp$assess$iscam$priors$steepnessBeta2 4.92
-mp$mp2$mp$assess$iscam$priors$logqdensity c(0,1)
-mp$mp2$mp$assess$iscam$priors$logqPrior1 c(0,1)
-mp$mp2$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
-mp$mp2$mp$assess$iscam$initPar$logR0 7.28
-mp$mp2$mp$assess$iscam$initPar$h .8
-mp$mp2$mp$assess$iscam$initPar$logm -0.6918
-mp$mp2$mp$assess$iscam$initPar$logRbar 7.09
-mp$mp2$mp$assess$iscam$initPar$logRinit 5.97
-mp$mp2$mp$assess$iscam$initPar$rho 0.413297
-mp$mp2$mp$assess$iscam$initPar$kappa 1.22062
 #
 ## Management Procedure 1: minE18.8_HR.2_slowUp4
 #
@@ -117,20 +89,6 @@ mp$mp3$mp$assess$iscam$cutoff 0.25
 mp$mp3$mp$assess$iscam$targHR 0.2
 mp$mp3$mp$assess$iscam$fixCutoff 18.8
 mp$mp3$mp$assess$iscam$selxRenorm 2
-mp$mp3$mp$assess$iscam$priors$meanInitM -0.798
-mp$mp3$mp$assess$iscam$priors$sdInitM 0.4
-mp$mp3$mp$assess$iscam$priors$steepnessBeta1 10
-mp$mp3$mp$assess$iscam$priors$steepnessBeta2 4.92
-mp$mp3$mp$assess$iscam$priors$logqdensity c(0,1)
-mp$mp3$mp$assess$iscam$priors$logqPrior1 c(0,1)
-mp$mp3$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
-mp$mp3$mp$assess$iscam$initPar$logR0 7.28
-mp$mp3$mp$assess$iscam$initPar$h .8
-mp$mp3$mp$assess$iscam$initPar$logm -0.6918
-mp$mp3$mp$assess$iscam$initPar$logRbar 7.09
-mp$mp3$mp$assess$iscam$initPar$logRinit 5.97
-mp$mp3$mp$assess$iscam$initPar$rho 0.413297
-mp$mp3$mp$assess$iscam$initPar$kappa 1.22062
 #
 ## Management Procedure 1: minE18.8_HR.2_slowUp5
 #
@@ -149,19 +107,5 @@ mp$mp4$mp$assess$iscam$cutoff 0.25
 mp$mp4$mp$assess$iscam$targHR 0.2
 mp$mp4$mp$assess$iscam$fixCutoff 18.8
 mp$mp4$mp$assess$iscam$selxRenorm 2
-mp$mp4$mp$assess$iscam$priors$meanInitM -0.798
-mp$mp4$mp$assess$iscam$priors$sdInitM 0.4
-mp$mp4$mp$assess$iscam$priors$steepnessBeta1 10
-mp$mp4$mp$assess$iscam$priors$steepnessBeta2 4.92
-mp$mp4$mp$assess$iscam$priors$logqdensity c(0,1)
-mp$mp4$mp$assess$iscam$priors$logqPrior1 c(0,1)
-mp$mp4$mp$assess$iscam$priors$logqPrior2 c(1,0.01)
-mp$mp4$mp$assess$iscam$initPar$logR0 7.28
-mp$mp4$mp$assess$iscam$initPar$h .8
-mp$mp4$mp$assess$iscam$initPar$logm -0.6918
-mp$mp4$mp$assess$iscam$initPar$logRbar 7.09
-mp$mp4$mp$assess$iscam$initPar$logRinit 5.97
-mp$mp4$mp$assess$iscam$initPar$rho 0.413297
-mp$mp4$mp$assess$iscam$initPar$kappa 1.22062
 #
 # File Ends <not run>.

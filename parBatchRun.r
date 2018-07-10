@@ -97,8 +97,8 @@ for (i in 6:8)
   # Now copy the completed simulation
   file.copy(from=source,to=destination,recursive=TRUE)
 
-  # cat("Removing folder ", batchFolderNames[i], "\n", sep="")
-  # system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
+  cat("Removing folder ", batchFolderNames[i], "\n", sep="")
+  system(command=paste("rm -d -R ",batchFolderNames[i],sep=""))
   options(warn=1)
 }
 elapsed <- (proc.time() - tBegin)[ "elapsed" ]

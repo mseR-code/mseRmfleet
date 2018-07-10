@@ -3264,6 +3264,8 @@ iscamWrite <- function ( obj )
   nGear <- ctlList$opMod$nGear
   nGrps <- ctlList$opMod$nGrps
 
+
+  # initialise from MCMC draws if provided
   if( !is.null(ctlList$opMod$posteriorSamples) ) 
   {
     if(!obj$ctlList$gui$quiet)

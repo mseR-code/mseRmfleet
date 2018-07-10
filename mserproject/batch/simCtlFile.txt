@@ -1,14 +1,14 @@
-# mseRguiSim GUI parameters written Mon Apr  9 13:34:36 2018 
+# simCtlBat4.txt: mseR parameter file written Wed Jun 13 16:49:48 2018.
 parameter value
-gui$mpLabel "NoFish"
-gui$nReps 100
-gui$scenarioLabel "WCVI"
+gui$mpLabel "minE18.8_HR.2"
+gui$nReps 1
+gui$quiet TRUE
+gui$scenarioLabel "WCVI_DDM"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
 gui$simSetXaxis FALSE
 gui$simSetYaxis FALSE
-gui$quiet TRUE
 mp$assess$avgPoints 3
 mp$assess$caaAges FALSE
 mp$assess$caaM 0.08
@@ -23,7 +23,7 @@ mp$assess$chkMethod2 FALSE
 mp$assess$idxMethod1 "seq(68,54,1)"
 mp$assess$idxMethod2 "seq(68,54,1)"
 mp$assess$t1Method 68
-mp$assess$t2Method 92
+mp$assess$t2Method 82
 mp$assess$ddAlphaG 1.4054
 mp$assess$ddB0 20
 mp$assess$ddkAge 2
@@ -86,8 +86,8 @@ mp$data$chkAges1 FALSE
 mp$data$chkAges2 FALSE
 mp$data$chkIndex1 FALSE
 mp$data$chkIndex2 FALSE
-mp$data$idxAges1 "seq(68,92,1)"
-mp$data$idxAges2 "c(68,92)"
+mp$data$idxAges1 "seq(68,82,1)"
+mp$data$idxAges2 "c(68,82)"
 mp$data$indexType "c(1,1)"
 mp$data$inputAges read.rep('mserproject/history/iscamWCVI2017.rep')
 mp$data$inputCatch read.rep('mserproject/history/iscamWCVI2017.rep')
@@ -153,7 +153,7 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
-mp$hcr$rule "linear"
+mp$hcr$rule "herring"
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 18.8
 mp$hcr$targHRHerring .2
@@ -169,14 +169,15 @@ opMod$allocProp c(0,0.7687,0.2313,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
 opMod$B0 45.6158
-opMod$baranovIter 5
-opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
+opMod$baranovIter 8
+opMod$baranovSteps c(0.5,0.3,0.5,1.,1.)
 opMod$c1 c(0.000184208185)
 opMod$c2 c(1.999008)
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
 opMod$endM 0.583934
 opMod$endMphase NULL
+opMod$endMrule "mean"
 opMod$futureOption 3
 opMod$repFile NULL
 opMod$estMdevs "repFile"
@@ -207,10 +208,10 @@ opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
 opMod$obsWtAge "repFile"
-opMod$nT 92
+opMod$nT 82
 opMod$powerg c(1,1,1,1,1)
-opMod$pulseMfrac 0
-opMod$pulseMFrq 0
+opMod$pulseMfrac 0.3
+opMod$pulseMFrq 16
 opMod$pulseMSize 1.5
 opMod$qg c(1,1,1,0.841236,0.999068)
 opMod$recDevsOffset 2
@@ -220,7 +221,6 @@ opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 opMod$rSeed 1270
 opMod$rSteepness 0.73723
 opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
-opMod$postSampleSize 5000
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12
