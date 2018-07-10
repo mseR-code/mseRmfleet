@@ -290,6 +290,8 @@ guiPerf <- function()
      
       nSims <- .getNumSims( trackData )
 
+      trackData <- trackData[1:nSims,]
+
       # Step 2: Load an Rdata working directory containing a list called blob.
       for ( i in 1:nSims )
       {
@@ -351,6 +353,7 @@ guiPerf <- function()
       #}
       #else
       #{
+        browser()
         n <- nchar( tmpFile )
         fName <- substring( tmpFile,1, n-4 )
         fName <- file.path( .PRJFLD, .DEFSTATFLD, fName )

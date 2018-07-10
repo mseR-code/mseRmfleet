@@ -94,20 +94,23 @@ library(dplyr)
   noFishTrack <-  trackData %>%
                   filter( mp == "NoFish" )
 
-  for( scenIdx in 1:length(scenarios) )
-  {
-    scenarioName <- scenarios[scenIdx]
-    scenNoFishTrack <-  noFishTrack %>%
-                        filter( scenario == scenarioName )
+  if( nrow(noFishTrack) > 0 )
+  { 
+    for( scenIdx in 1:length(scenarios) )
+    {
+      scenarioName <- scenarios[scenIdx]
+      scenNoFishTrack <-  noFishTrack %>%
+                          filter( scenario == scenarioName )
 
-    simFile     <- scenNoFishTrack[ 1, "simFile" ]
-    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
-    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+      simFile     <- scenNoFishTrack[ 1, "simFile" ]
+      simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+      simFilePath <- file.path( .PRJFLD, simFolder, simFile )
 
-    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
-    load( file=simFilePath )
-    assign( "blob", blob, pos=1 )
-    noFishBlobs[[scenarioName]] <- blob
+      cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+      load( file=simFilePath )
+      assign( "blob", blob, pos=1 )
+      noFishBlobs[[scenarioName]] <- blob
+    }
   }
 
   # Initialize row counter.
@@ -210,10 +213,12 @@ library(dplyr)
             Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
         }
         
-
-        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
-        noFishBt <- noFishBt[,2:ncol(noFishBt)]
-
+        if(!is.null(noFishBlobs[[scenarioName]]))
+        {
+          noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+          noFishBt <- noFishBt[,2:ncol(noFishBt)]
+        } else noFishBt <- 1
+        
         noFishDept <- Bt / noFishBt
 
       }

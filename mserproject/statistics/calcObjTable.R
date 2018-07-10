@@ -17,16 +17,10 @@ perfTable <- read.csv(  "./mserproject/statistics/mseRstatistics_perfTable1.csv"
 # scenarios <- unique( perfTable$Scenario )
 # MPs       <- unique( perfTable$Procedure )
 
-MPs <- c( "minE18.8_HR.2",
-          "minE18.8_HR.1",
-          "minE18.8_HR.1_cap2",
-          "minE.5B0_HR.2",
-          "minE.5B0_HR.1",
-          "minE.5B0_HR.1_cap2",
-          "HS30-60_HR.2",
-          "HS30-60_HR.1",
-          "HS30-60_HR.1_cap2",
-          "NoFish" )
+MPs <- c( "minE18.8_HR.2_slowUp2",
+          "minE18.8_HR.2_slowUp3",
+          "minE18.8_HR.2_slowUp4",
+          "minE18.8_HR.2_slowUp5"  )
 
 scenarios <- c( "WCVI_DDM", "WCVI_DIM", "WCVI_conM" )
 
@@ -80,4 +74,4 @@ for( sIdx in 1:length(scenarios) )
   }
 
 
-write.csv( objTable, file = "./mserproject/statistics/WCVI_HerringObjectiveTable.csv")
+write.csv( objTable, file = "./mserproject/statistics/WCVI_HerringObjectiveTable_slowUp.csv")
