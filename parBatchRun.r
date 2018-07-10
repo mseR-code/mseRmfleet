@@ -104,3 +104,13 @@ for (i in 6:8)
 elapsed <- (proc.time() - tBegin)[ "elapsed" ]
 cat( "\nMSG (.runBatchJob): Elapsed time for parallel batch = ",
   round(elapsed/60.0,digits=2)," minutes.\n" )
+
+# Now copy the project folder to the landmark server
+destFolderName <- paste("Herring_slowUp")
+copyDest <- file.path("/Volumes/Data/DFO_Pacific/projects/2018_Herring/HerringMSEruns/",destFolderName)
+dir.create( copyDest )
+
+# Copy project folder contents recursively to copyDest
+cat( "Copying project folder contents to ", copyDest, "\n", sep = "" )
+file.copy(  from = file.path( getwd(),"/project"), to = copyDest, 
+            recursive = TRUE )
