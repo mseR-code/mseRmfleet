@@ -1636,14 +1636,14 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
-plotDepCatchHRMultiPanel <- function( simFolder = "../slowUp_MCMC_Jul8",
+plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_MCMC_Jul13",
                                       mps = c("minE18.8_HR.2_slowUp2","minE18.8_HR.2_slowUp3","minE18.8_HR.2_slowUp4","minE18.8_HR.2_slowUp5"), 
                                       traces = 3,
                                       scenario = c("WCVI_DIM"),
                                       years = 1951:2032,
                                       saveFile = FALSE,
                                       yLimD = c(0,1.2),
-                                      yLimC = c(0,5),
+                                      yLimC = c(0,10),
                                       yLimU = c(0,0.7) )
 {
 
