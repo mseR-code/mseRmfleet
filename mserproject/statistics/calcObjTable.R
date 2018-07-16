@@ -15,12 +15,13 @@ perfTable <- read.csv(  "./mserproject/statistics/mseRstatistics_perfTable1.csv"
 
 # Get scenario/MP labels
 # scenarios <- unique( perfTable$Scenario )
-# MPs       <- unique( perfTable$Procedure )
+MPs       <- unique( perfTable$Procedure )
+MPS       <- MPs[order(MPs)]
 
-MPs <- c( "minE18.8_HR.2_slowUp2",
-          "minE18.8_HR.2_slowUp3",
-          "minE18.8_HR.2_slowUp4",
-          "minE18.8_HR.2_slowUp5"  )
+# MPs <- c( "minE18.8_HR.1_slowUp2",
+#           "minE18.8_HR.1_slowUp3",
+#           "minE18.8_HR.1_slowUp4",
+#           "minE18.8_HR.1_slowUp5"  )
 
 scenarios <- c( "WCVI_DDM", "WCVI_DIM", "WCVI_conM" )
 

@@ -310,15 +310,18 @@ guiPerf <- function()
           parTable <- data.frame( parameter=character(nrow(ctlPars) + 5),
                         matrix( "", nrow=nrow(ctlPars) + 5,ncol=nSims ) )
 
+          for( j in 1:ncol(parTable)) parTable[,j] <- as.character(parTable[,j])
+
           names( parTable ) <- c( "parameter",paste( "Sim",c(1:nSims),sep="" ) )
           parTable$parameter[1:nrow(ctlPars)] <- ctlPars[ ,"parameter" ]
         }
 
-        parTable[ 1:nrow(ctlPars), i+1 ] <- blob$ctlPars[ ,"value" ]
+        parTable[ 1:nrow(ctlPars), i+1 ] <- as.character(blob$ctlPars[ ,"value" ])
+
 
         gc()
       }
-      
+
       # Step 3: Calculate Performance Statistics over all simulations.
       
       # These are from guiPerf, need to add multipliers, etc.
@@ -332,7 +335,7 @@ guiPerf <- function()
       perfPars <- c( runDate=date(), perfPars )
 
       perfPars <- data.frame( cbind(parameter=names(perfPars),value=perfPars) )
-      
+
       perfStats <- .calcPerfStats()
       
       # Step 4: Save to Excel (Windows) or CSV (Mac) files.
@@ -353,7 +356,7 @@ guiPerf <- function()
       #}
       #else
       #{
-        browser()
+        # browser()
         n <- nchar( tmpFile )
         fName <- substring( tmpFile,1, n-4 )
         fName <- file.path( .PRJFLD, .DEFSTATFLD, fName )

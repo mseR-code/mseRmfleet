@@ -5397,7 +5397,7 @@
     lines( tVec,quants[2,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
     lines( tVec,quants[4,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
   }
-  abline( h=obj$ctlList$refPts$Umsy, lty="dashed" )
+  abline( h=obj$ctlList$mp$hcr$targHRHerring, lty="dashed" )
 
   usr <- par( "usr" )
 
