@@ -67,7 +67,7 @@ tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 stopCluster(cl)
 
 require(stringr)
-for (i in 1:nbatchFiles )
+for (i in 1:nBatchFiles )
 {
   # Find the sim output folder in the project file
   batchProjDir <- file.path(batchFolderNames[i],"mseRproject")
@@ -106,8 +106,8 @@ cat( "\nMSG (.runBatchJob): Elapsed time for parallel batch = ",
   round(elapsed/60.0,digits=2)," minutes.\n" )
 
 # Now copy the project folder to the landmark server
-destFolderName <- paste("Herring_slowUp_HR.1")
-copyDest <- file.path("/Volumes/Data/DFO_Pacific/projects/2018_Herring/HerringMSEruns/",destFolderName)
+destFolderName <- paste("Herring_slowUp_HR.1",Sys.Date(),sep = "_")
+copyDest <- file.path("/Volumes/Data/DFO_Pacific/projects/2018_Herring/HerringMSEruns",destFolderName)
 dir.create( copyDest )
 
 # Copy project folder contents recursively to copyDest
