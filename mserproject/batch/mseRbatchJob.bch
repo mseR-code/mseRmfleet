@@ -95,7 +95,7 @@ mp$mp3$mp$assess$iscam$selxRenorm 2
 #
 ## Management Procedure 4: minE.5B0_HR.1_cap5_slowUp5
 #
-mp$mp4$gui$mpLabel "minE.5B0_HR.1_slowUp5"
+mp$mp4$gui$mpLabel "minE.5B0_HR.1_cap5_slowUp5"
 mp$mp4$mp$hcr$targHRHerring .1
 mp$mp4$mp$hcr$herringCutoffVal .5
 mp$mp4$mp$hcr$herringCutoffType "relative"
