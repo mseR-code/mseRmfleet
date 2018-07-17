@@ -36,15 +36,15 @@ scenario$scenario3$opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 #
 ## Management Procedures
 #
-## Management Procedure 1: minE.5B0_HR.1_cap5_slowUp2
+## Management Procedure 1: minE.5B0_HR.1_cap2_slowUp2
 #
-mp$mp1$gui$mpLabel "minE.5B0_HR.1_cap5_slowUp2"
+mp$mp1$gui$mpLabel "minE.5B0_HR.1_cap2_slowUp2"
 mp$mp1$mp$hcr$targHRHerring .1
 mp$mp1$mp$hcr$herringCutoffVal .5
 mp$mp1$mp$hcr$herringCutoffType "relative"
 mp$mp1$mp$hcr$rule "herring"
 mp$mp1$mp$hcr$nYearsAboveCutoff 2
-mp$mp1$mp$hcr$catchCeiling 5.0
+mp$mp1$mp$hcr$catchCeiling 2.0
 mp$mp1$mp$assess$iscam$unfished 0
 mp$mp1$mp$assess$iscam$minAgeProp 0.02
 mp$mp1$mp$assess$iscam$mDevPhz 3
@@ -55,15 +55,15 @@ mp$mp1$mp$assess$iscam$targHR 0.2
 mp$mp1$mp$assess$iscam$fixCutoff 18.8
 mp$mp1$mp$assess$iscam$selxRenorm 2
 #
-## Management Procedure 2: minE.5B0_HR.1_cap5_slowUp3
+## Management Procedure 2: minE.5B0_HR.1_cap2_slowUp3
 #
-mp$mp2$gui$mpLabel "minE.5B0_HR.1_cap5_slowUp3"
+mp$mp2$gui$mpLabel "minE.5B0_HR.1_cap2_slowUp3"
 mp$mp2$mp$hcr$targHRHerring .1
 mp$mp2$mp$hcr$herringCutoffVal .5
 mp$mp2$mp$hcr$herringCutoffType "relative"
 mp$mp2$mp$hcr$rule "herring"
 mp$mp2$mp$hcr$nYearsAboveCutoff 3
-mp$mp2$mp$hcr$catchCeiling 5.0
+mp$mp2$mp$hcr$catchCeiling 2.0
 mp$mp2$mp$assess$iscam$unfished 0
 mp$mp2$mp$assess$iscam$minAgeProp 0.02
 mp$mp2$mp$assess$iscam$mDevPhz 3
@@ -74,15 +74,15 @@ mp$mp2$mp$assess$iscam$targHR 0.2
 mp$mp2$mp$assess$iscam$fixCutoff 18.8
 mp$mp2$mp$assess$iscam$selxRenorm 2
 #
-## Management Procedure 3: minE.5B0_HR.1_cap5_slowUp4
+## Management Procedure 3: minE.5B0_HR.1_cap2_slowUp4
 #
-mp$mp3$gui$mpLabel "minE.5B0_HR.1_cap5_slowUp4"
+mp$mp3$gui$mpLabel "minE.5B0_HR.1_cap2_slowUp4"
 mp$mp3$mp$hcr$targHRHerring .1
 mp$mp3$mp$hcr$herringCutoffVal .5
 mp$mp3$mp$hcr$herringCutoffType "relative"
 mp$mp3$mp$hcr$rule "herring"
 mp$mp3$mp$hcr$nYearsAboveCutoff 4
-mp$mp3$mp$hcr$catchCeiling 5.0
+mp$mp3$mp$hcr$catchCeiling 2.0
 mp$mp3$mp$assess$iscam$unfished 0
 mp$mp3$mp$assess$iscam$minAgeProp 0.02
 mp$mp3$mp$assess$iscam$mDevPhz 3
@@ -93,7 +93,7 @@ mp$mp3$mp$assess$iscam$targHR 0.2
 mp$mp3$mp$assess$iscam$fixCutoff 18.8
 mp$mp3$mp$assess$iscam$selxRenorm 2
 #
-## Management Procedure 4: minE.5B0_HR.1_cap5_slowUp5
+## Management Procedure 4: minE.5B0_HR.1_cap2_slowUp5
 #
 mp$mp4$gui$mpLabel "minE.5B0_HR.1_cap5_slowUp5"
 mp$mp4$mp$hcr$targHRHerring .1
@@ -101,7 +101,7 @@ mp$mp4$mp$hcr$herringCutoffVal .5
 mp$mp4$mp$hcr$herringCutoffType "relative"
 mp$mp4$mp$hcr$rule "herring"
 mp$mp4$mp$hcr$nYearsAboveCutoff 5
-mp$mp4$mp$hcr$catchCeiling 5.0
+mp$mp4$mp$hcr$catchCeiling 2.0
 mp$mp4$mp$assess$iscam$unfished 0
 mp$mp4$mp$assess$iscam$minAgeProp 0.02
 mp$mp4$mp$assess$iscam$mDevPhz 3
