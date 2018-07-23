@@ -2028,8 +2028,6 @@ iscamWrite <- function ( obj )
   # Change for slow up rule: overwrite legal biomass (3+ fish in year t)
   # with the spawning biomass estimate in years 1:t from the AM
   legalBiomass <- c(obj$sbt)[recentYears]
-  # Overwrite the sbt estimate with the 3+ fish for the last year
-  legalBiomass[slowUpYears] <- obj$biomass
 
   # Calculate hockey-stock legal harvest rule, with slow up
   # rule enforced (normal rule is if slowUpYears = 1)

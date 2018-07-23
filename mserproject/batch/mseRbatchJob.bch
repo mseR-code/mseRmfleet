@@ -18,6 +18,9 @@ scenario$scenario1$opMod$repFileName "mserproject/history/iscamWCVI2017.rep"
 scenario$scenario2$gui$nReps 100
 scenario$scenario2$gui$scenarioLabel "WCVI_DIM"
 scenario$scenario2$opMod$kYearsMbar 10
+scenario$scenario2$opMod$pulseMfrac 0.
+scenario$scenario2$opMod$pulseMFrq 0
+scenario$scenario2$opMod$pulseMSize 1.5
 scenario$scenario2$opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM"
 scenario$scenario2$opMod$repFileName "mserproject/history/iscamWCVI2017.rep"
 #

@@ -210,9 +210,9 @@ opMod$nGrps 1
 opMod$obsWtAge "repFile"
 opMod$nT 82
 opMod$powerg c(1,1,1,1,1)
-opMod$pulseMfrac 0.3
+opMod$pulseMfrac 0
 opMod$pulseMFrq 16
-opMod$pulseMSize 1.5
+opMod$pulseMSize 1
 opMod$qg c(1,1,1,0.841236,0.999068)
 opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"

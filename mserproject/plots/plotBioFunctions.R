@@ -385,6 +385,118 @@ plotFishingOppTradeoff <- function( simNum = 1,
 }
 
 
+# plotTulipAssErr()
+# Plots a simulation envelopes of assessment errors as MARE
+# of assessed biomass to OM biomass, will plot comparing MPs
+# for a given scenario
+plotTulipAssErr <- function(  simFolder = "../WCVI_slowUp_HR.1_cap2_Jul18",
+                              mps = c("minE.5B0_HR.1_cap2","minE.5B0_HR.1_cap2_slowUp2","minE.5B0_HR.1_cap2_slowUp3","minE.5B0_HR.1_cap2_slowUp4","minE.5B0_HR.1_cap2_slowUp5"), 
+                              traces = 3,
+                              scenOrder = c("WCVI_DDM","WCVI_DIM","WCVI_conM"),
+                              years = 1951:2032,
+                              yLim = c(-2 ,3.5) )
+
+{
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  info.df %>%
+            filter( mpLabel %in% mps )
+
+  par(mfrow = c(length(scenOrder),length(mps) ), mar = c(1,2.5,2,1.5), oma =c(4,5,1,3) )
+
+  for( scenIdx in 1:length(scenOrder) )
+  {
+    scenLabel <- scenOrder[scenIdx]
+    for(mIdx in 1:length(mps))
+    {
+      mp <- mps[mIdx]
+      singleDF <- subDF %>%
+                  filter( mpLabel == mp, scenarioLabel == scenLabel )
+      simID <- singleDF$simLabel
+      simFile <- paste(simID,".RData",sep = "")
+      simPath <- file.path(simFolder,simID,simFile)
+
+      # Load blob
+      load(simPath)
+
+      tMP <- blob$ctlList$opMod$tMP
+      nT  <- blob$ctlList$opMod$nT
+
+      # Now load the biomass and retro SBt estimates
+      Bt            <- blob$om$SBt[,2:ncol(blob$om$SBt)]
+      retroSpawnBt  <- blob$mp$assess$retroSpawnBt
+
+      # Need to flatten the retro spawning Bt to a single row
+      # for each replicate. Repetitions of the reps only happen
+      # for each year in proj period, so this plot will show projection
+      # period only
+      iReps <- max(retroSpawnBt[,"iRep"])
+      flatRetroSpawnBt <- matrix(nrow = iReps, ncol = nT - tMP + 1 )
+      for( i in 1:iReps)
+      {
+        for(tCol in tMP:nT )
+        {
+          retroRow <- which(retroSpawnBt[,"tStep"] == tCol & retroSpawnBt[,"iRep"] == i)
+          flatRetroSpawnBt[i,tCol - tMP + 1] <- retroSpawnBt[retroRow,tCol]
+        }
+      }
+
+      
+      # calculate relative errors
+      assRelErr     <- (flatRetroSpawnBt - Bt[,tMP:nT]) / Bt[tMP:nT]
+
+      # calculate 
+      assRelErrq    <- apply( X = assRelErr, FUN = quantile, MARGIN = 2,
+                              probs = c(0.05, 0.5, 0.95) )
+      meanRelErr    <- apply( X = assRelErr, FUN = mean, MARGIN = 2 )
+
+      plot( x = range(years[tMP:nT]), y = yLim, type = "n", xlab = "", 
+            ylab = "", las = 1 )
+        polygon(  x =  c(years[tMP:nT],rev(years[tMP:nT])),
+                  y = c(assRelErrq[1,],rev(assRelErrq[3,])),
+                  border = NA, col = "grey70" )
+        lines( x = years[tMP:nT], y = assRelErrq[2,], lwd = 2 )
+        lines( x = years[tMP:nT], y = meanRelErr, lwd = 2, lty = 2 )
+        for( tIdx in traces[traces <= iReps] )
+        {
+          lines( x =years[tMP:nT], y = assRelErr[tIdx,], lwd = .8 )
+        }
+        box()
+
+      mfg <- par("mfg")
+      if(mfg[1] == 1) mtext(side = 3, text = mp, cex = .8, line =2 )
+      if(mfg[2] == mfg[4])
+      {
+        mtext(side = 4, text = scenLabel, cex = .8, line = 2 )
+      }
+    }
+    if(mfg[1] == mfg[3] )
+      mtext(  side = 1, outer = T, text = "Year",
+              line = 2 )
+  }
+  mtext(  side = 2, outer = T, text = "Relative Assessment Error",
+          line = 1 )
+}
+
+
+
 
 
 # Function to plot projected biomass for the OM over the statArea sub-areas. 
@@ -1636,8 +1748,8 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
-plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_HR.1_Jul16",
-                                      mps = c("minE18.8_HR.1_slowUp2","minE18.8_HR.1_slowUp3","minE18.8_HR.1_slowUp4","minE18.8_HR.1_slowUp5"), 
+plotDepCatchHRMultiPanel <- function( simFolder = "../SOG_AM1_MCMC",
+                                      mps = c("AM1_minE21.2_HR.2"), 
                                       traces = 3,
                                       scenario = c("WCVI_DIM"),
                                       years = 1951:2032,
