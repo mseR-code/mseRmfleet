@@ -1748,13 +1748,13 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
-plotDepCatchHRMultiPanel <- function( simFolder = "../SOG_AM1_MCMC",
-                                      mps = c("AM1_minE21.2_HR.2"), 
+plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_HR.1_cap2",
+                                      mps = c("minE.5B0_HR.1_cap2","minE.5B0_HR.1_cap2_slowUp2","minE.5B0_HR.1_cap2_slowUp3","minE.5B0_HR.1_cap2_slowUp4","minE.5B0_HR.1_cap2_slowUp5"), 
                                       traces = 3,
                                       scenario = c("WCVI_DIM"),
                                       years = 1951:2032,
                                       saveFile = FALSE,
-                                      yLimD = c(0,1.2),
+                                      yLimD = c(0,1.5),
                                       yLimC = c(0,10),
                                       yLimU = c(0,0.4) )
 {
