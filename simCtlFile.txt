@@ -210,9 +210,9 @@ opMod$nGrps 1
 opMod$obsWtAge "repFile"
 opMod$nT 82
 opMod$powerg c(1,1,1,1,1)
-opMod$pulseMfrac 0.3
-opMod$pulseMFrq 16
-opMod$pulseMSize 1.5
+opMod$pulseMfrac 0
+opMod$pulseMFrq 0
+opMod$pulseMSize 1
 opMod$qg c(1,1,1,0.841236,0.999068)
 opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
@@ -220,7 +220,7 @@ opMod$recM 0.583934
 opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
 opMod$rSeed 1270
 opMod$rSteepness 0.73723
-opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+opMod$posteriorSamples NULL
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12

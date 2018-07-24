@@ -1,12 +1,21 @@
 library(RColorBrewer)
 
+folder <- file.path("mserproject","sim24072018110543")
+
+repFile <- file.path(folder,"iscam_ageM.rep")
+blobFile <- file.path(folder,"sim24072018110543.RData")
+
 source("mseRtools.r")
 source("read.admb.R")
-rep <- read.rep("iscam_ageM.rep")
+rep <- read.rep(repFile)
+load(blobFile)
 
 It    <- rep$it
 Ityrs <- rep$iyr
 sbt   <- rep$sbt
+q     <- rep$q
+
+Bt <- blob$om$Bt[1,2:83]
 
 ageData <- rep$A
 ageFit  <- rep$Ahat
@@ -16,17 +25,25 @@ pointCols <- brewer.pal(n = 4, "Dark2")
 # First, plot the CPUE index
 pdf("Itplot.pdf", width = 11, height = 4 )
 par()
-plot( x = range(Ityrs, na.rm = T), y = c(0,max(It,na.rm=T)), type= "n", 
+plot( x = range(Ityrs, na.rm = T), y = c(0,max(It,sbt,na.rm=T)), type= "n", 
       xlab = "Year", ylab = "Spawn Index (kt)", las =1 )
-  points(x = Ityrs[1,], y = It[1,], pch = 16, cex = 1.2, col = pointCols[1] )
+  points(x = Ityrs[1,], y = It[1,]/q[1], pch = 16, cex = 1.2, col = pointCols[1] )
   points(x = Ityrs[2,], y = It[2,], pch = 16, cex = 1.2, col = pointCols[2] )
-  # lines( x = 1951:2032, y = sbt, lty = 3, lwd = .8)
+  lines( x = 1951:2032, y = sbt, lty = 3, lwd = .8)
+  # lines( x = 1951:2032, y = Bt, lty = 1, lwd = 2, col = "red")
   abline(v = 2017.5, lty = 2, lwd = .8)
-  panLegend( x = 0.01, y = 0.97,
+  panLegend( x = 0.6, y = 0.97,
               legTxt = c( "Surface Survey",
-                          "Dive Survey" ),
-              pch = 16, cex = 1.2, col = pointCols,
+                          "Dive Survey",
+                          # "OM",
+                          "AM MLE" ),
+              pch = c(16,16,NA), 
+              cex = 1.2, 
+              col = c(pointCols[1:2],"black"),
+              lty = c(NA,NA,3),
+              lwd = c(NA,NA,.8),
               bty = "n" )
+  mtext( side = 3, text = "WCVI")
 dev.off()
 
 # Now plot age observations
