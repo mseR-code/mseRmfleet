@@ -1,9 +1,9 @@
 library(RColorBrewer)
 
-folder <- file.path("mserproject","sim24072018110543")
+folder <- file.path("mserproject","sim25072018012223")
 
 repFile <- file.path(folder,"iscam_ageM.rep")
-blobFile <- file.path(folder,"sim24072018110543.RData")
+blobFile <- file.path(folder,"sim25072018012223.RData")
 
 source("mseRtools.r")
 source("read.admb.R")
@@ -30,7 +30,7 @@ plot( x = range(Ityrs, na.rm = T), y = c(0,max(It,sbt,na.rm=T)), type= "n",
   points(x = Ityrs[1,], y = It[1,]/q[1], pch = 16, cex = 1.2, col = pointCols[1] )
   points(x = Ityrs[2,], y = It[2,], pch = 16, cex = 1.2, col = pointCols[2] )
   lines( x = 1951:2032, y = sbt, lty = 3, lwd = .8)
-  # lines( x = 1951:2032, y = Bt, lty = 1, lwd = 2, col = "red")
+  lines( x = 1951:2032, y = Bt, lty = 1, lwd = 2, col = "red")
   abline(v = 2017.5, lty = 2, lwd = .8)
   panLegend( x = 0.6, y = 0.97,
               legTxt = c( "Surface Survey",
