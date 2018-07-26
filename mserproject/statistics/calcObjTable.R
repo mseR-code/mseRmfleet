@@ -14,7 +14,7 @@ perfTable <- read.csv(  "./mserproject/statistics/mseRstatistics_perfTable1.csv"
                         stringsAsFactors = FALSE)
 
 # Get scenario/MP labels
-# scenarios <- unique( perfTable$Scenario )
+scenarios <- unique( perfTable$Scenario )
 MPs       <- unique( perfTable$Procedure )
 MPS       <- MPs[order(MPs)]
 
@@ -23,16 +23,17 @@ MPS       <- MPs[order(MPs)]
 #           "minE18.8_HR.1_slowUp4",
 #           "minE18.8_HR.1_slowUp5"  )
 
-scenarios <- c( "WCVI_DDM", "WCVI_DIM", "WCVI_conM" )
+
 
 Periods   <- unique( perfTable$Period )
 
 PerfectInfo <- FALSE
 if( !PerfectInfo ) MPs <- MPs[!grepl("PerfectInfo",MPs)]
 
-objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 12 )
+objTable <- matrix(NA, nrow = length(scenarios) * length(MPs), ncol = 13 )
 colnames(objTable) <- c(  "Scenario","MP","Label",
                           "ProbBtGt.3B0",
+                          "ProbBtGt.4B0",
                           "ProbBtGt.6B0",
                           "NCN1_ProbGt.75B0",
                           "NCN2_ProbGtB90s",
@@ -60,9 +61,14 @@ for( sIdx in 1:length(scenarios) )
                 filter( Scenario == scenario,
                         Procedure == mp )
 
+    # browser()
+
+    if(nrow(subPerf) == 0) next
+
     objTable[tabRow,c("Scenario","MP","Label")] <- c(scenario,mIdx,mp)
     
     objTable[tabRow,"ProbBtGt.3B0"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGt.3B0" ],2)
+    objTable[tabRow,"ProbBtGt.4B0"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGt.4B0" ],2)
     objTable[tabRow,"ProbBtGt.6B0"] <- round(subPerf[subPerf$Period == "Long", "totProbBtGt.6B0" ],2)
     objTable[tabRow,"medAAV"] <- round(subPerf[subPerf$Period == "Long", "medAAV" ],2)
     objTable[tabRow,"medAveCatch"] <- round(subPerf[subPerf$Period == "Long", "medAvgCatch" ],2)

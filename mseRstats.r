@@ -73,6 +73,7 @@ library(dplyr)
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
+                    "medProbGt.4B0","Q1ProbGt.4B0","Q2ProbGt.4B0",
                     "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
                     "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
                     "medProbClosure","Q1ProbClosure","Q2ProbClosure",
@@ -359,6 +360,16 @@ library(dplyr)
         result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
 
+        # We should add the other USR candidates here
+        # .4B0
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = SB0, targMult = .4,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
+        result[ iRow, "medProbGt.4B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.4B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.4B0" ] <- tmp[5]
+
     
         # LTA
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = LTA, targMult = 1,
@@ -369,7 +380,7 @@ library(dplyr)
         result[ iRow, "Q1ProbGtBave" ] <- tmp[1]
         result[ iRow, "Q2ProbGtBave" ] <- tmp[5]
 
-        # LTA
+        # avg Prod Period
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
                                               calcProbAcross = "time", 
                                               summaryFun = "quantile",
@@ -404,6 +415,12 @@ library(dplyr)
                                               calcProbAcross = "replicates", 
                                               summaryFun = "mean" )
         result[ iRow, "totProbBtGt.3B0" ] <- tmp
+
+        # total prob (mass of cloud) Dt > .3
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .4, targMult = 1,
+                                              calcProbAcross = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGt.4B0" ] <- tmp
 
         # Vertical integration of probability Dt > .6
         tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .6, targMult = 1,

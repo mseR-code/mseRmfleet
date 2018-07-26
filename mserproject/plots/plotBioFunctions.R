@@ -43,12 +43,34 @@ plotMPDepCatchTulips <- function( df = info.df,
   # mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)  
 } # END plotMPDepCatchTulips()
 
-plotMtTulip <- function(  df = info.df, mp = "NoFish", traces = 3 )
-{
+plotMtTulip <- function(  simFolder = "../WCVI_newRuns_CSAS", 
+                          scenario = c("WCVI_DDM_obsCV.625_pulseM2.0x.75"),
+                          MPs = c("minE.5B0_HR.1_cap2"), 
+                          traces = 3 )
+{ 
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
 
   if(traces > 0) traces <- sample(1:100,size = traces )
-  subDF <-  df %>%
-            filter(mpLabel == mp )
+
+  subDF <-  info.df  %>%
+            filter( scenarioLabel %in% scenario,
+                    mpLabel %in% MPs )
 
   par(mfrow =c(nrow(subDF),1), mar = c(0,0,0,0), oma = c(3,3,3,1) )
 
