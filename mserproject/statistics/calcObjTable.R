@@ -35,13 +35,13 @@ colnames(objTable) <- c(  "Scenario","MP","Label",
                           "ProbBtGt.3B0",
                           "ProbBtGt.4B0",
                           "ProbBtGt.6B0",
+                          "ProbBtGtBave",
+                          "ProbBtGtBave-prod",
                           "NCN1_ProbGt.75B0",
                           "NCN2_ProbGtB90s",
                           "medAAV",
                           "medAveCatch",
-                          "probClosure",
-                          "ProbBtGtBave",
-                          "ProbBtGtBave-prod" )
+                          "probClosure" )
 
 
 
@@ -81,4 +81,4 @@ for( sIdx in 1:length(scenarios) )
   }
 
 
-write.csv( objTable, file = "./mserproject/statistics/WCVI_HerringObjectiveTable_slowUp.csv")
+write.csv( objTable, file = "./mserproject/statistics/WCVI_HerringObjectiveTable.csv")
