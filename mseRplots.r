@@ -12447,8 +12447,8 @@ plotRefPts <- function( obj )
     if ( gfx$doLegend )
     {
       panLegend( 0.5,0.95, legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
-        lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
-        col = c("black", .BmsyCOL) )    
+      lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+      col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
@@ -12469,7 +12469,7 @@ plotRefPts <- function( obj )
       mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
       mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
     }
-
+    
     if ( gfx$annotate )
     {   
     }

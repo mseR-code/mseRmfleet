@@ -12325,11 +12325,16 @@ plotRefPts <- function( obj )
     }
     
     box()
+<<<<<<< HEAD
     if(lab)
     {
       mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Year" )
       mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Biomass" )  
     }
+=======
+    mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
+    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
+>>>>>>> master
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12446,14 +12451,22 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
+<<<<<<< HEAD
       panLegend( 0.5,0.95, legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
+=======
+      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
+>>>>>>> master
         lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
         col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
+<<<<<<< HEAD
     targetHR <- obj$ctlList$mp$hcr$targHRHerring
+=======
+    targetHR <- blob$ctlList$mp$hcr$targHRHerring
+>>>>>>> master
 
     abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
@@ -12464,11 +12477,16 @@ plotRefPts <- function( obj )
     axis( side=4, labels=FALSE )
     
     box()
+<<<<<<< HEAD
     if( lab )
     {
       mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
       mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
     }
+=======
+    mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
+    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
+>>>>>>> master
 
     if ( gfx$annotate )
     {   

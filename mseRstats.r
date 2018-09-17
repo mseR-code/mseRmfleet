@@ -73,11 +73,13 @@ library(dplyr)
                     "medProbGt.75B0","Q1ProbGt.75B0","Q2ProbGt.75B0",
                     "medProbGt.3B0","Q1ProbGt.3B0","Q2ProbGt.3B0",
                     "medProbGt.6B0","Q1ProbGt.6B0","Q2ProbGt.6B0",
-                    "medProbGt.4B0","Q1ProbGt.4B0","Q2ProbGt.4B0",
                     "medProbGtBave","Q1ProbGtBave","Q2ProbGtBave",
                     "medProbGtBave-prod","Q1ProbGtBave-prod","Q2ProbGtBave-prod",
-                    "medProbClosure","Q1ProbClosure","Q2ProbClosure",
-                    "meanProbClosure","minProbBtGt.3B0" )
+                    "medPropClosure","Q1PropClosure","Q2PropClosure",
+                    "minProbBtGt.3B0","totProbBtGt.3B0",
+                    "minProbBtGt.6B0","totProbBtGt.6B0",
+                    "minProbBtGtBave","totProbBtGtBave",
+                    "minProbBtGtBave-prod","totProbBtGtBave-prod" )
 
   colNames    <- c( headerNames, statNames )
   result      <- data.frame( matrix( NA, nrow=nResults,ncol=length(colNames) ),row.names=NULL )
@@ -213,13 +215,12 @@ library(dplyr)
           for( repIdx in 1:nrow(Dept) )
             Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
         }
-        
         if(!is.null(noFishBlobs[[scenarioName]]))
         {
           noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
           noFishBt <- noFishBt[,2:ncol(noFishBt)]
         } else noFishBt <- 1
-        
+
         noFishDept <- Bt / noFishBt
 
       }
@@ -349,7 +350,6 @@ library(dplyr)
         result[ iRow, "Q1ProbNCNGoal2NoFish" ] <- tmp[1]
         result[ iRow, "Q2ProbNCNGoal2NoFish" ] <- tmp[5]
 
-
         # We should add the other USR candidates here
         # LTA
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = SB0, targMult = .6,
@@ -380,7 +380,6 @@ library(dplyr)
         result[ iRow, "Q1ProbGtBave" ] <- tmp[1]
         result[ iRow, "Q2ProbGtBave" ] <- tmp[5]
 
-        # avg Prod Period
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
                                               calcProbAcross = "time", 
                                               summaryFun = "quantile",

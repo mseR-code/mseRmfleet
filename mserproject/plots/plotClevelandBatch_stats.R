@@ -16,19 +16,37 @@ source("plotBioFunctions.R")
 
 MPnames <- c( "NoFish",
               "minE18.8_HR.2",
-              "minE18.8_HR.2_cap5",
+              "minE18.8_HR.2_cap30",
               "minE18.8_HR.1",
-              "minE18.8_HR.1_cap5",
+              "minE18.8_HR.1_cap30",
               "minE.5B0_HR.2",
-              "minE.5B0_HR.2_cap5",
+              "minE.5B0_HR.2_cap30",
               "minE.5B0_HR.1",
-              "minE.5B0_HR.1_cap5",
+              "minE.5B0_HR.1_cap30",
               "HS30-60_HR.2",
-              "HS30-60_HR.2_cap5",
+              "HS30-60_HR.2_cap30",
               "HS30-60_HR.1",
+<<<<<<< HEAD
+              "HS30-60_HR.1_cap30" )
+              # "PerfectInfo_minE18.8_HR.2",
+              # "PerfectInfo_minE18.8_HR.1",
+              # "PerfectInfo_minE18.8_HR.2_cap5",
+              # "PerfectInfo_minE18.8_HR.1_cap5",
+              # "PerfectInfo_minE.5B0_HR.2",
+              # "PerfectInfo_minE.5B0_HR.1",
+              # "PerfectInfo_minE.5B0_HR.2_cap5",
+              # "PerfectInfo_minE.5B0_HR.1_cap5",
+              # "PerfectInfo_HS30-60_HR.2",
+              # "PerfectInfo_HS30-60_HR.1",
+              # "PerfectInfo_HS30-60_HR.2_cap5",
+              # "PerfectInfo_HS30-60_HR.1_cap5")
+
+whatWeLike <- c(3:5,6:9,11:13)
+=======
               "HS30-60_HR.1_cap5" )
 
 whatWeLike <- c(4:9,11:13)
+>>>>>>> WCVI
 hlIdx <- NULL
 
 

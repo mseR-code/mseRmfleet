@@ -176,11 +176,19 @@ guiPerf <- function()
     
     # Revised:
     guiChanges$pfShort1  <- tMP
+<<<<<<< HEAD
     guiChanges$pfShort2  <- tMP+4
     guiChanges$pfMed1    <- tMP
     guiChanges$pfMed2    <- tMP+9
     guiChanges$pfLong1   <- tMP
     guiChanges$pfLong2   <- tMP+14
+=======
+    guiChanges$pfShort2  <- tMP+9
+    guiChanges$pfMed1    <- tMP
+    guiChanges$pfMed2    <- tMP+14
+    guiChanges$pfLong1   <- tMP
+    guiChanges$pfLong2   <- tMP+19
+>>>>>>> master
     
     # =========================================================================
 
@@ -369,6 +377,10 @@ guiPerf <- function()
         write.csv( perfStats$summary1, paste( fName,"_perfTable1",".csv", sep="" ), row.names=F) # K.Holt added this line & disabled line above for 2017 MSE
         write.csv( perfStats$summary2, paste( fName,"_perfTable2",".csv", sep="" ), row.names=F )
         
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         source("mserproject/statistics/calcObjTable.R")
         # calcObjTable(fName) # Calls function from objectivesTable2017.r to summarize performance measures relative to 2017 MSE objectives 
       #}

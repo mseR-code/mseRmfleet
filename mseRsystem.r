@@ -676,8 +676,7 @@ ageLenOpMod <- function( objRef, t )
     if( recOption=="Beverton-Holt" )
     {
       tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) & t < tMP ) 
-        omegat[t] <- Rt[t] / tmpR
+      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
     }
     else
         tmpR <- avgR
@@ -754,6 +753,26 @@ ageLenOpMod <- function( objRef, t )
 
 
   # Solve catch equation for this year's Ftg based on tac allocated among gears
+  # Add test fishery catch in projection
+  if(t >= tMP)
+  {
+    testFishery <- ctlList$opMod$testFishery
+    # Calculate test fishery catch based on the minimum harvest rate
+    # of the test fishery over the historical period
+    minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
+    minFtest <- log( 1 / (1 - minUtest) )
+
+    # reduce to a small F if needed
+    Ftest <- max(0.01, minFtest)
+    # Calculate assuming a discrete fishery 
+    Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
+
+    testCatch <- min(Ctest, sum(testFishery))
+    testFishery[2] <- testCatch
+
+    Ctg[t,] <- Ctg[t,] + testFishery
+  }
+  
   if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
@@ -817,7 +836,6 @@ ageLenOpMod <- function( objRef, t )
   }
 
   if( t >= tMP & sum(Ctg[t,1:3]) == 0 ) Ftg[t,] <- rep(0,5)
-
 
   # Add an F based test fishery if biomass is below the threshold
   # if( Bt[t] <= 0.2 ) Ftg[t,] <- Ftg[t,] + c(0.0,0.01,0.0,0.0,0.0)
@@ -2692,7 +2710,6 @@ iscamWrite <- function ( obj )
   mp$assess$retroRt       <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
   mp$assess$retroMt       <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
   mp$assess$retroBio3plus <- matrix( NA,nrow=(nT-tMP+1),ncol=(nT+1) )
-
   # Build the return object.
   obj <- list( ctlList=ctlObj, om=om, mp=mp, refPtList=refPtsObj ) 
 
