@@ -425,7 +425,7 @@ calcRefPoints <- function( opModList )
   lifeScheds$Ma    <- .calcMa( A50=A50,A95=A95,A=A )
   lifeScheds$Salg  <- .calcSalg( salgPars=salgPars, A=A, Lal=lifeScheds$Lal )
   lifeScheds$Palg  <- .calcPalg( palgPars=palgPars, A=A, Lal=lifeScheds$Lal )
-  lifeScheds$genTime <- .calcGenTime( M=obj$recM, A50=A50,A95=A95,A=A )
+  lifeScheds$genTime <- .calcGenTime( M=obj$M, A50=A50,A95=A95,A=A )
   # cat("Generation time for M =",obj$recM," is: ", lifeScheds$genTime, "\n", sep = "" )
   lifeScheds
 }
@@ -466,11 +466,6 @@ calcRefPoints <- function( opModList )
   nGrps <- obj$nGrps
   nGear <- obj$nGear
 
-  # HACK to use average M over history for ssbpr at initialisation
-  Mta <- obj$repFile$M
-  Mbar <- apply(X = Mta, FUN = mean, MARGIN = 2)
-  M <- Mbar[1]
-  
 
   Ma    <- obj$Ma
   Ma[1] <- 0
@@ -637,8 +632,7 @@ calcRefPoints <- function( opModList )
 {
   obj <- deref( objRef )
   
-  # Changed to use recM (which is average M over historical period)
-  f <- seq( from=0.0, to=.MAXF*max(obj$recM), length=.nFVALS )
+  f <- seq( from=0.0, to=.MAXF*max(obj$M), length=.nFVALS )
 
   recruits   <- rep( NA, length=.nFVALS )
   ssbpr      <- rep( NA, length=.nFVALS )

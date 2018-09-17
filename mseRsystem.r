@@ -522,11 +522,6 @@ ageLenOpMod <- function( objRef, t )
   Wal   <- obj$refPtList$Wal
   Wal[1] <- 0
 
-  if( ctlList$opMod$obsWtAge == "repFile" )
-  {
-    Wal[2:A] <- obj$om$Wta[t,2:A]
-  }
-  
   
   
   # Maturity ogive parameters
@@ -620,11 +615,10 @@ ageLenOpMod <- function( objRef, t )
   {
     if( !is.null(ctlList$opMod$repFileName) )
     {
-      repFile   <- ctlList$opMod$repFile
-      avgR      <- repFile$rbar   
-      inputFtg  <- t(repFile$ft)
-      inputRt   <- repFile$rep_rt[2:67] * exp(obj$om$Mt[1:66])
-      inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
+      repFile   <- lisread(ctlList$opMod$repFile)
+      inputFtg  <- rbind(repFile$Ftg1,repFile$Ftg2,repFil3$Ftg3)
+      inputN1am <- repFile$Nta_m[1,]    # age 2-10 in 1951
+      inputN1af <- repFile$Nta_f[1,]    # age 2-10 in 1951
       inputNa1  <- c( inputRt[1], inputNa1)
 
       Rt[1:66] <- inputRt[1:66]
@@ -3422,7 +3416,7 @@ iscamWrite <- function ( obj )
   # fill the recruitment devs, and therefore results differ from 2010.       --#
   #----------------------------------------------------------------------------#
 
-  RandomWalkM <- TRUE
+  RandomWalkM <- FALSE
   if ( RandomWalkM )
   {
       # Natural mortality: lag-1 autocorrelated, log-normal process errors,
@@ -3435,7 +3429,7 @@ iscamWrite <- function ( obj )
       gammaM    <- ctlList$opMod$gammaM           # Lag-1 autocorr in M
       ranM      <- .fillRanWalk( gamma=gammaM, sigma=sigmaM, deltat=deltaM )
       ranM      <- ranM/mean( ranM ) 
-      Mt[1]     <- ctlList$opMod$M                # Scale Mt[1] to equal input mean M.
+      Mt[1]     <- ctlList$opMod$M[1]             # Scale Mt[1] to equal input mean M.
       Mt[2:nT]  <- Mt[1] * ranM[ c(2:nT) ]
       endM      <- ctlList$opMod$endM
 
@@ -3499,20 +3493,6 @@ iscamWrite <- function ( obj )
     obj$om$pulseMt[pulseYrs] <- obj$om$Mt[pulseYrs] * ctlList$opMod$pulseMSize
   }
 
-  if( ctlList$opMod$obsWtAge == "repFile" )
-  {
-    obsWtAge <- ctlList$opMod$repFile
-    obj$om$Wta <- matrix(0, ncol = nAges, nrow = nT )
-    obsWtAge <- obsWtAge$d3_wt_avg
-    obj$om$Wta[1:(tMP-1),2:nAges] <- obsWtAge[,5:13]
-
-    # Now populate future with average of history
-
-    for(tIdx in tMP:nT)
-      obj$om$Wta[tIdx,2:nAges]   <- apply( X = obj$om$Wta[1:(tMP-1),2:nAges],
-                                           FUN = mean, MARGIN = 2 )
-  }
-
 
   # Draw tsBoot indices anyways, then use in projected Mt
   # matrices (this way the random draws for each run are the same)
@@ -3547,7 +3527,7 @@ iscamWrite <- function ( obj )
   if ( !is.null(ctlList$opMod$estRecDevs) )
   {
     scalrecDevs <- ctlList$opMod$estRecDevs
-    recDevs <- scalrecDevs$delta
+    recDevs <- scalrecDevs$recDevs
     # the offset allows for generating recDevs in years < tMP - 1
     recDevsOffset <- ctlList$opMod$recDevsOffset
     
