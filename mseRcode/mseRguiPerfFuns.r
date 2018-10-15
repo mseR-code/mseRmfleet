@@ -176,11 +176,11 @@ guiPerf <- function()
     
     # Revised:
     guiChanges$pfShort1  <- tMP
-    guiChanges$pfShort2  <- tMP+9
+    guiChanges$pfShort2  <- tMP+4
     guiChanges$pfMed1    <- tMP
-    guiChanges$pfMed2    <- tMP+14
+    guiChanges$pfMed2    <- tMP+9
     guiChanges$pfLong1   <- tMP
-    guiChanges$pfLong2   <- tMP+19
+    guiChanges$pfLong2   <- tMP+14
     
     # =========================================================================
 
@@ -290,6 +290,8 @@ guiPerf <- function()
      
       nSims <- .getNumSims( trackData )
 
+      trackData <- trackData[1:nSims,]
+
       # Step 2: Load an Rdata working directory containing a list called blob.
       for ( i in 1:nSims )
       {
@@ -308,15 +310,18 @@ guiPerf <- function()
           parTable <- data.frame( parameter=character(nrow(ctlPars) + 5),
                         matrix( "", nrow=nrow(ctlPars) + 5,ncol=nSims ) )
 
+          for( j in 1:ncol(parTable)) parTable[,j] <- as.character(parTable[,j])
+
           names( parTable ) <- c( "parameter",paste( "Sim",c(1:nSims),sep="" ) )
           parTable$parameter[1:nrow(ctlPars)] <- ctlPars[ ,"parameter" ]
         }
 
-        parTable[ 1:nrow(ctlPars), i+1 ] <- blob$ctlPars[ ,"value" ]
+        parTable[ 1:nrow(ctlPars), i+1 ] <- as.character(blob$ctlPars[ ,"value" ])
+
 
         gc()
       }
-      
+
       # Step 3: Calculate Performance Statistics over all simulations.
       
       # These are from guiPerf, need to add multipliers, etc.
@@ -330,7 +335,7 @@ guiPerf <- function()
       perfPars <- c( runDate=date(), perfPars )
 
       perfPars <- data.frame( cbind(parameter=names(perfPars),value=perfPars) )
-      
+
       perfStats <- .calcPerfStats()
       
       # Step 4: Save to Excel (Windows) or CSV (Mac) files.
@@ -351,6 +356,7 @@ guiPerf <- function()
       #}
       #else
       #{
+        # browser()
         n <- nchar( tmpFile )
         fName <- substring( tmpFile,1, n-4 )
         fName <- file.path( .PRJFLD, .DEFSTATFLD, fName )
@@ -363,7 +369,6 @@ guiPerf <- function()
         write.csv( perfStats$summary1, paste( fName,"_perfTable1",".csv", sep="" ), row.names=F) # K.Holt added this line & disabled line above for 2017 MSE
         write.csv( perfStats$summary2, paste( fName,"_perfTable2",".csv", sep="" ), row.names=F )
         
-
         source("mserproject/statistics/calcObjTable.R")
         # calcObjTable(fName) # Calls function from objectivesTable2017.r to summarize performance measures relative to 2017 MSE objectives 
       #}

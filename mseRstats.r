@@ -97,20 +97,23 @@ library(dplyr)
   noFishTrack <-  trackData %>%
                   filter( mp == "NoFish" )
 
-  for( scenIdx in 1:length(scenarios) )
-  {
-    scenarioName <- scenarios[scenIdx]
-    scenNoFishTrack <-  noFishTrack %>%
-                        filter( scenario == scenarioName )
+  if( nrow(noFishTrack) > 0 )
+  { 
+    for( scenIdx in 1:length(scenarios) )
+    {
+      scenarioName <- scenarios[scenIdx]
+      scenNoFishTrack <-  noFishTrack %>%
+                          filter( scenario == scenarioName )
 
-    simFile     <- scenNoFishTrack[ 1, "simFile" ]
-    simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
-    simFilePath <- file.path( .PRJFLD, simFolder, simFile )
+      simFile     <- scenNoFishTrack[ 1, "simFile" ]
+      simFolder   <- scenNoFishTrack[ 1, "simFolder" ]
+      simFilePath <- file.path( .PRJFLD, simFolder, simFile )
 
-    cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
-    load( file=simFilePath )
-    assign( "blob", blob, pos=1 )
-    noFishBlobs[[scenarioName]] <- blob
+      cat( "\nMSG (.subPerf) Loading",simFilePath,"...\n" )    
+      load( file=simFilePath )
+      assign( "blob", blob, pos=1 )
+      noFishBlobs[[scenarioName]] <- blob
+    }
   }
 
   # Initialize row counter.
@@ -212,10 +215,11 @@ library(dplyr)
           for( repIdx in 1:nrow(Dept) )
             Dept[repIdx,] <- Bt[repIdx,] / SB0[repIdx]
         }
-        
-
-        noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
-        noFishBt <- noFishBt[,2:ncol(noFishBt)]
+        if(!is.null(noFishBlobs[[scenarioName]]))
+        {
+          noFishBt <- noFishBlobs[[scenarioName]]$om$SBt
+          noFishBt <- noFishBt[,2:ncol(noFishBt)]
+        } else noFishBt <- 1
 
         noFishDept <- Bt / noFishBt
 
@@ -318,7 +322,33 @@ library(dplyr)
       if( validSim )
       { 
         LTA <- apply(X = Bt[ ,1:67], FUN = mean, MARGIN = 1)
-        refB <- apply(X = Bt[ ,38:66], FUN = mean, MARGIN = 1)
+        refB <- apply(X = Bt[ ,38:46], FUN = mean, MARGIN = 1)
+        B90s <- apply(X = Bt[ ,40:49], FUN = mean, MARGIN = 1)
+
+        #Hard code ProbGt.75B0 over tdx (NCN Goal 1)
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = 1, targMult = .75, 
+                                              calcProbAcross = "time", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbGt.75B0" ] <- tmp
+        
+        #Hard code ProbGt.75NoFish over tdx (NCN Goal 1)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .75, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbGt.75NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.75NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.75NoFish" ] <- tmp[5]
+
+  
+        # MedProb NCN Goal 2 ()
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = B90s, targMult = 1,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbGtB90s" ] <- tmp
+
+        # MedProb NCN Goal 2 (.76NoFish over 2 gens)
+        tmp <- .calcQuantsRefPoints( noFishDept[,tdx], target = 1, targMult = .76, refProb = 1, probs = quantVals )
+        result[ iRow, "medProbNCNGoal2NoFish" ] <- tmp[3]
+        result[ iRow, "Q1ProbNCNGoal2NoFish" ] <- tmp[1]
+        result[ iRow, "Q2ProbNCNGoal2NoFish" ] <- tmp[5]
 
         # We should add the other USR candidates here
         # LTA
@@ -330,6 +360,16 @@ library(dplyr)
         result[ iRow, "Q1ProbGt.6B0" ] <- tmp[1]
         result[ iRow, "Q2ProbGt.6B0" ] <- tmp[5]
 
+        # We should add the other USR candidates here
+        # .4B0
+        tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = SB0, targMult = .4,
+                                              calcProbAcross = "time", 
+                                              summaryFun = "quantile",
+                                              probs = quantVals )
+        result[ iRow, "medProbGt.4B0" ] <- tmp[3]
+        result[ iRow, "Q1ProbGt.4B0" ] <- tmp[1]
+        result[ iRow, "Q2ProbGt.4B0" ] <- tmp[5]
+
     
         # LTA
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = LTA, targMult = 1,
@@ -340,7 +380,6 @@ library(dplyr)
         result[ iRow, "Q1ProbGtBave" ] <- tmp[1]
         result[ iRow, "Q2ProbGtBave" ] <- tmp[5]
 
-        # LTA
         tmp <- .calcStatsRefPointsMCMC_flex(  Bt[,tdx], target = refB, targMult = 1,
                                               calcProbAcross = "time", 
                                               summaryFun = "quantile",
@@ -375,6 +414,12 @@ library(dplyr)
                                               calcProbAcross = "replicates", 
                                               summaryFun = "mean" )
         result[ iRow, "totProbBtGt.3B0" ] <- tmp
+
+        # total prob (mass of cloud) Dt > .3
+        tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .4, targMult = 1,
+                                              calcProbAcross = "replicates", 
+                                              summaryFun = "mean" )
+        result[ iRow, "totProbBtGt.4B0" ] <- tmp
 
         # Vertical integration of probability Dt > .6
         tmp <- .calcStatsRefPointsMCMC_flex(  Dept[,tdx], target = .6, targMult = 1,
@@ -484,9 +529,19 @@ library(dplyr)
         # lost fishing opportunities.
         tmp <- .calcPropFloor( Ct[,tdx], floor = .5 )
         tmp <- quantile( 1-tmp, probs = quantVals )
-        result[iRow,"medPropClosure"] <- tmp[3]
-        result[iRow,"Q1PropClosure"] <- tmp[1]
-        result[iRow,"Q2PropClosure"] <- tmp[5]
+        result[iRow,"medProbClosure"] <- tmp[3]
+        result[iRow,"Q1ProbClosure"] <- tmp[1]
+        result[iRow,"Q2ProbClosure"] <- tmp[5]
+
+        # HACK: Hijack the ref points stats function
+        # to calculate the mean probability that fishery is
+        # open (Ct > .14), then subtract that from 1
+        # for meanPropClosure
+        tmp <- .calcStatsRefPointsMCMC_flex(  Ct[,tdx], target = .65, targMult = 1,
+                                              calcProb = "replicates", 
+                                              summaryFun = "mean" )
+
+        result[iRow,"meanProbClosure"] <- 1 - tmp
 
       }
 

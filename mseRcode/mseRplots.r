@@ -134,7 +134,7 @@
     if ( side==1 )
     {  
       axis( side=1, at=xSeq, cex.axis=cexAxis, labels=xLabs )
-      axis( side=3, at=xSeq, labels=FALSE )
+      # axis( side=3, at=xSeq, labels=FALSE )
     }
     if ( side==3 )
       axis( side=3, at=xSeq, cex.axis=cexAxis, labels=xLabs )
@@ -1695,13 +1695,15 @@
   Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
-  
-  # Extract Ft for the 3 commercial gears.
-  Ft <- obj$om$Ftg[ iRep,(1:ncol(obj$om$Ft)),c(1:3) ]
-  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt))]
 
   nT  <- length( Bt )
-  tMP <- obj$ctlList$opMod$tMP
+    tMP <- obj$ctlList$opMod$tMP
+  
+  # Extract Ft for the 3 commercial gears.
+  Ft <- obj$om$Ftg[ iRep,(1:nT),c(1:3) ]
+  Mt <- obj$om$Mt[ iRep,,(1:nT)]
+
+
 
   xLim  <- gfx$xLim
   yLim1 <- gfx$yLim1
@@ -1769,8 +1771,11 @@
   
   # Panel 3: Plot fishing mortality by gear.
 
+  .FtgCOL <- brewer.pal(n = ncol(Ft), name = "Dark2")
+
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
-  lines( x = 1:nT, y = Mt, col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[1,], col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[2,], col = .MtCOL, lty = .MtLTY+1, lwd = .MtLWD )
   for ( g in 1:ncol(Ft) )
     lines( c(1:nT), Ft[,g], col=.FtgCOL[g], lty=.FtgLTY[g], lwd=.FtgLWD[g] )
     
@@ -1923,7 +1928,7 @@
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
   LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  TRP <- .USRHerring
   
 
   # X-axis limits.
@@ -2294,7 +2299,8 @@
 
 
 .plotMt <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE, doLegend=TRUE,
-                     showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ) )
+                     showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ),
+                     lab = TRUE )
 {
   M   <- obj$ctlList$opMod$M
   Mt  <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
@@ -2333,7 +2339,7 @@
     
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
   
-  abline( h=M, col=.MCOL, lty=.MLTY, lwd=.MLWD )
+  # abline( h=M, col=.MCOL, lty=.MLTY, lwd=.MLWD )
 
   #Plot retroMt values
   for( r in 1:nrow(retroMt) )
@@ -2342,8 +2348,9 @@
     lines( x = (1:nT), y = retroMt[r,2:(nT+1)], col = Mcol ) 
   }
 
-  lines( x = (1:nT), y = retroMt[1,2:(nT+1)], col = "darkgreen", lwd = 3 ) 
-  lines( x = (1:nT), y = retroMt[nrow(retroMt),2:(nT+1)], col = "red", lwd = 3 ) 
+  lines( x = (1:nT), y = retroMt[1,2:(nT+1)], col = "green", lwd = 3 ) 
+  lines( x = (1:nT), y = retroMt[2,2:(nT+1)], col = "darkgreen", lwd = 3 ) 
+  # lines( x = (1:nT), y = retroMt[nrow(retroMt),2:(nT+1)], col = "red", lwd = 3 ) 
    
   lines( c(1:nT), Mt, col=.MtCOL, lty=.MtLTY, lwd=.MtLWD )
 
@@ -2356,8 +2363,11 @@
   axis( side=4, labels=FALSE )
     
   box()
-  mtext( side=1, line=.INLINE3, cex=.CEXLAB4, "Year" )
-  mtext( side=2, line=.INLINE3, cex=.CEXLAB4, "Natural Mortality" )
+  if(lab)
+  { 
+    mtext( side=1, line=.INLINE3, cex=.CEXLAB4, "Year" )
+    mtext( side=2, line=.INLINE3, cex=.CEXLAB4, "Natural Mortality" )
+  }
 
   if ( gfx$annotate )
     mtext( side=3, line=0, cex=.CEXTITLE4, outer=TRUE, "Natural Mortality" )
@@ -2436,7 +2446,30 @@
                       doLegend=TRUE, xLim=NULL, yLim=NULL ) )
 {
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
-  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+
+  if( !is.null(obj$ctlList$opMod$posteriorDraws) )
+  {
+    postDraw    <- obj$ctlList$opMod$posteriorDraws[iRep]
+    B0          <- obj$ctlList$opMod$mcmcPar[postDraw,"sbo"]
+    rSteepness  <- obj$ctlList$opMod$mcmcPar[postDraw,"h"]
+
+    # Read in mcmcM to rescale R0
+    mcmcM       <- read.csv(paste(obj$ctlList$opMod$posteriorSamples,"/mcmcMt.csv",sep = ""), header =T )
+    Mbar        <- mean(as.numeric(mcmcM[postDraw,]))
+
+    # Rescale R0 and recalc rec.a
+    R0          <- obj$ctlList$opMod$mcmcPar[postDraw,"ro"] * exp(Mbar)
+    rec.a       <- 4.*rSteepness*R0 / ( B0*(1.-rSteepness) )
+    rec.b       <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
+
+    ssb         <- seq(0,4*B0, length = 100)
+    recruits    <- rec.a * ssb / (1 + rec.b*ssb)
+  } else {
+    ssb      <- refPtList$ssb
+    recruits <- refPtList$recruits
+  }
+
 
   nT  <- length( Rt )
   tMP <- obj$ctlList$opMod$tMP
@@ -2465,9 +2498,8 @@
 
   plot( xLim, yLim, type="n", axes=FALSE, xlab="", ylab="" )
   points( Bt, Rt, cex=.CEXSYM4, bg=colVec, pch=pchVec )
-  
-  ssb      <- refPtList$ssb
-  recruits <- refPtList$recruits
+
+
   lines( ssb[ssb >= 0.0], recruits[ssb>=0.0], lty=1, lwd=.LWD2 )
   
   axis( side=1, cex.axis=.CEXAXIS2 )
@@ -3589,8 +3621,8 @@
 
  #  if( obj$mp$hcr$specs$remRefBase=="rrBaseFmsy" & obj$mp$hcr$specs$remRefSource=="rrSrceEst" )
  #    remRate <- obj$ctlList$refPts$Fmsy
-	# if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
-	#   remRate <- obj$mp$hcr$specs$remRateInput
+  # if ( obj$mp$hcr$specs$remRefBase != "rrBaseFmsy" )
+  #   remRate <- obj$mp$hcr$specs$remRateInput
 
   remRate <- obj$mp$hcr$targHRHerring
 
@@ -5127,10 +5159,6 @@
     abline( h=seq(yLim[1], yLim[2], length=10),   col=.GRIDCOL, lty=.GRIDLTY, lwd=.GRIDLWD )
   }
 
-  if( .ISCAMFLAG )
-  {
-    abline( v = tMP + c(14,19), lty = 3, lwd = .8, col = "grey20" )
-  }
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
@@ -5372,7 +5400,7 @@
     lines( tVec,quants[2,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
     lines( tVec,quants[4,], col=.TULQCOL, lty=.TULQLTY, lwd=.TULQLWD )
   }
-  abline( h=obj$ctlList$refPts$Umsy, lty="dashed" )
+  abline( h=obj$ctlList$mp$hcr$targHRHerring, lty="dashed" )
 
   usr <- par( "usr" )
 
@@ -6673,7 +6701,7 @@
   {
     if( obj$mp$hcr$specs$remRefBase == "rrBaseFmsy" )
       remRate <- obj$ctlList$refpts$Fmsy
-  	if ( obj$mp$hcr$specs$remRefBase == "rrBaseF01" )
+    if ( obj$mp$hcr$specs$remRefBase == "rrBaseF01" )
       remRate <- obj$ctlList$refPts$F01
     if ( obj$mp$hcr$specs$remRefBase =="rrBaseFspr" )
       remRate <- obj$ctlList$refPts$FsprX
@@ -12174,7 +12202,7 @@ plotRefPts <- function( obj )
 # Source:       K.Holt (17-Aug-09), Modified A.R. Kronlund (07-Jul-10)
 .plotBtFit <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE,
                         bygears=FALSE, doLegend=FALSE, xLim=NULL, yLim=NULL,
-                        useYears=FALSE ) )
+                        useYears=FALSE ), lab = TRUE )
 {
   # What stock assessment method?
 
@@ -12211,10 +12239,10 @@ plotRefPts <- function( obj )
       xLim <- c( 1,nT )
 
   # Y-axis limits.
-  yLimB <- gfx$yLimB
-  if ( is.null(yLimB) )
+  yLim <- gfx$yLim
+  if ( is.null(yLim) )
   {
-    yLim <- c( 0, max(c(omBt,assessBt,legalB),na.rm=TRUE) )
+    yLim <- c( 0, max(c(omBt,assessBt),na.rm=TRUE) )
   }
   
   nGear <- dim( It )[2]
@@ -12254,8 +12282,13 @@ plotRefPts <- function( obj )
           pch=c(     NA, .GearPCH[i],        NA ), bty="n", bg="white" )
       }
     }
-    mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
-    mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Biomass" )
+    if(lab)
+    {
+      mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Year" )
+      mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=TRUE, "Biomass" )  
+    }
+
+    
   }
   else
   {
@@ -12282,8 +12315,7 @@ plotRefPts <- function( obj )
   
     if ( gfx$useYears )
     {
-      
-      .addXaxis( xLim=xLim, initYear=.INITYEAR, gfx$useYears )
+      .addXaxis( xLim=xLim, initYear=.INITYEAR, years = gfx$useYears )
       axis( side=2, cex.axis=.CEXAXIS, las=.YAXISLAS )
       axis( side=4, labels=FALSE )      
     }
@@ -12296,8 +12328,11 @@ plotRefPts <- function( obj )
     }
     
     box()
-    mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
+    if(lab)
+    {
+      mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Year" )
+      mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Biomass" )  
+    }
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12337,7 +12372,7 @@ plotRefPts <- function( obj )
 # Returns:      NULL (invisibly).
 .plotUt <- function( obj, iSim=1, iRep=1, gfx=list( annotate=TRUE,
                      bygears=FALSE, doLegend=FALSE, xLim=NULL, yLim=NULL,
-                     useYears=FALSE ) )
+                     useYears=FALSE ), lab = TRUE )
 {
   nCol       <- dim( obj$om$legalHR )[2]
   legalHR    <- obj$om$spawnHR[ iRep,c(2:nCol) ]
@@ -12414,14 +12449,14 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
-      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
-        lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
-        col = c("black", .BmsyCOL) )    
+      panLegend( 0.5,0.95, legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
+      lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+      col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
-    targetHR <- blob$ctlList$mp$hcr$targHRHerring
+    targetHR <- obj$ctlList$mp$hcr$targHRHerring
 
     abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
@@ -12432,9 +12467,12 @@ plotRefPts <- function( obj )
     axis( side=4, labels=FALSE )
     
     box()
-    mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
-
+    if( lab )
+    {
+      mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
+      mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
+    }
+    
     if ( gfx$annotate )
     {   
     }
@@ -13595,7 +13633,7 @@ plotRefPts <- function( obj )
     abline( h = depUSR, lty = 2, col = "darkgreen", lwd = 2 )
 
     if( gfx$doLegend )
-      panLegend(  x = .2, y =.5, bty = "n",
+      panLegend(  x = .3, y =.8, bty = "n",
                   legTxt = c( expression(.3*B[0]),
                               expression(.6*B[0])),
                   lty = 2, lwd = 2,
@@ -13645,14 +13683,17 @@ plotRefPts <- function( obj )
 
 .plotTulipDepCat <- function( obj, allQuants=TRUE, annotate=FALSE,
                               yLimC=NULL, yLimD=NULL,
-                              DepLab = "Depletion", ... )
+                              DepLab = "Depletion", colHeader = NULL,
+                              ... )
 {
+  if( is.null(colHeader) )
+    colHeader <- obj$ctlList$gui$mpLabel
 
   .plotTulipDepletion( obj, xLim=NULL, yLim=yLimD, ... )
-  panLab(x = 0.4, y = .9, txt = obj$ctlList$gui$mpLabel )
+  mtext(side = 3, text = colHeader, cex = .6, line = 3 )
   mfg <- par( "mfg" )
   if ( mfg[2]==1 )
-    mtext( side=2, line=2.5, cex=1, DepLab )
+    mtext( side=2, line=2.5, cex=1, expression(B[t]/B[0]) )
   .plotTulipCatch( obj, xLim=NULL, yLim = yLimC, ... )
   mfg <- par( "mfg" )  
   if( mfg[2]==1 ) 
@@ -13715,7 +13756,7 @@ plotRefPts <- function( obj )
 
   # X-axis (bottom): panel is in the last row.
   if ( mfg[1]==mfg[3] )
-    #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
+    # axis( side=1, at=xSeq, cex.axis=.CEXAXIS2 )
     .addXaxis( xLim, initYear=.INITYEAR, side=1, years=gfx$useYears )
  # else
   #  #axis( side=1, at=xSeq, cex.axis=.CEXAXIS2, labels=FALSE )
@@ -13736,7 +13777,7 @@ plotRefPts <- function( obj )
     abline( h=seq(yLim[1], yLim[2],length=10), lty=.GRIDLTY, lwd=.GRIDLWD, col=.GRIDCOL )
   }
   
-  axis( side=4, labels=FALSE )
+  # axis( side=4, labels=FALSE )
 
   abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )
 
@@ -14412,21 +14453,21 @@ plotRefPts <- function( obj )
 {
   panel.estPars <- function( x,y,z=stats,... )
   {
-	  xMean <- mean( x,na.rm=T )
+    xMean <- mean( x,na.rm=T )
     yMean <- mean( y,na.rm=T )
-		points( x,y,pch=16,cex=0.6,col="darkgray" )
-		abline( h=yMean,v=xMean,col="blue",lty=3 )
+    points( x,y,pch=16,cex=0.6,col="darkgray" )
+    abline( h=yMean,v=xMean,col="blue",lty=3 )
 
-		if ( !is.null(stats) )
+    if ( !is.null(stats) )
     {
       # This is logic to figure out what "pair" is being plotted.
       # The modal estimates are the first row of the mcmcObj.
       # The par()$mfg calls finds the current row and column indices of
       # the panel being plotted.
 
-	    xStat <- z[ par()$mfg[2] ]
+      xStat <- z[ par()$mfg[2] ]
       yStat <- z[ par()$mfg[1] ]
-		  points( xStat,yStat, pch=3, cex=3, lwd=2 )
+      points( xStat,yStat, pch=3, cex=3, lwd=2 )
     }
     
     # Now mark the first and last points (green and red?).
@@ -14435,22 +14476,22 @@ plotRefPts <- function( obj )
     #idx <- seq( 100,length(x),100 )
     #points( x[idx], y[idx], bg="red", cex=1.2, pch=21 )
     
-		points( xMean,yMean, bg="white", pch=21,cex=2 )    
+    points( xMean,yMean, bg="white", pch=21,cex=2 )    
   }
 
   panel.hist <- function( x,... )
   {
     # Histograms for diagonal of pairs plot (from PBS Modelling CCA).
-	  usr <- par("usr")
+    usr <- par("usr")
     on.exit( par(usr) )
-	  h <- hist( x, breaks="Sturges", plot=FALSE )
-	  #h <- hist( x, breaks=15, plot=FALSE )
-	  breaks <- h$breaks
+    h <- hist( x, breaks="Sturges", plot=FALSE )
+    #h <- hist( x, breaks=15, plot=FALSE )
+    breaks <- h$breaks
     nB <- length(breaks)
-	  y <- h$counts
+    y <- h$counts
     y <- y / sum(y)
-	  par( usr = c(usr[1:2], 0, max(y)*1.5) )
-	  rect( breaks[-nB], 0, breaks[-1], y, col="#FFD18F" )
+    par( usr = c(usr[1:2], 0, max(y)*1.5) )
+    rect( breaks[-nB], 0, breaks[-1], y, col="#FFD18F" )
     box()
   }
   

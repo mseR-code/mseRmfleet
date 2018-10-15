@@ -1,5 +1,6 @@
 # mseR Options.r: Written:  Sat Dec  6 21:17:59 2014 
 # SPC: 8 March 2016 - Options and Globals should be merged.
+library(RColorBrewer)
 # General options start here:
 #
 .CEXANNO <- 1      #  Annotation character expansion 
@@ -243,9 +244,9 @@
 # Settings for .Ftg 
 #
 .FtgBG <- c("black","red","green","blue","magenta")
-.FtgCOL <- c("black","red","green","blue","magenta")
+.FtgCOL <- brewer.pal(n=5, name = "Dark2" )
 .FtgFG <- c("black","black","black","black","black")
-.FtgLTY <- c(3,3,3,3,3)
+.FtgLTY <- c(1,1,1,1,1)
 .FtgLWD <- c(2,2,2,2,2)
 .FtgPCH <- c(21,21,21,21,21)
 .FtgCEX <- c(1.4,1.4,1.4,1.4,1.4)
@@ -254,8 +255,8 @@
 #
 # Settings for .M 
 #
-.MBG <- "purple" 
-.MCOL <- "purple" 
+.MBG <- "red" 
+.MCOL <- "red" 
 .MFG <- "black" 
 .MLTY <- 4 
 .MLWD <- 2 
@@ -266,8 +267,8 @@
 #
 # Settings for .Mt 
 #
-.MtBG <- "purple" 
-.MtCOL <- "purple" 
+.MtBG <- "red" 
+.MtCOL <- "red" 
 .MtFG <- "black" 
 .MtLTY <- 1 
 .MtLWD <- 2 
@@ -385,8 +386,7 @@
 .DeptBLIM <- .3
 .DeptBUPPER <- 0.525
 #.DeptLAB  <- "Female spawning biomass (000s t)" # Using biomass for Atl Hal
-.DeptLAB  <- "SSB (post-fishing)" 
-if( .FBt_Perf ) .DeptLAB <- "SSB (pre-fishing)"
+.DeptLAB  <- "Spawning Biomass" 
 .DeptUNIT <- "" 
 #
 # Settings for .Gear 

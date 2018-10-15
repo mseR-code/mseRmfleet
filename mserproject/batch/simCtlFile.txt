@@ -1,9 +1,18 @@
+<<<<<<< HEAD
+# simCtlBat4.txt: mseR parameter file written Wed Jun 13 16:49:48 2018.
+parameter value
+gui$mpLabel "minE18.8_HR.2"
+gui$nReps 1
+gui$quiet TRUE
+gui$scenarioLabel "WCVI_DDM"
+=======
 # mseRguiSim GUI parameters written Mon May 14 13:40:10 2018 
 parameter value
 gui$mpLabel "HS30-60_HR.2"
 gui$nReps 10
 gui$quiet FALSE
 gui$scenarioLabel "SOG_tvM"
+>>>>>>> master
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simRefPtsF"
@@ -23,7 +32,11 @@ mp$assess$chkMethod2 FALSE
 mp$assess$idxMethod1 "seq(68,54,1)"
 mp$assess$idxMethod2 "seq(68,54,1)"
 mp$assess$t1Method 68
+<<<<<<< HEAD
+mp$assess$t2Method 82
+=======
 mp$assess$t2Method 87
+>>>>>>> master
 mp$assess$ddAlphaG 1.4054
 mp$assess$ddB0 20
 mp$assess$ddkAge 2
@@ -72,14 +85,27 @@ mp$assess$iscam$priors$meanInitM -0.79
 mp$assess$iscam$priors$sdInitM 0.4
 mp$assess$iscam$priors$steepnessBeta1 10
 mp$assess$iscam$priors$steepnessBeta2 4.92
+mp$assess$iscam$priors$logqdensity c(0,1)
 mp$assess$iscam$priors$logqPrior1 c(0,0)
 mp$assess$iscam$priors$logqPrior2 c(1,0.01)
+mp$assess$iscam$initPar$logR0 7.28
+mp$assess$iscam$initPar$h .8
+mp$assess$iscam$initPar$logm -0.6918
+mp$assess$iscam$initPar$logRbar 7.09
+mp$assess$iscam$initPar$logRinit 5.97
+mp$assess$iscam$initPar$rho 0.413297
+mp$assess$iscam$initPar$kappa 1.22062
 mp$data$chkAges1 FALSE
 mp$data$chkAges2 FALSE
 mp$data$chkIndex1 FALSE
 mp$data$chkIndex2 FALSE
+<<<<<<< HEAD
+mp$data$idxAges1 "seq(68,82,1)"
+mp$data$idxAges2 "c(68,82)"
+=======
 mp$data$idxAges1 "seq(68,87,1)"
 mp$data$idxAges2 "c(68,87)"
+>>>>>>> master
 mp$data$indexType "c(1,1)"
 mp$data$inputAges read.rep('mserproject/history/iscamSOG2017.rep')
 mp$data$inputCatch read.rep('mserproject/history/iscamSOG2017.rep')
@@ -127,6 +153,7 @@ mp$hcr$deltaTACcType "absolute"
 mp$hcr$nMCMC 1
 mp$hcr$nProjYears 5
 mp$hcr$nThin 1
+mp$hcr$nYearsAboveCutoff 1
 mp$hcr$optRefPt "useSnow"
 mp$hcr$paAdj FALSE
 mp$hcr$qIndex 0.5
@@ -145,6 +172,10 @@ mp$hcr$Stable3a 0.5
 mp$hcr$Stable3b 0.75
 mp$hcr$statusBase "statusBaseB0"
 mp$hcr$statusSource "statusSrceEst"
+<<<<<<< HEAD
+mp$hcr$rule "herring"
+=======
+>>>>>>> master
 mp$hcr$herringCutoffType "absolute"
 mp$hcr$herringCutoffVal 21.2
 mp$hcr$targHRHerring .2
@@ -159,17 +190,25 @@ mp$hcr$useSnow TRUE
 opMod$allocProp c(0.186,0.4213,0.3927,0,0)
 opMod$aMat50 2.2616
 opMod$aMat95 3.213166
+<<<<<<< HEAD
+opMod$B0 45.6158
+opMod$baranovIter 8
+opMod$baranovSteps c(0.5,0.3,0.5,1.,1.)
+opMod$c1 c(0.000184208185)
+opMod$c2 c(1.999008)
+=======
 opMod$B0 140.265
 opMod$baranovIter 5
 opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$c1 c(4.5e-6)
 opMod$c2 c(3.127)
+>>>>>>> master
 opMod$dg c(0.0,0.0,0,0,0)
 opMod$kYearsMbar NULL
 opMod$endM 0.5602331
 opMod$endMrule NULL
 opMod$endMphase NULL
-opMod$endMrule NULL
+opMod$endMrule "mean"
 opMod$futureOption 3
 opMod$repFile NULL
 opMod$estMdevs "repFile"
@@ -200,6 +239,21 @@ opMod$nAges 10
 opMod$nGear 5
 opMod$nGrps 1
 opMod$obsWtAge "repFile"
+<<<<<<< HEAD
+opMod$nT 82
+opMod$powerg c(1,1,1,1,1)
+opMod$pulseMfrac 0
+opMod$pulseMFrq 16
+opMod$pulseMSize 1
+opMod$qg c(1,1,1,0.841236,0.999068)
+opMod$recDevsOffset 2
+opMod$recruitmentOption "Beverton-Holt"
+opMod$recM 0.583934
+opMod$repFileName 'mserproject/history/iscamWCVI2017.rep'
+opMod$rSeed 1270
+opMod$rSteepness 0.73723
+opMod$posteriorSamples "mserproject/history/localPost/WCVI/tvM/"
+=======
 opMod$nT 87
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseMfrac 0.3
@@ -214,6 +268,7 @@ opMod$rSeed 1275
 opMod$rSteepness 0.775463
 opMod$posteriorSamples "mserproject/history/localPost/SOG/tvM/"
 opMod$postSampleSize 5000
+>>>>>>> master
 opMod$postSampleSeed 2335
 opMod$selType c(1,1,1,1,1)
 opMod$sigmaLinf 0.12

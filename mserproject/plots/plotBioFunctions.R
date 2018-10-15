@@ -1,4 +1,248 @@
+
+# plotMPDepCatchTulips()
+# Plots the depletion and catch simulation envelopes for
+# a single MP, comparing performance across scenarios.
+plotMPDepCatchTulips <- function( df = info.df, 
+                                  mp = "minE18.8_HR.2", traces = 3,
+                                  scenOrder = c("WCVI_DDM","WCVI_DIM","WCVI_conM"),
+                                  yLimC = c(0,40), yLimD = c(0,1.6),
+                                  stock = "WCVI" )
+{
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  df %>%
+            filter(mpLabel == mp )
+
+  pdf( file = paste( stock, "_", mp, ".pdf", sep = "" ), width = 11, height = 8 )
+
+  par( mfcol = c(2,nrow(subDF)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
+
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = TRUE, bygears = FALSE, yLim = c(0,1.3),
+               grids = FALSE, refPts = FALSE )
+
+  for( scenLabel in scenOrder )
+  {
+    scenDF  <- subDF %>% filter( scenarioLabel == scenLabel )
+    simID   <- scenDF[,"simLabel"]
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path("..",simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    .plotTulipDepCat( obj = blob, gfx = gfx, traces = traces, refPts = FALSE,
+                      colHeader = blob$ctlList$gui$scenarioLabel,
+                      yLimC = yLimC, yLimD = yLimD )
+
+    # lab <- paste("(",letters[i],")",sep = "")
+
+    # panLab( x = 0.02, y = 0.95, txt = lab)
+  }
+
+  dev.off()
+  # mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)  
+} # END plotMPDepCatchTulips()
+
+plotMtTulip <- function(  simFolder = "../WCVI_newRuns_CSAS", 
+                          scenario = c("WCVI_DDM_obsCV.625_pulseM2.0x.75"),
+                          MPs = c("minE.5B0_HR.1_cap2"), 
+                          traces = 3 )
+{ 
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+  if(traces > 0) traces <- sample(1:100,size = traces )
+
+  subDF <-  info.df  %>%
+            filter( scenarioLabel %in% scenario,
+                    mpLabel %in% MPs )
+
+  par(mfrow =c(nrow(subDF),1), mar = c(0,0,0,0), oma = c(3,3,3,1) )
+
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,1.3),
+               grids = FALSE, refPts = FALSE )
+
+  for( i in 1:nrow(subDF) )
+  {
+    simID   <- subDF[i,"simLabel"]
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path("..",simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    .plotTulipF( obj = blob, gfx = gfx, traces = traces, refPts = FALSE )
+
+    lab <- paste("(",letters[i],")",sep = "")
+
+    panLab( x = 0.02, y = 0.95, txt = lab)
+  }
+  mtext(side =2, text = "Natural Mortality Rate (/yr)", outer =T, line = 2)
+}
+
+
+plotMPsMtBtFitUt <- function( iRep = 1,
+                              simFolder = "../WCVI_allScenarios_MCMC",
+                              scenario = "WCVI_DIM",
+                              MPs = c("minE18.8_HR.2","minE18.8_HR.1","minE18.8_HR.1_cap2"),
+                              saveFileRoot = "minE18.8",
+                              saveFile = FALSE,
+                              yLimB = c(0,100),
+                              yLimM = c(0,1.3),
+                              yLimHR = c(0,1.2) )
+{
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+  info.df <-  info.df %>%
+              filter( scenarioLabel == scenario,
+                      mpLabel %in% MPs )
+
+  # Set up saving options
+  savePath <- file.path( ".","BtFitMtUt", scenario, saveFileRoot)
+  saveName <- paste("BtFitMtUt_rep", iRep, ".pdf", sep = "" )
+  savePath <- file.path(savePath,saveName)
+
+
+  if(saveFile)
+    pdf(file = savePath, width = 11, height = 8 )
+
+  # Set up plot environment
+  par(mfcol = c(3,length(MPs) ), mar = c(1.5,1.5,1.5,1.5), oma = c( 3,3,2,1 )  )
+
+  # Loop over MPs
+  for( mp in MPs )
+  {
+    subDF <-  info.df %>%
+              filter( mpLabel == mp )
+
+    simID <- subDF[1,"simLabel"]
+
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path(simFolder,simID,simFile)
+
+    # Load blob
+    load(simPath)
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                 showProj = FALSE, bygears = FALSE,
+                 yLim = yLimB )
+
+    .plotBtFit(blob, gfx = gfx, iRep = iRep, lab = FALSE  )
+
+    mtext(side = 3, text = mp, line = 1, cex = .8 )
+
+    mfg <- par("mfg")
+
+    if(mfg[2] == 1 )
+    {
+      panLegend(  x = 0.5, y = 0.95, bty = "n",
+                  legTxt = c( "SSB", expression(.3*B[0]), "1st Fit", "2nd Fit" ),
+                  col = c("red","orange","green","darkgreen" ),
+                  lty =c(1,3,1,1),
+                  lwd = c(2,2,2,2))
+      mtext( side = 2, text = "Biomass (kt)", line = 2.5 )
+    }
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                showProj = FALSE, bygears = FALSE, yLim = yLimM )
+
+    
+    .plotMt(blob, gfx = gfx, iRep = iRep, lab = FALSE )
+
+    mfg <- par("mfg")
+
+    if(mfg[2] == 1 )
+    {
+      panLegend(  x = 0.4, y = 0.3, bty = "n",
+                  legTxt = c( expression(M[t]), "1st Fit", "2nd Fit"),
+                  col = c("red","green","darkgreen" ),
+                  lwd = c(2,2,2))
+      mtext( side = 2, text = "Natural Mortality (/yr)", line = 2.5 )
+    }
+
+    
+
+    gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+                 showProj = FALSE, bygears = FALSE, yLim = yLimHR)
+
+
+
+    .plotUt(blob, gfx = gfx, iRep = iRep, lab = FALSE )  
+
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+    {
+      panLegend(  x = 0.4, y = 0.95, 
+                  legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
+                  lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+                  col = c("black", .BmsyCOL) )  
+      mtext( side = 2, text = "Harvest Rate (/yr)", line = 2.5 ) 
+    }
+  }
+  mtext( outer = TRUE, text = "Year", side = 1, line = 2 )
+
+  if(saveFile)
+    dev.off()
+}
+
+
 # Functions for plotting OM outputs
+plotMtBtFitUt <- function( )
+{
+  gfx <- list( useYears = TRUE, doLegend = FALSE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,1) )
+
+  par(mfrow = c(3,1), mar =c(2,2,2,2), oma = c(3,3,1,1) )
+
+  .plotMt(blob, gfx = gfx )
+  panLegend(  x = 0.3, y = 0.3, bty = "n",
+              legTxt = c( "OM", "Last Fit", "First Fit"),
+              col = c("purple","red","darkgreen" ),
+              lwd = c(2,2,2))
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE, yLim = c(0,200) )
+
+  .plotBtFit(blob, gfx = gfx )
+
+  gfx <- list( useYears = TRUE, doLegend = TRUE, annotate = FALSE,
+               showProj = FALSE, bygears = FALSE )
+
+  .plotUt(blob, gfx = gfx )  
+}
+
 
 plotMtBtFitUt <- function(  )
 {
@@ -186,6 +430,118 @@ plotFishingOppTradeoff <- function( simNum = 1,
 
 
 }
+
+
+# plotTulipAssErr()
+# Plots a simulation envelopes of assessment errors as MARE
+# of assessed biomass to OM biomass, will plot comparing MPs
+# for a given scenario
+plotTulipAssErr <- function(  simFolder = "../WCVI_slowUp_HR.1_cap2_Jul18",
+                              mps = c("minE.5B0_HR.1_cap2","minE.5B0_HR.1_cap2_slowUp2","minE.5B0_HR.1_cap2_slowUp3","minE.5B0_HR.1_cap2_slowUp4","minE.5B0_HR.1_cap2_slowUp5"), 
+                              traces = 3,
+                              scenOrder = c("WCVI_DDM","WCVI_DIM","WCVI_conM"),
+                              years = 1951:2032,
+                              yLim = c(-2 ,3.5) )
+
+{
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
+
+    info.df
+  }
+
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
+
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  info.df %>%
+            filter( mpLabel %in% mps )
+
+  par(mfrow = c(length(scenOrder),length(mps) ), mar = c(1,2.5,2,1.5), oma =c(4,5,1,3) )
+
+  for( scenIdx in 1:length(scenOrder) )
+  {
+    scenLabel <- scenOrder[scenIdx]
+    for(mIdx in 1:length(mps))
+    {
+      mp <- mps[mIdx]
+      singleDF <- subDF %>%
+                  filter( mpLabel == mp, scenarioLabel == scenLabel )
+      simID <- singleDF$simLabel
+      simFile <- paste(simID,".RData",sep = "")
+      simPath <- file.path(simFolder,simID,simFile)
+
+      # Load blob
+      load(simPath)
+
+      tMP <- blob$ctlList$opMod$tMP
+      nT  <- blob$ctlList$opMod$nT
+
+      # Now load the biomass and retro SBt estimates
+      Bt            <- blob$om$SBt[,2:ncol(blob$om$SBt)]
+      retroSpawnBt  <- blob$mp$assess$retroSpawnBt
+
+      # Need to flatten the retro spawning Bt to a single row
+      # for each replicate. Repetitions of the reps only happen
+      # for each year in proj period, so this plot will show projection
+      # period only
+      iReps <- max(retroSpawnBt[,"iRep"])
+      flatRetroSpawnBt <- matrix(nrow = iReps, ncol = nT - tMP + 1 )
+      for( i in 1:iReps)
+      {
+        for(tCol in tMP:nT )
+        {
+          retroRow <- which(retroSpawnBt[,"tStep"] == tCol & retroSpawnBt[,"iRep"] == i)
+          flatRetroSpawnBt[i,tCol - tMP + 1] <- retroSpawnBt[retroRow,tCol]
+        }
+      }
+
+      
+      # calculate relative errors
+      assRelErr     <- (flatRetroSpawnBt - Bt[,tMP:nT]) / Bt[tMP:nT]
+
+      # calculate 
+      assRelErrq    <- apply( X = assRelErr, FUN = quantile, MARGIN = 2,
+                              probs = c(0.05, 0.5, 0.95) )
+      meanRelErr    <- apply( X = assRelErr, FUN = mean, MARGIN = 2 )
+
+      plot( x = range(years[tMP:nT]), y = yLim, type = "n", xlab = "", 
+            ylab = "", las = 1 )
+        polygon(  x =  c(years[tMP:nT],rev(years[tMP:nT])),
+                  y = c(assRelErrq[1,],rev(assRelErrq[3,])),
+                  border = NA, col = "grey70" )
+        lines( x = years[tMP:nT], y = assRelErrq[2,], lwd = 2 )
+        lines( x = years[tMP:nT], y = meanRelErr, lwd = 2, lty = 2 )
+        for( tIdx in traces[traces <= iReps] )
+        {
+          lines( x =years[tMP:nT], y = assRelErr[tIdx,], lwd = .8 )
+        }
+        box()
+
+      mfg <- par("mfg")
+      if(mfg[1] == 1) mtext(side = 3, text = mp, cex = .8, line =2 )
+      if(mfg[2] == mfg[4])
+      {
+        mtext(side = 4, text = scenLabel, cex = .8, line = 2 )
+      }
+    }
+    if(mfg[1] == mfg[3] )
+      mtext(  side = 1, outer = T, text = "Year",
+              line = 2 )
+  }
+  mtext(  side = 2, outer = T, text = "Relative Assessment Error",
+          line = 1 )
+}
+
 
 
 
@@ -1439,6 +1795,22 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
+<<<<<<< HEAD
+plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_HR.1_cap2",
+                                      mps = c("minE.5B0_HR.1_cap2","minE.5B0_HR.1_cap2_slowUp2","minE.5B0_HR.1_cap2_slowUp3","minE.5B0_HR.1_cap2_slowUp4","minE.5B0_HR.1_cap2_slowUp5"), 
+                                      traces = 3,
+                                      scenario = c("WCVI_DIM"),
+                                      years = 1951:2032,
+                                      saveFile = FALSE,
+                                      yLimD = c(0,1.5),
+                                      yLimC = c(0,10),
+                                      yLimU = c(0,0.4) )
+{
+
+  # Read in sims
+  sims <- list.files(file.path(simFolder))
+  sims <- sims[grepl("sim",sims)]
+=======
 plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
                                       scenarios = scenList, df = info.df, gfx,
                                       traces = 3 )
@@ -1448,45 +1820,58 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
   for( scenIdx in 1:length(scenarios) )
   {
     scen <- scenarios[scenIdx]
+>>>>>>> master
 
-    depCatchPlot    <- paste(scen, plotNameRoot, ".pdf", sep = "" )
-    depCatch_noFish <- paste(scen,plotNameRoot,"_noFish.pdf", sep = "" )
+  readInfoFile <- function( sim )
+  {
+    infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
+    info <- lisread(infoPath)
+    info.df <- as.data.frame(info)
+    info.df$simLabel <- sim
 
-    noFishID <- df[  which(df$mpLabel == "NoFish" & df$scenarioLabel == scen)[1],
-                          "simLabel"]
-    noFishPath  <- file.path("..",noFishID,paste(noFishID, ".RData", sep = "") )
+    info.df
+  }
 
-    if(!is.na(noFishID))
-    {
-      load(noFishPath)
-      noFishBlob <- blob
-    }
+  gfx <- list(  annotate=TRUE, doLegend=TRUE, grids=FALSE,
+                showProj=TRUE, xLim=NULL, yLim=NULL, useYears=TRUE )
 
-    if( "NoFish" %in% MPnames ) lenMPlist <- length(MPnames) - 1
-    else lenMPlist <- length(MPnames)
+  # Read in info files, sort by  scenarios
+  info.df <- lapply( X = sims, FUN = readInfoFile )
+  info.df <- do.call( "rbind", info.df )
 
-    mpList <- vector( mode = "list", length = lenMPlist )
-    mpListIdx <- 1
 
-    pdf( file = depCatchPlot, width = length(MPnames)*2, height = 6 )
-    par( mfcol = c(2,length(MPnames)), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+  if(traces > 0) traces <- sample(1:100,size = traces )
+  subDF <-  info.df %>%
+            filter( mpLabel %in% mps, scenarioLabel %in% scenario )
 
-    for( mpIdx in 1:length(MPnames) )
-    {
-      mp <- MPnames[mpIdx]
-      df.sub <-   df %>%
-                  filter( scenarioLabel == scen,
-                          mpLabel == mp )
+  depCatchPlot <- paste(scenario, "DepCatchHR.pdf" )
 
-      simID     <- df.sub[1,]$simLabel
-      if(is.na(simID)) next
+  if( saveFile )
+    pdf( file = depCatchPlot, width = 11, height = 8 )
 
-      simPath  <- file.path("..",simID,paste(simID, ".RData", sep = "") )
-      load(simPath)
+  par( mfcol = c(3,length(mps)), mar = c(1.5,2,1.5,2), oma = c(3,3,4,1))
 
-      if(mpIdx == 1) gfx$doLegend <- TRUE
-      else gfx$doLegend <- FALSE
+  for( mpIdx in 1:length(mps) )
+  {
+    mp <- mps[mpIdx]
+    singleDF <- subDF %>%
+                filter( mpLabel == mp )
+    simID <- singleDF$simLabel
+    simFile <- paste(simID,".RData",sep = "")
+    simPath <- file.path(simFolder,simID,simFile)
 
+    # Load blob
+    load(simPath)
+
+<<<<<<< HEAD
+    obj <<- blob
+
+    tMP <- blob$ctlList$opMod$tMP
+    nT  <- blob$ctlList$opMod$nT
+
+    if( mpIdx > 1 )
+      gfx$doLegend <- FALSE
+=======
       .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,50),
                         refPts = FALSE, traces = traces )
 
@@ -1505,29 +1890,34 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
         mpListIdx <- mpListIdx + 1
       }
     }
+>>>>>>> master
 
-    mtext( side = 3, outer = T, text = scen, cex = 1.3, line = 2.5)
+    .plotTulipDepCat( blob, gfx = gfx, yLimD = yLimD, yLimC = yLimC,
+                      refPts = FALSE, traces = traces )
 
-    dev.off()
+    gfxHR <- gfx
+    gfxHR$yLim <- yLimU
 
-    if(is.na(noFishID)) next
-    if("NoFish" %in% MPnames ) noFishScaleMPs <- MPnames[MPnames != "NoFish" ]
-    pdf( file = depCatch_noFish, width = (lenMPlist)*3, height = 6 )
-    par( mfcol = c(2,lenMPlist), mar = c(1,1.5,1,1.5), oma = c(3,3,4,1))
+    .plotTulipHR( blob, gfx = gfxHR, refPts = FALSE, traces = traces,
+                  xLim = c(tMP-1,nT) )
+    
+    mfg <- par("mfg")
+    if( mfg[2] == 1 )
+      mtext( side = 2, text = "Harvest Rate", line = 3)
 
-    for( idx in 1:length(mpList) )
-    {
-      if(idx == 1) gfx$doLegend <- TRUE
-      else gfx$doLegend <- FALSE
 
-      if( is.null(mpList[[idx]]) ) next
+  }
 
+<<<<<<< HEAD
+  if(saveFile)
+=======
       .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,50),
                         refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]),
                         traces = traces )
     }
+>>>>>>> master
     dev.off()
-  }
+
 }
 
 

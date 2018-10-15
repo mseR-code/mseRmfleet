@@ -1,8 +1,13 @@
 library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
+<<<<<<< HEAD
+# batchFiles <- 1:8
+batchFiles <- c(2,3,6,7)
+=======
 batchFiles <- c(1:24)
 # batchFiles <- c(9:12,21:24)
+>>>>>>> master
 nBatchFiles <- length(batchFiles)
 batchFolderNames <- paste("mseRBat",batchFiles,sep = "")
 
@@ -67,7 +72,11 @@ tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 stopCluster(cl)
 
 require(stringr)
+<<<<<<< HEAD
+for (i in 1:nBatchFiles )
+=======
 for (idx in (1:length(batchFiles)))
+>>>>>>> master
 {
   i <- batchFiles[idx]
   # Find the sim output folder in the project file
@@ -107,3 +116,13 @@ for (idx in (1:length(batchFiles)))
 elapsed <- (proc.time() - tBegin)[ "elapsed" ]
 cat( "\nMSG (.runBatchJob): Elapsed time for parallel batch = ",
   round(elapsed/60.0,digits=2)," minutes.\n" )
+
+# Now copy the project folder to the landmark server
+destFolderName <- paste("Herring_slowUp_HR.1",Sys.Date(),sep = "_")
+copyDest <- file.path("/Volumes/Data/DFO_Pacific/projects/2018_Herring/HerringMSEruns",destFolderName)
+dir.create( copyDest )
+
+# Copy project folder contents recursively to copyDest
+cat( "Copying project folder contents to ", copyDest, "\n", sep = "" )
+file.copy(  from = file.path( getwd(),"mseRproject"), to = copyDest, 
+            recursive = TRUE )

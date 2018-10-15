@@ -15,16 +15,52 @@ source("../../mseRrefPoints.R")
 source("../../mseRrefPoints.R")
 source("plotBioFunctions.R")
 
+<<<<<<< HEAD
+MPs <- c( "minE18.8_HR.2",
+          "minE18.8_HR.1",
+          "minE18.8_HR.1_cap2",
+=======
 MPs <- c( "NoFish",
 
           "minE21.2_HR.2",
           "minE21.2_HR.1",
           "minE21.2_HR.1_cap30",
+>>>>>>> master
           "minE.5B0_HR.2",
           "minE.5B0_HR.1",
           "minE.5B0_HR.1_cap30",
           "HS30-60_HR.2",
           "HS30-60_HR.1",
+<<<<<<< HEAD
+          "HS30-60_HR.1_cap2",
+          "NoFish" )
+
+
+MPs_PI <- c(  "PerfectInfo_minE18.8_HR.2",
+              "PerfectInfo_minE18.8_HR.1",
+              "PerfectInfo_minE18.8_HR.1_cap2",
+              "PerfectInfo_minE.5B0_HR.2",
+              "PerfectInfo_minE.5B0_HR.1",
+              "PerfectInfo_minE.5B0_HR.1_cap2",
+              "PerfectInfo_HS30-60_HR.2",
+              "PerfectInfo_HS30-60_HR.1",
+              "PerfectInfo_HS30-60_HR.1_cap2" )
+
+currMPs <- c( "minE18.8_HR.2",
+              "minE18.8_HR.1",
+              "minE18.8_HR.1_cap2",
+              "NoFish" )
+
+bestMP <- c(  "minE.5B0_HR.1_cap2",
+              "minE18.8_HR.1_cap2",
+              "HS30-60_HR.1_cap2",
+              "NoFish" )
+
+bestMPs_PI <- c(  "minE.5B0_HR.1_cap2",
+                  "PerfectInfo_minE.5B0_HR.1_cap2",
+                  "minE18.8_HR.1_cap2",
+                  "PerfectInfo_minE18.8_HR.1_cap2" )
+=======
           "HS30-60_HR.1_cap30" )
 
 MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",
@@ -36,6 +72,7 @@ MPs_PI <- c(  "PerfectInfo_minE21.2_HR.2",
               "PerfectInfo_HS30-60_HR.2",
               "PerfectInfo_HS30-60_HR.1",
               "PerfectInfo_HS30-60_HR.1_cap30" )
+>>>>>>> master
 
 currMPs <- c( "NoFish",
               "minE21.2_HR.2",
@@ -78,9 +115,9 @@ info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df ) %>%
             arrange(scenarioLabel,mpLabel)
 
-# scenList <- unique( info.df$scenarioLabel )
+scenList <- unique( info.df$scenarioLabel )
 
-scenList <- c( "WCVI_Mbar10", "WCVI_PulseM_1.5x16" )
+# scenList <- c( "WCVI_DIM", "WCVI_DDM" )
 # MPs       <- unique( info.df$mpLabel )
 
 yrs <- seq(1951,by = 1, length = 92)
@@ -90,8 +127,30 @@ nT <- 92
 plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs_DepCatch",
                           scenarios = scenList, df = info.df, gfx = gfx)
 
+<<<<<<< HEAD
+plotDepCatchMultiPanels(  MPnames = MPs, plotNameRoot = "allMPs",
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
+                          gfx = gfx )
+
+plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs",
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
+                          gfx = gfx, yLimC = c(0,15), yLimD = c(0,2) )
+
+plotDepCatchMultiPanels(  MPnames = bestMP, plotNameRoot = "bestMP",
+                          scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_conM"), df = info.df,
+                          gfx = gfx )
+
+# plotDepCatchMultiPanels(  MPnames = MPs_PI, plotNameRoot = "allMPs_PI",
+#                           scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
+#                           gfx = gfx )
+
+# plotDepCatchMultiPanels(  MPnames = bestMPs_PI, plotNameRoot = "bestMPs_PI",
+#                           scenarios = c("WCVI_DDM","WCVI_DIM","WCVI_.25histM"), df = info.df,
+#                           gfx = gfx )
+=======
 plotDepCatchMultiPanels(  MPnames = currMPs, plotNameRoot = "currMPs_DepCatch",
                           scenarios = scenList, df = info.df, gfx = gfx)
+>>>>>>> master
 
 plotDepCatchMultiPanels(  MPnames = bestMPs, 
                           plotNameRoot = "bestMPs_DepCatch",

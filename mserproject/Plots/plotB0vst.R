@@ -44,7 +44,8 @@ info.df <- lapply( X = sims, FUN = readInfoFile )
 info.df <- do.call( "rbind", info.df ) %>%
             arrange(scenarioLabel,mpLabel)
 
-scenList <- unique( info.df$scenarioLabel )
+# scenList <- unique( info.df$scenarioLabel )
+scenList <- c("WCVI_DDM", "WCVI_DIM")
 
 yrs <- seq(1951,by = 1, length = 92)
 nT <- 92
@@ -73,27 +74,31 @@ for( scenIdx in 1:length(scenList) )
 
     # arrange B0 estimates in a matrix
     B0estimates <- blob$mp$assess$mpdPars$SSB0.sbo
-    SSB0mat <- matrix(blob$ctlList$opMod$B0, nrow = 100, ncol = nT )
+    SSB0mat     <- matrix(NA, nrow = 100, ncol = nT )
+    postDraws   <- blob$ctlList$opMod$posteriorDraws
     for( i in 1:100 )
     {
+      SSB0mat[i,1:67]  <- blob$ctlList$opMod$mcmcPar[postDraws[i],"sbo"]
       SSB0mat[i,68:92] <- B0estimates[1:25 + (i-1)*25]
     }
+    browser()
 
     SSB0dist <- apply(  X = SSB0mat, FUN = quantile, probs = c(.025, .5, .975),
                         MARGIN = 2)
 
     traces <- sample(x = 1:100, size = 3 )
 
-    plot( x = range(yrs), y = c(0,max(B0estimates) ), type = "n", 
+    plot( x = range(yrs), y = c(0,quantile(B0estimates, prob = 0.975) ), type = "n", 
           xlab = "", ylab = "", las = 1 )
       polygon(  x = c(yrs,rev(yrs)), y = c(SSB0dist[1,],rev(SSB0dist[3,])),
                 border = NA, col = "grey70" )
+      abline(v = 2018, lty = 2, lwd = 2 )
       lines( x = yrs, y = SSB0dist[2,], lwd = 3 )
       for( t in traces)
         lines( x = yrs, y = SSB0mat[t,], lwd = .8)
-      panLab( x = 0.3, y = 0.3, txt = stamp )
+      panLab( x = 0.2, y = 0.9, txt = stamp )
 
   }
   mtext( side = 1, text = "Year", outer =T, line = 2)
-  mtext( side =2, text = expression(paste("Est. ", B[0] (kt), sep = "" ) ), line = 1.5, outer = T)
+  mtext( side =2, text = expression(paste("Est. ", B[0], " (kt)", sep = "" ) ), line = 1.5, outer = T)
 }
