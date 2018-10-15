@@ -1,6 +1,6 @@
 # simCtlBat6.txt: mseR parameter file written Tue Nov  7 21:15:15 2017.
 parameter value
-gui$mpLabel 'NoFish'
+gui$mpLabel 'currentMP_phaseIn'
 gui$nReps 3
 gui$quiet FALSE
 gui$scenarioLabel 'sableOpMod'
@@ -100,7 +100,7 @@ mp$hcr$Inc2b 0.5
 mp$hcr$Inc3a 0.5
 mp$hcr$Inc3b 0.95
 mp$hcr$inputF 0.055
-mp$hcr$phaseFinitF 0.08
+mp$hcr$phaseFinitF 0.07
 mp$hcr$phaseFtime 58
 mp$hcr$lambda1 0.
 mp$hcr$lowerBoundMult 0.4
@@ -112,6 +112,7 @@ mp$hcr$minDeltaTACup 0.2
 mp$hcr$deltaTACcType "relative"
 mp$hcr$nMCMC 5000
 mp$hcr$nProjYears 5
+mp$hcr$nYearsAboveCutoff 1
 mp$hcr$nThin 10
 mp$hcr$optRefPt "useSnow"
 mp$hcr$paAdj FALSE
@@ -121,6 +122,7 @@ mp$hcr$qUpper 0.9
 mp$hcr$relBase TRUE
 mp$hcr$remRefBase 'rrBaseFinput'
 mp$hcr$remRefSource "rrSrceEst"
+mp$hcr$rule "linear"
 mp$hcr$sprX 40
 mp$hcr$Stable1a 0.01
 mp$hcr$Stable1b 0.05

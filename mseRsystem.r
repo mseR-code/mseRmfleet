@@ -734,6 +734,9 @@ ageLenOpMod <- function( objRef, t )
   nTimes  <- 0
   .PAUSE  <<- FALSE
 
+  if( t < tMP ) 
+    Ctg[t,] <- Ctg[t,]/1000.
+
 
   if( sum(Ctg[t,1:3]) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
@@ -756,9 +759,6 @@ ageLenOpMod <- function( objRef, t )
     # Also, still getting SSB way higher here than SCAL output for 1998
     # Also, the post-tMP simulated biomass seems too consistent 
     # among 3 trial reps
-
-    if( t < tMP ) 
-        Ctg[t,] <- Ctg[t,]/1000.
         
     solveF <- .solveBaranovNum( B=Balt[,,t], S=Salg, P=Palg, D=dg, F=initF, M=Mt[,t],
                                 C=Ctg[t,], lam=ctlList$opMod$baranovSteps )
@@ -1267,11 +1267,13 @@ callProcedureSP <- function( obj, t )
 
     if( .Platform$OS.type=="unix" )
     { 
-      system( command=paste( exeName," ",mcmcString," -iprint 100 -maxfn 5000",sep="" ),
-              intern=TRUE, wait=TRUE, ignore.stdout=T  )
+      x <- system(  command=paste( exeName," ",mcmcString," -iprint 100 -maxfn 5000",sep="" ),
+                    intern=TRUE, wait=TRUE, ignore.stdout=T, 
+                    ignore.stderr = TRUE )
 
-      system( command=paste( exeName," ","-mceval",sep="" ),
-              intern=TRUE, wait=TRUE, ignore.stdout=T  )
+      x <- system(  command=paste( exeName," ","-mceval",sep="" ),
+                    intern=TRUE, wait=TRUE, ignore.stdout=T,
+                    ignore.stderr = TRUE )
     }
     else     # Windows branch call to "system".
     {
@@ -2086,7 +2088,7 @@ iscamWrite <- function ( obj )
 
   # Change for slow up rule: overwrite legal biomass (3+ fish in year t)
   # with the spawning biomass estimate in years 1:t from the AM
-  legalBiomass <- c(obj$sbt)[recentYears]
+  legalBiomass <- c(obj$sbt[recentYears[-slowUpYears]],legalBiomass)
 
   # Calculate hockey-stock legal harvest rule, with slow up
   # rule enforced (normal rule is if slowUpYears = 1)
@@ -4317,7 +4319,7 @@ iscamWrite <- function ( obj )
       {
         if( t < ctlList$mp$hcr$phaseFtime )
         {
-            fmult <- 0.08/ctlList$mp$hcr$inputF - 1.
+            fmult <- ctlList$mp$hcr$phaseFinitF/ctlList$mp$hcr$inputF - 1.
             f1    <- fmult/(ctlList$mp$hcr$phaseFtime - tMP)        
             mp$hcr$remRate[t] <- max(ctlList$mp$hcr$inputF*(1. + f1*(ctlList$mp$hcr$phaseFtime-t)),
                                      ctlList$mp$hcr$inputF)                 
@@ -4333,8 +4335,6 @@ iscamWrite <- function ( obj )
   }  # ENDIF remRefSource != "rrSrceEquil"
  
   # Update lower and upper HCR control points.
-  targHR <- ctlList$mp$hcr$targHRHerring
-  mp$hcr$remRate[t]  <- ctlList$mp$hcr$targHRHerring
 
   if(ctlList$mp$hcr$rule == "herring")
   {
@@ -4408,10 +4408,10 @@ iscamWrite <- function ( obj )
       rule$assessMethod     <- ctlList$mp$assess$methodId
       rule$slowUpYears      <- ctlList$mp$hcr$nYearsAboveCutoff
       rule$t                <- t
-      rule$sbt              <- stockAssessment$sbt
+      rule$sbt              <- stockAssessment$spawnBt
       rule$biomass          <- stockAssessment$mpdPars$projExpBio
-      rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
-      rule$targHR           <- ctlList$mp$hcr$targHRHerring
+      rule$maxF             <- 2*ctlList$mp$hcr$phaseFinitF
+      rule$targHR           <- mp$hcr$remRate[t]
       rule$assessFailed     <- FALSE
 
       # Calculate catch limit
@@ -4508,7 +4508,6 @@ iscamWrite <- function ( obj )
 
   # Add test fishery catch - maybe we move this inside the OM
   # om$Ctg[t,]    <- om$Ctg[t,] + ctlList$opMod$testFishery
-
  
   mp$assess$runStatus[ tRow, "deadFlag" ]      <- .DEADFLAG
   mp$assess$runStatus[ tRow, "fisheryClosed" ] <- .FISHERYCLOSED
