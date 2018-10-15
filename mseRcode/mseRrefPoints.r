@@ -34,7 +34,7 @@ calcRefPoints <- function( opModList )
 
   # Indices
   A           <- obj$nAges
-  obj$piOne   <- 1/obj$nGrps
+  obj$piOne   <- 1
 
   # salgPars: used to compute selectivity for age a, growth-group l, by gear g.
   obj$L50Cg1  <- obj$L50Cg1
