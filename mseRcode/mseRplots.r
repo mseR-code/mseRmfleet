@@ -1695,13 +1695,15 @@
   Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
-  
-  # Extract Ft for the 3 commercial gears.
-  Ft <- obj$om$Ftg[ iRep,(1:ncol(obj$om$Ft)),c(1:3) ]
-  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt))]
 
   nT  <- length( Bt )
-  tMP <- obj$ctlList$opMod$tMP
+    tMP <- obj$ctlList$opMod$tMP
+  
+  # Extract Ft for the 3 commercial gears.
+  Ft <- obj$om$Ftg[ iRep,(1:nT),c(1:3) ]
+  Mt <- obj$om$Mt[ iRep,,(1:nT)]
+
+
 
   xLim  <- gfx$xLim
   yLim1 <- gfx$yLim1
@@ -1772,7 +1774,8 @@
   .FtgCOL <- brewer.pal(n = ncol(Ft), name = "Dark2")
 
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
-  lines( x = 1:nT, y = Mt, col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[1,], col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[2,], col = .MtCOL, lty = .MtLTY+1, lwd = .MtLWD )
   for ( g in 1:ncol(Ft) )
     lines( c(1:nT), Ft[,g], col=.FtgCOL[g], lty=.FtgLTY[g], lwd=.FtgLWD[g] )
     
@@ -12325,16 +12328,11 @@ plotRefPts <- function( obj )
     }
     
     box()
-<<<<<<< HEAD
     if(lab)
     {
       mtext( side=1, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Year" )
       mtext( side=2, line=.OUTLINE, cex=.CEXLAB, outer=FALSE, "Biomass" )  
     }
-=======
-    mtext( side=1, line=.INLINE1, cex=.CEXLAB, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB, "Biomass (000s t)" )
->>>>>>> master
 
     # Add lines for all predicted biomass states
     if ( !all( is.na(retroExpBt[,"tStep"] ) ) )    
@@ -12451,22 +12449,14 @@ plotRefPts <- function( obj )
   
     if ( gfx$doLegend )
     {
-<<<<<<< HEAD
       panLegend( 0.5,0.95, legTxt=c(expression(C[t]/SB[t]),expression(U[max])), bty = "n",
-=======
-      panLegend( 0.5,0.95, legTxt=c("Ct/SBt","Target HR"), bty = "n",
->>>>>>> master
-        lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
-        col = c("black", .BmsyCOL) )    
+      lty=c( .LegUtLTY, .BmsyLTY ), lwd=c( .LegUtLWD, .BmsyLWD ),
+      col = c("black", .BmsyCOL) )    
     }
 
     abline( v=tMP, col=.tMPCOL, lty=.tMPLTY, lwd=.tMPLWD )  
 
-<<<<<<< HEAD
     targetHR <- obj$ctlList$mp$hcr$targHRHerring
-=======
-    targetHR <- blob$ctlList$mp$hcr$targHRHerring
->>>>>>> master
 
     abline( h=targetHR, col=.BmsyCOL, lty=.BmsyLTY, lwd=.BmsyLWD )    
     #abline( h=equilBmsy, lty=2, col="black", lwd=2 )  
@@ -12477,17 +12467,12 @@ plotRefPts <- function( obj )
     axis( side=4, labels=FALSE )
     
     box()
-<<<<<<< HEAD
     if( lab )
     {
       mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
       mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
     }
-=======
-    mtext( side=1, line=.OUTLINE,  cex=.CEXLAB2, outer=TRUE, "Year" )
-    mtext( side=2, line=3, cex=.CEXLAB2, outer=FALSE, "Harvest Rate" )
->>>>>>> master
-
+    
     if ( gfx$annotate )
     {   
     }

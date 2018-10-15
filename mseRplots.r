@@ -1695,13 +1695,15 @@
   Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
-  
-  # Extract Ft for the 3 commercial gears.
-  Ft <- obj$om$Ftg[ iRep,(1:ncol(obj$om$Ft)),c(1:3) ]
-  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt))]
 
   nT  <- length( Bt )
-  tMP <- obj$ctlList$opMod$tMP
+    tMP <- obj$ctlList$opMod$tMP
+  
+  # Extract Ft for the 3 commercial gears.
+  Ft <- obj$om$Ftg[ iRep,(1:nT),c(1:3) ]
+  Mt <- obj$om$Mt[ iRep,,(1:nT)]
+
+
 
   xLim  <- gfx$xLim
   yLim1 <- gfx$yLim1
@@ -1772,7 +1774,8 @@
   .FtgCOL <- brewer.pal(n = ncol(Ft), name = "Dark2")
 
   plot( xLim, yLim3, type="n", axes=FALSE, xlab="", ylab="" )
-  lines( x = 1:nT, y = Mt, col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[1,], col = .MtCOL, lty = .MtLTY, lwd = .MtLWD )
+  lines( x = 1:nT, y = Mt[2,], col = .MtCOL, lty = .MtLTY+1, lwd = .MtLWD )
   for ( g in 1:ncol(Ft) )
     lines( c(1:nT), Ft[,g], col=.FtgCOL[g], lty=.FtgLTY[g], lwd=.FtgLWD[g] )
     

@@ -508,35 +508,71 @@ ageLenOpMod <- function( objRef, t )
   minAge <- as.numeric( ctlList$mp$data$minAge )
   tMP    <- as.numeric( ctlList$opMod$tMP )
   nGear  <- as.numeric( ctlList$opMod$nGear )
-  nGrps  <- as.numeric( ctlList$opMod$nGrps )
 
   # Set parameter values.
   B0         <- ctlList$opMod$B0
   rSteepness <- ctlList$opMod$rSteepness
-  M          <- ctlList$opMod$M        # Average M without trend or pulse.
-  Mt         <- obj$om$Mt              # M may be time-varying.  
+  M          <- ctlList$opMod$M
+  Mt         <- obj$om$Mt        # Average M without trend or pulse.
+ 
 
   # Length-at-age-/group-
   nGrps <- ctlList$opMod$nGrps
   Lal   <- obj$refPtList$Lal
   Wal   <- obj$refPtList$Wal
-  Wal[1] <- 0
-
-  
   
   # Maturity ogive parameters
   A50   <- ctlList$opMod$aMat50
   A95   <- ctlList$opMod$aMat95
   Ma    <- obj$refPtList$Ma  
-  Ma[1] <- 0
+
+  futureAvoid <- ctlList$opMod$futureAvoid
   
   # Retention probability for age-/length-/gear-  
   Palg <- obj$refPtList$Palg
   # Selectivity ogives for age-/length-/gear- 
   Salg <- obj$refPtList$Salg
-
-  Salg[1,,] <- 0 
+  if( t >= tMP & futureAvoid ) # Recalculate selectivity using futureSel option
+  {
+    if( !is.null(ctlList$opMod$selAge) )
+      selAge <- ctlList$opMod$selAge
+    else selAge <- FALSE
+    salgPars <- list( L50Cg1 = ctlList$opMod$L50Cg1,
+                      L95Cg1 = ctlList$opMod$L95Cg1,
+                      L95Cg2 = ctlList$opMod$L95Cg2,
+                      L50Cg2 = ctlList$opMod$L50Cg2,
+                      selType = ctlList$opMod$selType,
+                      nGrps  = ctlList$opMod$nGrps,
+                      nGear  = ctlList$opMod$nGear,
+                      avoidProb = ctlList$opMod$avoidProb ,
+                      selAge    = selAge )
+    Salg <- .calcSalg( salgPars, A = A, Lal = Lal )
+  }
   
+  # retention future option: futureOption==2 means that
+  # retention probabilities are made knife-edge to simulate
+  # a no high-grading (retention) fishery 
+  if ( 2 %in% ctlList$opMod$futureOption & t > tMP )
+  {
+    L95Dg <- vector("numeric", length=nGear)
+    L50Dg <- vector("numeric", length=nGear)
+    for( g in 1:nGear )
+    {
+        L95Dg[g] <- max(ctlList$opMod$L95Dg[g],
+                    ctlList$opMod$sizeLimFuture[g])
+        L50Dg[g] <- ctlList$opMod$L50Dg[g]
+    }
+    palgPars <- list( sizeLim  = ctlList$opMod$sizeLimFuture,
+                      L50Dg    = L50Dg,
+                      L95Dg    = L95Dg,
+                      nGrps    = nGrps,
+                      nGear    = nGear
+                  )
+    tmpP <- .calcPalg(palgPars,A=A,Lal=Lal)
+    Palg <- tmpP
+  }
+
+
   sigmaR    <- ctlList$opMod$sigmaR     # std error in log-recruitment
   gammaR    <- ctlList$opMod$gammaR     # autocorrelation in log-recruitment
   
@@ -551,6 +587,16 @@ ageLenOpMod <- function( objRef, t )
   rec.a     <- obj$refPtList$rec.a     # recruitment slope
   rec.b     <- obj$refPtList$rec.b     # recruitment dd parameter
   R0        <- obj$refPtList$R0        # unfished recruitment
+
+  # if( t==1 )
+  # {
+      tmp <- lisread(ctlList$opMod$repFileName)
+  #   numAgeYr1_m <- tmp$Nta_m[ctlList$opMod$firstRepYear,]
+  #   numAgeYr1_f <- tmp$Nta_f[ctlList$opMod$firstRepYear,]
+      avgR        <- tmp$avgR
+  # }
+
+  # We should get the Fs from the rep file
 
   recOption   <- ctlList$opMod$recruitmentOption
 
@@ -574,19 +620,34 @@ ageLenOpMod <- function( objRef, t )
   # Controls: catch biomass, dead-discard biomass, 
   
   # Fishing mortality, and total mortality
-  Catg  <- obj$om$Catg    # array of gear-specific catchBiomass-at-age
-  uCatg <- obj$om$uCatg   # age-proportions in landed catch
-  Ctg   <- obj$om$Ctg     # matrix of gear-specific total landed catch biomass
-  Ct    <- obj$om$Ct      # vector of total landed catch biomass
-  Dt    <- obj$om$Dt      # vector of total discard biomass.
-  Datg  <- obj$om$Datg    # array of dead discard biomass-at-age
+  Catg    <- obj$om$Catg    # array of gear-specific catchBiomass-at-age
+  uCatg   <- obj$om$uCatg   # age-proportions in landed catch
+  Ctg     <- obj$om$Ctg     # matrix of gear-specific total landed catch biomass
+  Ct      <- obj$om$Ct      # vector of total landed catch biomass
+  Dt      <- obj$om$Dt      # vector of total discard biomass.
+  Datg    <- obj$om$Datg    # array of dead discard biomass-at-age
   Dtg   <- obj$om$Dtg     # matrix of gear-specific total discarded biomass
   Ftg   <- obj$om$Ftg     # matrix of gear-specific fishing mortality
   Zalt  <- obj$om$Zalt    # array of total mortality by age-/length-group
 
+
+
+  if( t == 1 )
+  {
+    Discatg <- Datg
+    Disctg  <- Dtg
+    capCtg  <- Ctg
+  } else {
+    Discatg <- obj$om$Discatg
+    Disctg  <- obj$om$Disctg
+    capCtg  <- obj$om$capCtg
+  }
+
     
   fg    <- ctlList$opMod$fg       # Relative Fs by gear 
-  dg    <- ctlList$opMod$dg       # discard mortality rates by gear
+  dg    <- ctlList$opMod$dg       # discard mortality rates by gear\
+  if( t >= tMP & !is.null(ctlList$opMod$dgFuture) )
+    dg  <- ctlList$opMod$dgFuture 
   
   # Gear-specific catchability, cpue power, and deterministic biomass index.
   qg     <- ctlList$opMod$qg      # vector of catchability by gear
@@ -598,84 +659,42 @@ ageLenOpMod <- function( objRef, t )
   epsilontg  <- obj$om$errors$epsilontg  # std normal error in log-indices
   epsilongat <- obj$om$errors$epsilongat # std normal error in age-proportions
 
-
-  ## HACK ##
-  # Re-scale recruitment deviations using the realised
-  # recruitment deviation sd from the historical period
-  if(t == tMP)
-  {
-    newSigmaR <- sd(log(omegat[1:(t-1)]))
-    omegat[tMP:nT] <- exp(deltat[tMP:nT]*newSigmaR - newSigmaR^2/2)
-  }
-
-  # Compute pulse limit
-  pulseLim <- ctlList$opMod$pulseMfrac * B0
-
-  if( t == 1 )
-  {
-    if( !is.null(ctlList$opMod$repFileName) )
-    {
-      repFile   <- lisread(ctlList$opMod$repFile)
-      inputFtg  <- rbind(repFile$Ftg1,repFile$Ftg2,repFil3$Ftg3)
-      inputN1am <- repFile$Nta_m[1,]    # age 2-10 in 1951
-      inputN1af <- repFile$Nta_f[1,]    # age 2-10 in 1951
-      inputNa1  <- c( inputRt[1], inputNa1)
-
-      Rt[1:66] <- inputRt[1:66]
-
-    }
-    if( !is.null( ctlList$opMod$posteriorSamples ) )
-    {
-      postDraw  <- ctlList$opMod$posteriorDraws[ctlList$opMod$repNo]
-      avgR      <- ctlList$opMod$mcmcPar[postDraw,"rbar"]
-      inputFtg  <- ctlList$opMod$inputFtg
-      inputRt   <- ctlList$opMod$inputRt
-      # Use rep file for Na1 until MCMC output is obtained
-      inputNa1  <- repFile$N[1,]    # age 2-10 in 1951
-      inputNa1  <- c( inputRt[1], inputNa1)      
-      Rt[1:67]  <- inputRt[1:67]
-    }  
-
-    # Now overwrite OM values with input values
-    Ftg[1:67,]    <- inputFtg[1:67,]
-  }
-  
-  # What to do in year 68?? I feel like ISCAM predicts this..
-
   # Initialise population if t=1, else update variables from last time step.
   if ( t==1 )
   {
     # Recruitment, number-at-age, biomass-at-age
+    Rt[t]     <- obj$ref$R0
     #Nalt[,,t] <- outer( numAgeYr1, rep( obj$refPtList$piOne, nGrps ) )
-    numAgeYr1 <- inputNa1
-    Nalt[,1:nGrps,t] <- numAgeYr1
-
-
+    Nalt[,1:2,t] <- obj$ref$numAgeYr1
+    # Nalt[,2,t] <- numAgeYr1_f
     Balt[,,t] <- Nalt[,,t]*Wal
-  
+    # Spawning biomass and number.
+    Bt[t] <- sum(Balt[,2,t]*Ma)
+    Nt[t] <- sum(Nalt[,2,t]*Ma)
+
     # Total biomass and number
     Btot[t] <- sum( Balt[,,t] )
     Ntot[t] <- sum( Nalt[,,t] )
-    Bt[t]   <- sum( Balt[,,t] * Ma )
-    Nt[t]   <- sum( Nalt[,,t] * Ma )
 
+    # Populate Fs with rep file
+    Ftg[1:(tMP-1),1] <- tmp$Ftg1
+    Ftg[1:(tMP-1),2] <- tmp$Ftg2
+    Ftg[1:(tMP-1),3] <- tmp$Ftg3
   } # end "if(t==1)"
   else  # t>1
   {
-    # Spawning biomass
-    SBt <- obj$om$SBt[t-1]
-
     # Calculate age-1 recruitment, Beverton-Holt stock-recruitment.
     #if( t>44 )
     if( recOption=="Beverton-Holt" )
     {
-      tmpR      <- rec.a*SBt/( 1.0 + rec.b*SBt )
-      if( !is.na(Rt[t]) & t < tMP ) omegat[t] <- Rt[t] / tmpR
+        tmpR <- rec.a*Bt[t-1]/( 1.0 + rec.b*Bt[t-1] )
     }
     else
         tmpR <- avgR
 
-    Rt[t] <- omegat[t]*tmpR 
+    Rt[t] <- omegat[t]*tmpR #(S-R gives females only)
+
+    # if ( t == tMP) browser()
     
     # Update numbers-at-age.
     # Nalt[1,,t] <- outer( Rt[t], rep( obj$pars$piOne, nGrps ) )
@@ -691,196 +710,225 @@ ageLenOpMod <- function( objRef, t )
     for( l in 1:nGrps )
       Nalt[A,l,t] <- Nalt[A-1,l,t-1]*exp(-Zalt[A-1,l,t-1]) + Nalt[A,l,t-1]*exp(-Zalt[A,l,t-1])
 
+
     Balt[,,t] <- Nalt[,,t]*Wal
 
+    # Spawning biomass and number...only use female group
+    # Beginning of year.
+    Bt[t]   <- sum(Balt[,2,t]*Ma)
+    Nt[t]   <- sum(Nalt[,2,t]*Ma)
 
-    # Total and spawning biomass and number
+
+    # Total biomass and number
     Btot[t] <- sum( Balt[,,t] )
-    Bt[t]   <- sum( Balt[,,t] * Ma )
-    Nt[t]   <- sum( Nalt[,,t] * Ma )
     Ntot[t] <- sum( Nalt[,,t] )
-    
-    # Switch out Mt for pulseMt for the previous time step 
-    # if spawning biomass is below the pulse limit
-    if( t >= tMP )
-    {
-      if( Bt[t] < pulseLim ) 
-      {
-        Mt[t] <- obj$om$pulseMt[t]
-
-      }
-    }
-
   }  # end t>1 ifelse
-  
-  # if( t > tMP ) browser()
 
+  
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
-
         
-  # Add test fishery catch in projection
-  if(t >= tMP )
-  {
-
-    # browser()
-    testFishery <- ctlList$opMod$testFishery
-    # Calculate test fishery catch based on the minimum harvest rate
-    # of the test fishery over the historical period
-
-    if(sum(testFishery) > 0)
-    {
-      minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
-      minFtest <- log( 1 / (1 - minUtest) )
-
-      # reduce to a small F if needed
-      Ftest <- max(0.01, minFtest)
-      # Calculate assuming a discrete fishery 
-      Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
-
-      testCatch <- min( Ctest, sum(testFishery) )
-      testFishery[2] <- testCatch
-    }
-
-    Ctg[t,] <- Ctg[t,] + testFishery
-  }
-
-
   # Solve catch equation for this year's Ftg based on tac allocated among gears
-  # Add test fishery catch in projection
-  if(t >= tMP)
-  {
-    testFishery <- ctlList$opMod$testFishery
-    # Calculate test fishery catch based on the minimum harvest rate
-    # of the test fishery over the historical period
-    minUtest <- min( sum(testFishery) / obj$om$SBt[1:(tMP-1)] )
-    minFtest <- log( 1 / (1 - minUtest) )
+  # Not sure what these are for...
+  solveOK <- FALSE
+  nTimes  <- 0
+  .PAUSE  <<- FALSE
 
-    # reduce to a small F if needed
-    Ftest <- max(0.01, minFtest)
-    # Calculate assuming a discrete fishery 
-    Ctest <- sum(Balt[,,t]*exp((1.-exp(-Ftest + Mt[t])))*Salg[,,2]*Ftest/(Ftest + Mt[t]))
 
-    testCatch <- min(Ctest, sum(testFishery))
-    testFishery[2] <- testCatch
-
-    Ctg[t,] <- Ctg[t,] + testFishery
-  }
-  
-  if ( sum(Ctg[t,1:3], na.rm = T) > 0. & t >= tMP ) # don't bother if fishery catch=0
+  if( sum(Ctg[t,1:3]) > 0. & t >= tMP ) # don't bother if fishery catch=0
   {
     gT <<- t
-
-    if( t < tMP ) initF <- c( obj$ctlList$opMod$repFile$ft[,t])
-    else initF <- c(rep(0.01,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
+    relLal <- matrix(1,nrow=nrow(Lal),ncol=ncol(Lal))
+    # No size limit prior to 1988
+    #if( t < 20  )
+    #{
+    #    relLal[ Lal < 81 ] <- 0.
+    #    for( g in 1:4 )
+    #        Palg[,,g] <- Palg[,,g]*relLal
+    #}
+    initF <- c(rep(0.05,3),0,0)   # SJ this is hardcoded in for a given # of fisheries/surveys. Too path specific!!!!
     idx0  <- which(Ctg[t,] < 0)
     Ctg[t,idx0] <- 0.
     baranovTime <<- t
     #if(t>17) browser()
+    # SPC 7-Mar-2016: The output catch in the final two years jumps for g=1
+    # to almost 3x the input catch.
+    # Also, still getting SSB way higher here than SCAL output for 1998
+    # Also, the post-tMP simulated biomass seems too consistent 
+    # among 3 trial reps
 
-    solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps,
-                                        nIter = ctlList$opMod$baranovIter,
-                                        fisheryTiming = 0 ) )
+    if( t < tMP ) 
+        Ctg[t,] <- Ctg[t,]/1000.
+        
+    solveF <- .solveBaranovNum( B=Balt[,,t], S=Salg, P=Palg, D=dg, F=initF, M=Mt[,t],
+                                C=Ctg[t,], lam=ctlList$opMod$baranovSteps )
 
-
-    if(any(!is.finite(solveF))) 
-    {
-      cat( "Warning: non finite Ftg... t = ", t, "\n" ) 
-      cat( "Reducing step size by half and trying again.\n" ) 
-
-      solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                        C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
-                                        nIter = ctlList$opMod$baranovIter,
-                                        fisheryTiming = 0 ) )
-
-      cat( solveF, "\n" )
-
-      if( class(solveF) == "try-error" ) browser()
-
-      solveF[!is.finite(solveF)] <- 0
-    }
-
+    solveF[ solveF > 1 ] <- 1.
     if( any( solveF < 0 ) )
     {
-      
         cat("Warning: negative Ftg... t = ", t, "\n")
-        cat( "Reducing step size by half and trying again.\n" ) 
-
-        solveF <- try(.solveBaranovMfleet(  B=Balt[,,t], S=Salg, F=initF, M=Mt[t],
-                                            C=Ctg[t,], lam=ctlList$opMod$baranovSteps/2,
-                                            nIter = ctlList$opMod$baranovIter,
-                                            fisheryTiming = 0 ) )
-
         cat( solveF, "\n" )
-
-        if( class(solveF) == "try-error" ) browser()
-
         solveF[ solveF < 0. ] <- 0.
     }
-
-    if( class(solveF) == "try-error" ) browser()
-
-    solveF[ solveF > 10 ] <- 10
-
     Ftg[t,] <- solveF
-
-    if(t > 1)
-      if(SBt < sum(ctlList$opMod$testFishery) ) browser()
+  } 
+  if( sum(Ctg[t,1:3]) == 0.) 
+  {
+    Ftg[t,] <- 0
   }
 
-  if( t >= tMP & sum(Ctg[t,1:3]) == 0 ) Ftg[t,] <- rep(0,5)
-
-  # Add an F based test fishery if biomass is below the threshold
-  # if( Bt[t] <= 0.2 ) Ftg[t,] <- Ftg[t,] + c(0.0,0.01,0.0,0.0,0.0)
-  
-
   # Compute total mortality by summing M and Fg over gear types
-  Zalt[,,t] <- matrix( Mt[t], ncol = nGrps, nrow = A, byrow = TRUE)
+  Zalt[,,t] <- matrix(Mt[,t], ncol = nGrps, nrow = A, byrow = TRUE)
   for( g in 1:(nGear-2) )
-    Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]
+    Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]*(dg[g]*Palg[,,g] - Palg[,,g] + 1.)
 
   # Catch- and dead-discards-at-age 
-  legalC <- 0.; legalD <- 0.; sublegalD <- 0.
+  legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
+  sublegalDisc <- c(0.,0.,0.)
   for( g in 1:(nGear-2) )
   {
-    Cal <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]/Zalt[,,t]
-    Dal <- 0
+    Cal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*(1.-Palg[,,g])/Zalt[,,t]
+    Dal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*(1.-exp(-dg[g]))*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
+    Discal  <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
     
     # catch-age/year/gear
-    Catg[,t,g]  <- Cal
-    Datg[,t,g]  <- Dal
-    
+    Catg[,t,g]    <- rowSums( Cal )
+    Datg[,t,g]    <- rowSums( Dal )
+    Discatg[,t,g] <- rowSums( Discal )
+
     # catch-year/gear
-    Ctg[t,g] <- sum( Catg[,t,g] )
-    Dtg[t,g] <- sum( Datg[,t,g] )
+    capCtg[t,g] <- sum( Catg[,t,g] )
+    Dtg[t,g]    <- sum( Datg[,t,g] )
+    Disctg[t,g] <- sum( Discatg[,t,g] )
     
-    # accumulate legal catch, discards, and sublegal total discards
+    # accumulate legal catch, legal dead discards, and sublegal total dead discards
     legalC    <- legalC + sum( Cal*obj$refPtList$Legal )
     legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
+
+    # Now sum sublegal discards
+    sublegalDisc[g] <- sublegalDisc[g] + sum( Discal*(1.-obj$refPtList$Legal) )
   }
 
-  # if(t > tMP )browser()
+  # Now apply the sublegal cap if catch is positive
+  if( sum( Ctg[t,1:3] ) > 0 & any( Ftg[t,] > 0) )
+  { 
+    sublegalCap <- ctlList$mp$hcr$juveCap
+    sublegalC   <- 0.
+    if( !is.null(ctlList$mp$hcr$juveCap) & t >= tMP )
+    {
+      if( all(sublegalCap <= 2 ) ) 
+        sublegalCap <- Ctg[t,1:3] * sublegalCap
+      else if( any(sublegalCap > 2) ) 
+      {
+        sublegalCap <- sum( sublegalCap[ sublegalCap > 1 ] )
+        sublegalCap <- sublegalCap * obj$opMod$allocProp[ 1:3 ] / 1000
+      }
 
-  # Calculate spawning biomass at spawn time (post F and M)
-  SBt <- sum(Balt[,1:nGrps,t]*Ma*exp(-Zalt[,1:nGrps,t]))
+      # Redefine Zalt
+      Zalt[,,t] <- matrix(M, ncol = nGrps, nrow = A, byrow = TRUE)
 
-  # Calculate spawning biomass before fishing (post M, pre F)
-  FBt <- sum(Balt[,1:nGrps,t]*Ma*exp(-Mt[t]))
+      # Now loop over gear types, and check whether they
+      # hit their cap
+      adjust <- TRUE
+      legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
+      while( adjust )
+      {
+        for( gIdx in 1:(nGear - 2) )
+        {
+          if( sublegalCap[gIdx] == 0.0 ) 
+          {
+            capCtg[t,gIdx] <- 0.0
+            Ftg[t,gIdx]    <- 0.0
+          } else {
+            # Now check the discards against the cap
+            overDisc <- sublegalDisc[gIdx] - sublegalCap[gIdx]
+            if( overDisc > 0 ) 
+              Ftg[t,gIdx] <- Ftg[t,gIdx] * sublegalCap[ gIdx ] / sublegalDisc[ gIdx ]
+            # Add fishing mortality to Z
+            Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]*(dg[g]*Palg[,,g] - Palg[,,g] + 1.) 
+          }
+        }
+        # re compute Catch- and dead-discards-at-age
+        legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
+        sublegalDisc <- c(0.,0.,0.)
+        for( g in 1:(nGear-2) )
+        {
+          Cal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*(1.-Palg[,,g])/Zalt[,,t]
+          Dal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*(1.-exp(-dg[g]))*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
+          Discal  <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
+          
+          # catch-age/year/gear
+          Catg[,t,g]    <- rowSums( Cal )
+          Datg[,t,g]    <- rowSums( Dal )
+          Discatg[,t,g] <- rowSums( Discal )
+
+          # catch-year/gear
+          capCtg[t,g]   <- sum( Catg[,t,g] )
+          Dtg[t,g]      <- sum( Datg[,t,g] )
+          Disctg[t,g]   <- sum( Discatg[,t,g] )
+          
+          # accumulate legal catch, legal dead discards, and sublegal total dead discards
+          legalC    <- legalC + sum( Cal*obj$refPtList$Legal )
+          legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
+          sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
+
+          # Now sum sublegal discards
+          sublegalDisc[g] <- sublegalDisc[g] + sum( Discal*(1.-obj$refPtList$Legal) )
+        }
+        underUtilized <- Ctg[t,] - capCtg[t,]
+        underUtilized[4:5] <- 0
+        if( all(sublegalDisc - sublegalCap < 1e-10 ) ) adjust <- FALSE
+      }
+
+      capBalt <- Balt[,,t]*(exp(-Zalt[,,t]))
+
+      # Now compute top up F and Z values
+      noDisc <- Palg
+      noDisc[,,1:3] <- noDisc[,,5]
+      initF <- c(rep(0.05,3),0,0)
+      if( any(underUtilized > 0) )
+        topUpF <- .solveBaranovNum( B=capBalt, S=Salg, P=noDisc, D=dg, F=initF, M=M,
+                                    C=underUtilized, lam=ctlList$opMod$baranovSteps )
+      else topUpF <- rep(0,5)
+
+      topUpZ <- matrix( 0, ncol = nGrps, nrow = A, byrow = TRUE )
+      for( g in 1:(nGear - 2) )
+      topUpZ <- topUpZ + Salg[,,g]*topUpF[g]
+
+      # Add to landed catch using the topUp (discards won't change)
+
+      for( g in 1:(nGear-2))
+      {
+        if( all(topUpZ == 0) )
+          Ctg[t,g] <- capCtg[t,g]
+        else {
+          # top up catch at age, legnth, gear and time
+          topUpCal    <- capBalt * ( 1 - exp(-topUpZ) ) *Salg[,,g]*topUpF[g]/topUpZ
+          topUpCatg   <- rowSums( topUpCal )
+            
+          # This is the reported quantity
+          Ctg[t,g]    <- capCtg[t,g] + sum( topUpCatg )
+          legalC      <- legalC + sum(topUpCal*obj$refPtList$Legal)
+          sublegalC   <- sublegalC + sum(topUpCal*(1-obj$refPtList$Legal))  
+        }
+      }
+      # Now add total mortality at age and length for next time step
+      Zalt[,,t] <- Zalt[,,t] + topUpZ
+      # And add top up F to the base F for an estimate of F
+      # in the reporting
+      Ftg[t,1:3] <- Ftg[t,1:3] + topUpF[1:3]
+    }  
+    Ftg[t,4:5] <- 0
+  }
 
   # Total landings and harvest rates.
   legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
   sublegalB  <- sum( Balt[,,t]*(1.-obj$refPtList$Legal) )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
-  legalHR    <- (legalC + legalD)/legalB
-  spawnHR    <- (legalC + legalD)/(SBt + legalC + legalD )
-  # if( sublegalB == 0 ) sublegalHR <- sublegalD*sublegalB
-  # else sublegalHR <- sublegalD/sublegalB
-
-  
-
+  legalHR    <- (legalC+legalD)/legalB
+  sublegalHR <- (sublegalD+sublegalC)/sublegalB
 
   # Gear-specific cpue, catch, discards, and sample age-proportions
   for( i in 1:length(useIndex) )
@@ -893,13 +941,13 @@ ageLenOpMod <- function( objRef, t )
     #     obj$mp$data$Itg[t,g] <- obj$om$Itg[t,g]*exp( tauIndexg[i]*epsilontg[t,g] - tauIndexg[i]*tauIndexg[i]/2. )        
     # }
     # Changed tMP to tMP-1 to impute survey values for tMP.
-    if( !.INDEXSERIESINPUT | (t >= (tMP)) ) 
+    if( !.INDEXSERIESINPUT | (t >= (tMP-1)) ) 
     {
       
       # Only impute a tMP point for indices active in the future.
       if ( k2Index[i] > 0 )
       {
-         obj$om$Itg[t,g] <- qg[g]*Bt[t]^powerg[g]
+         obj$om$Itg[t,g] <- qg[g]*sum( Salg[,,g]*Balt[,,t] )^powerg[g]
          # browser()
       }
       if( attr(obj$mp$data$Itg,"indexOn")[t,g]==TRUE )
@@ -912,7 +960,7 @@ ageLenOpMod <- function( objRef, t )
     g <- useAges[i]
     if( !.AGESERIESINPUT | (t >= tMP) )
     {
-      # if(t >= tMP - 1) browser()
+      if( any(!is.finite(Ctg[t,]))) browser()
       if( Ctg[t,g] > 0. ) 
       {
         uCatg[minAge:A,t,g] <- Catg[minAge:A,t,g]/Ctg[t,g] # true proportions in catch, A
@@ -923,7 +971,6 @@ ageLenOpMod <- function( objRef, t )
     }
   }
 
-  # browser()
   
   # Update all objects in obj for this time step.
   obj$om$Nalt  <- Nalt    # numbers-at-age
@@ -946,14 +993,14 @@ ageLenOpMod <- function( objRef, t )
   obj$om$uCatg <- uCatg   # age-proportions in landed catch
   obj$om$Dtg   <- Dtg     # dead discard in biomass by gear
   obj$om$Datg  <- Datg    # dead discards by age/gear
+  obj$om$Discatg <- Discatg  # all discards by age/gear  
+  obj$om$Disctg  <- Dtg
+  obj$om$capCtg  <- Ctg
   obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
   
-  obj$om$SBt[t]             <- SBt          # Spawning biomass at time of spawning
-  obj$om$FBt[t]             <- FBt          # Spawning biomass before fishing occurs (post M)
-
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
-  obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
-  # obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
+  # obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
+  obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
   obj$om$legalB[t]         <- legalB       # legal biomass
   obj$om$sublegalB[t]      <- sublegalB    # sublegal biomass
   obj$om$legalC[t]         <- legalC       # legal catch
@@ -2376,18 +2423,12 @@ iscamWrite <- function ( obj )
   {
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlObj$mp$data$inputCatch
-    catch <- catch$dCatchData
-    catch[,ncol(catch)] <- ctlObj$mp$data$inputCatch$ct
+    catch <- catch$landCatchMatrix
     years <- catch[,1]
-    times <- years - .INITYEAR + 1
-    gears <- catch[,2]
+    times <- catch[,2]
 
-    gearNums <- unique(gears)
-    for( g in gearNums )
-    {
-      gearTimes <- times[gears == g]
-      om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
-    }
+    om$Ctg[1:(tMP-1),1:ncol(om$Ctg)] <- catch[,3:7]
+
     if( !ctlObj$gui$quiet )
       cat( "\nMSG (.createMP) Extracted catch and converted units.\n" )   
     .CATCHSERIESINPUT <<- TRUE
@@ -2406,20 +2447,10 @@ iscamWrite <- function ( obj )
   {
     # Extract abundance indices from input file and assign 
     # to blob elements...
-    indices  <- ctlObj$mp$data$inputIndex$d3_survey_data
+    indices  <- ctlObj$mp$data$inputIndex
+    indices  <- indices$idxSeries
     useIndex <- tmpTimes$useIndex
-    om$Itg[, useIndex] <- NA
-
-    years <- indices[,1]
-    times <- years - .INITYEAR + 1
-    gears <- indices[,3]
-
-    gearNums <- unique(gears)
-    for( g in gearNums)
-    {
-      gearTimes <- times[gears == g]
-      om$Itg[gearTimes,g] <- indices[gearTimes, 2]
-    }
+    om$Itg[1:(tMP-1), useIndex] <- t(indices)
 
     om$Itg[ om$Itg < 0 ] <- NA
   
@@ -2444,7 +2475,8 @@ iscamWrite <- function ( obj )
 
   if ( !is.null(ctlObj$mp$data$inputAges) )
   {
-    ages <- ctlObj$mp$data$inputAges$Ahat
+    browser()
+    ages <- ctlObj$mp$data$inputAges
     ageObs <- ctlObj$mp$data$inputAges$d3_A
     
     # Use observations from ISCAM in historical period
@@ -2743,6 +2775,7 @@ iscamWrite <- function ( obj )
   tMP    <- ctlList$opMod$tMP
   nT     <- ctlList$opMod$nT
   nGear  <- ctlList$opMod$nGear
+  nGrps  <- ctlList$opMod$nGrps
 
   #------------------------------------------------------
   # Create blob objects pars,om,and mp to store all simulation results
@@ -2756,7 +2789,7 @@ iscamWrite <- function ( obj )
               Nt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Btot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ntot       = matrix( NA,nrow=nReps,ncol=(nT+1) ),
-              Mt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),               
+              Mt         = array( NA, dim = c(nReps,nGrps,nT) ),               
               Rt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ct         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ctg        = array( data=NA,dim=c(nReps,nT,nGear) ),
@@ -2965,7 +2998,7 @@ iscamWrite <- function ( obj )
     blob$om$Nt[i,]         <- c( i, obj$om$Nt )
     blob$om$Btot[i,]       <- c( i, obj$om$Btot )
     blob$om$Ntot[i,]       <- c( i, obj$om$Ntot )
-    blob$om$Mt[i,]         <- c( i, obj$om$Mt )    
+    blob$om$Mt[i,,]        <- c( obj$om$Mt )    
     blob$om$Rt[i,]         <- c( i, obj$om$Rt )
     blob$om$Ct[i,]         <- c( i, obj$om$Ct )
     blob$om$Dt[i,]         <- c( i, obj$om$Dt )
@@ -3055,7 +3088,7 @@ iscamWrite <- function ( obj )
   colnames( blob$om$Ntot ) <- c( "iRep", tmpNames )
 
   tmpNames <- paste("M",c(1:nT), sep="")
-  colnames( blob$om$Mt ) <- c( "iRep", tmpNames )  
+  dimnames( blob$om$Mt ) <- list( NULL, NULL, NULL )  
   
   tmpNames <- paste("R",c(1:nT),sep="")
   colnames( blob$om$Rt ) <- c( "iRep", tmpNames )
@@ -3384,18 +3417,11 @@ iscamWrite <- function ( obj )
   {
     # Extract catch and assign to blob elements, convering to 000s mt.
     catch <- ctlList$mp$data$inputCatch
-    catch <- catch$dCatchData
+    catch <- catch$landCatchMatrix
     years <- catch[,1]
-    times <- years - .INITYEAR + 1
-    gears <- catch[,2]
+    times <- catch[,2]
 
-
-    gearNums <- unique(gears)
-    for( g in gearNums )
-    {
-      gearTimes <- times[gears == g]
-      obj$om$Ctg[gearTimes,g] <- catch[which(gears == g), 7]
-    }
+    obj$om$Ctg[times,] <- catch[,3:7]
 
     obj$om$Ctg[is.na(obj$om$Ctg)] <- 0
     if(!obj$ctlList$gui$quiet)
@@ -3452,7 +3478,9 @@ iscamWrite <- function ( obj )
   }
   else
   {
-      obj$om$Mt <- rep( ctlList$opMod$M[1:nGrps], nT )
+      obj$om$Mt <- matrix(  ctlList$opMod$M[1:nGrps], 
+                            nrow = nGrps,
+                            ncol = nT, byrow = FALSE )
   }
 
   if( !is.null(ctlList$opMod$estMdevs ) )
@@ -3462,12 +3490,12 @@ iscamWrite <- function ( obj )
     if( estMdevs == "repFile" )
       estMdevs <- ctlList$opMod$repFile
 
-    obj$om$Mt[1:(tMP-1)] <- estMdevs$M[,1]
+    obj$om$Mt[,1:(tMP-1)] <- estMdevs$M[,1]
 
     if( !is.null(ctlList$opMod$kYearsMbar) )
     {
       k <-  ctlList$opMod$kYearsMbar
-      Mbar <- mean( obj$om$Mt[ (tMP - k):(tMP - 1 ) ] )
+      Mbar <- mean( obj$om$Mt[ ,(tMP - k):(tMP - 1 ) ] )
       endM <- Mbar
     }
 
@@ -3499,14 +3527,14 @@ iscamWrite <- function ( obj )
   if(!is.null(ctlList$opMod$kBoot))
     initBoot <- tMP - ctlList$opMod$kBoot
   else initBoot <- 1
-  bootMt <- tsBoot( x = obj$om$Mt[initBoot:(tMP-1)], 
+  bootMt <- tsBoot( x = obj$om$Mt[1,initBoot:(tMP-1)], 
                     length = length((tMP):nT), 
                     tolSD = ctlList$opMod$bootTolSD,
                     tolMult = ctlList$opMod$bootTolMult )
 
   if( ctlList$opMod$useBoot )
   {
-    obj$om$Mt[tMP:nT]   <- bootMt
+    obj$om$Mt[,tMP:nT]   <- bootMt
   }
 
   #----------------------------------------------------------------------------#

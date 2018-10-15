@@ -87,7 +87,7 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .DEADFLAG  <- FALSE       # All future catch==0 if TRUE
 
 # Flag to indicate ISCAM is being used as the AM
-.ISCAMFLAG <- TRUE
+.ISCAMFLAG <- FALSE
 
 # Herring related objective depletion values
 .BlimHerring  <- .3
@@ -97,7 +97,7 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .FBt_Perf <- FALSE
 
 # Flag to produce Mt envelopes in Perf under legal HR
-.USEMt <- TRUE
+.USEMt <- FALSE
 if( .USEMt ) 
   cat("HR plots in guiPerf will show Mt simulation envelope.\n")
 # Same, but for Rt
@@ -161,7 +161,7 @@ if( .ISCAMFLAG )
 #------------------------------------------------------------------------------#
 
 # General mseR globals.
-.INITYEAR <- 1951     # initial year.
+.INITYEAR <- 1965     # initial year.
 .MAXREP <- 200
 .GUIMSG <- TRUE
 .PLTMSG <- TRUE

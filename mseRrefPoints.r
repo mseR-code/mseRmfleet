@@ -63,6 +63,7 @@ calcRefPoints <- function( opModList )
   rSteepness <- obj$rSteepness      # Steepness.
   obj$R0     <- B0/obj$ssbpr        # Unfished recruitment.
 
+
   # Beverton-Holt stock-recruitment parameters
   obj$rec.a  <- 4.*rSteepness*obj$R0 / ( B0*(1.-rSteepness) )
   obj$rec.b  <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
@@ -226,23 +227,8 @@ calcRefPoints <- function( opModList )
 
   selAge <- salgPars$selAge
 
+  avoidProb <- salgPars$avoidProb
 
-  # From sableOpmod.tpl:
-  #for( g=1; g<=nFisheries; g++ )
-  #{
-  #    if( selType[g] == 2 )   // use dome-shaped function 
-  #    { 
-  #      tmp1 = exp( (-1.)*log(19.0)*(tmpLal-L50_1[g])/(L95_1[g] - L50_1[g]) );
-  #      tmp2 = exp( (-1.)*log(19.0)*(tmpLal-L50_2[g])/(L95_2[g] - L50_2[g]) );
-  #      Salg[g] = elem_prod( (1./(1.+tmp1)), (1./(1.+tmp2)) );
-  #      Salg[g] /= matrixMAX( Salg[g] ); 
-  #    }
-  #    else                    // use asymptotic function
-  #    { 
-  #      tmp1 = exp( (-1.)*log(19.0)*(tmpLal-L50_1[g])/(L95_1[g] - L50_1[g]) );
-  #      Salg[g] = 1./(1.+tmp1); 
-  #    }      
-  #}
   selType <- salgPars$selType
   Salg <- array( data=NA, dim=c(A,nGrps,nGear) )
   for( g in 1:nGear )
@@ -264,6 +250,15 @@ calcRefPoints <- function( opModList )
       tmp1 <- exp( (-1.)*log(19.0)*(Lal-L50Cg1[g])/(L95Cg1[g] - L50Cg1[g]) )
       Salg[,,g] <- 1.0 / ( 1.0+tmp1 )
       Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
+    }
+
+    subLegal <- Lal < 55
+
+    if( g <= 3 )
+    {
+      tmpS <- Salg[,,g]
+      tmpS[ subLegal ] <- (1 - avoidProb[g]) * tmpS[ subLegal ]
+      Salg[,,g] <- tmpS
     }
 
   }
@@ -379,6 +374,7 @@ calcRefPoints <- function( opModList )
   A50       <- obj$aMat50
   A95       <- obj$aMat95
 
+  avoidProb <- obj$avoidProb
 
 
   if(!is.null(obj$selAge))
@@ -392,7 +388,8 @@ calcRefPoints <- function( opModList )
                     selType = obj$selType,
                     nGrps  = obj$nGrps,
                     nGear  = obj$nGear,
-                    selAge = selAge
+                    selAge = selAge,
+                    avoidProb = c(0,0,0) #hardwired at 0 for history
                   )
 
   palgPars <- list( sizeLim  = obj$sizeLim,
@@ -531,6 +528,7 @@ calcRefPoints <- function( opModList )
   if ( any(is.na(Dalg)) )
     browser()
 
+
   # legal ypr - this must sum over the gear types.
   #yprLeg    <- sum( Legal*matrixsum( Calg+Dalg ) ) 
   #yprSubLeg <- sum( (1.-Legal)*matrixsum( Calg+Dalg ) )
@@ -542,9 +540,10 @@ calcRefPoints <- function( opModList )
   # Only use femlaes for ssbpr
   # Added: depletion by total mortality for end of year spawning before
   # graduating to the following year class (Herring/ISCAM)
-  ssbpr  <- sum( Nal[,1]*Wal[,1]*Ma*exp(-1.*Zal[,1]) )
+  ssbpr  <- sum( Nal[,2]*Wal[,2]*Ma )
   legbpr <- sum( Nal*Legal*Wal )
   sublegbpr <- sum( Nal*(1.-Legal)*Wal )
+
 
   # compile return list
   phi <- obj
