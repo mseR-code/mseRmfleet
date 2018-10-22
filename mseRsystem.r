@@ -1012,6 +1012,12 @@ ageLenOpMod <- function( objRef, t )
   obj$om$errors$epsilontg  <- epsilontg    # index obs error
   obj$om$errors$epsilongat <- epsilongat   # age prop sampling error
 
+  if(t == tMP + 1)
+  {
+    saveObj <- obj$om
+    save( saveObj, file = "omObj.RData" )
+  }
+
   return( as.ref(obj) )
 }     # END function ageLenOpMod
 
@@ -1168,6 +1174,89 @@ callProcedureSP <- function( obj, t )
   # -- Call the Surplus production model.
   
   result <- assessModSP( spObj )
+
+  result
+}     # END function callAssessSP
+
+
+callProcedureSP <- function( obj, t )
+{
+  # Input object is from .createMP, it is NOT a blob.
+
+  ddObj   <- list()                        # List to pass to assessModDD
+  ddObj$t <- t                             # Current time step.
+  nT      <- obj$opMod$nT                  # Number of years in simulation.
+  tMP     <- obj$opMod$tMP                 # Year MP first applied, tMP.
+  
+  # (1) Data.
+  
+  # Catch summed over gear types in Ct from Ctg.  Discards are Dt and Dtg.
+  Ct       <- obj$om$Ct[1:(t-1)]           # Extract catch history.
+  ddObj$Ct <- Ct
+
+  # Extract survey index attributes before they are lost when It extracted.
+  surveyOn          <- attributes( obj$mp$data$It )$surveyOn
+  Itg               <- matrix( obj$mp$data$Itg )
+  Itg[ is.na(Itg) ] <- -1
+  dim(Itg)          <- dim( obj$mp$data$Itg )
+  ddObj$Itg         <- Itg
+
+  # Got catch and survey data, from
+  # here we can start making dat list
+
+  ddObj$t1Survey <- obj$mp$data$t1Survey          # First survey year.
+  ddObj$tSurvey  <- t - 1                         # Last survey year.
+
+  # (2) Assessment Method - need to add fixed inputs
+  # 1. FW pars to dat object
+  # 2. Iitial parameter values to par object
+
+  ddObj$pmMsy   <- obj$mp$assess$ddPmMsy
+  ddObj$psdMsy  <- obj$mp$assess$ddPsdMsy
+  ddObj$pmFmsy  <- obj$mp$assess$ddPmFmsy
+  ddObj$psdFmsy <- obj$mp$assess$ddPsdFmsy
+  ddObj$Msy     <- obj$mp$assess$ddMsy
+  ddObj$Fmsy    <- obj$mp$assess$ddFmsy
+  ddObj$lnOmega <- rep( 0,(t-3) )
+  ddObj$rho     <- obj$mp$assess$ddRhoEiv
+
+  ddObj$indexType <- as.numeric( as.logical(obj$mp$assess$ddSurveyRel) )
+  
+  # (3) Harvest control rule parameters.
+
+  hcrType       <- obj$mp$hcr$hcrType
+  ddObj$hcrType <- hcrType
+
+  if ( hcrType == "constantF" )
+    ddObj$ruleType <-1 
+  if ( hcrType == "variableF" )
+    ddObj$ruleType <- 2
+  if ( hcrType == "declineRisk" )
+    ddObj$ruleType <- 3
+   if ( hcrType == "hcrUser" )
+    ddObj$ruleType <- 4
+
+  ddObj$nProjYears <- 1
+  if ( hcrType == "declineRisk" )
+    ddObj$nProjYears <- obj$mp$hcr$nProjYears
+
+  ddObj$trendYears   <- obj$mp$hcr$trendYears
+  ddObj$rSeed        <- obj$opMod$rSeed 
+
+  # Add in parameters to control MLE or MCMC in ADMB.
+  ddObj$nMCMC         <- obj$mp$hcr$nMCMC
+  ddObj$nThin         <- obj$mp$hcr$nThin
+  ddObj$useMLE        <- obj$mp$hcr$useMLE
+
+  # Quota levels for projection.
+  ddObj$Qlevel <- seq( obj$mp$hcr$lowerQuota, obj$mp$hcr$upperQuota,
+                       obj$mp$hcr$binQuota )
+
+  ddObj$idxCtlPts <- obj$mp$hcr$idxCtlPts      # From .calcTimes function.
+  
+  # -- Call the Surplus production model.
+  
+  result <- assessModSP( ddObj )
 
   result
 }     # END function callAssessSP
@@ -4163,6 +4252,55 @@ iscamWrite <- function ( obj )
     mp$assess$retroRt[ tRow, c(1:length(val)) ] <- val
     
   }     # ENDIF methodId=.PMOD
+
+  if( ctlList$mp$assess$methodId == .DDMOD )
+  {
+    # Call DD procedure
+    stockAssessment <- callProcedureDD( obj, t)
+
+    # Go over following code, modify for 
+    # DD specific parameters
+
+    tRow <- t - tMP + 1
+
+    stockAssessment$runStatus[c("est","std","cor","cov","names")] <- NULL
+    val <- c( t, unlist( stockAssessment$runStatus ) )
+    mp$assess$runStatus[ tRow,c(1:length(val)) ] <- val
+    names( mp$assess$runStatus )[c(1:length(val))] <- c( "tStep",names(stockAssessment$runStatus) )
+
+    val <- c( t,unlist(stockAssessment$mpdPars) )
+    mp$assess$mpdPars[ tRow,c(1:length(val)) ] <- val
+    names( mp$assess$mpdPars )[c(1:length(val))] <- c( "tStep",names(unlist(stockAssessment$mpdPars)) )
+    
+    # ARK (17-Nov-10) Update ItgScaled from ISCAM.
+    for ( i in 1:length(tmpTimes$useIndex) )
+    {
+      val <- (stockAssessment$pit[i,]/stockAssessment$q[i])[!is.na(stockAssessment$pit[i,])]
+      idx <- tmpTimes$useIndex[i]
+      indexOn <- !is.na(obj$om$Itg[,idx])[1:(t-1)]
+      mp$assess$ItgScaled[tmpTimes$useIndex[i],which(indexOn)] <- val
+    }
+    
+    # Fill next row of "stepwise" (i.e., retrospective) biomass estimates
+    val <- c( t,stockAssessment$sbt )
+    mp$assess$retroExpBt[ tRow, c(1:length(val)) ] <- val
+    val <- c( t,stockAssessment$sbt )
+    if(is.null(mp$assess$retroSpawnBt)) 
+      mp$assess$retroSpawnBt <- mp$assess$retroExpBt
+    mp$assess$retroSpawnBt[ tRow, c(1:length(val))] <- val
+
+    val <- c( t, stockAssessment$delta )
+    mp$assess$retroRt[ tRow, c(1:length(val)) ] <- val
+
+    # Get logMdevs
+    val <- c(t,0, stockAssessment$log_m_devs )
+    mp$assess$retroMt[tRow, c(1:length(val))] <- val  
+
+    # Get retrospective 3+ biomass
+    mp$assess$retroBio3plus[tRow,1:(t+1)] <- c(t,stockAssessment$sbt)
+    mp$assess$retroBio3plus[tRow,t+1] <- stockAssessment$mpdPars$projExpBio
+
+  }
 
   if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW )
   {

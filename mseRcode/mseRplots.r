@@ -1692,7 +1692,7 @@
 {
   Bmsy <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
 

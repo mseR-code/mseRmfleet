@@ -3,7 +3,7 @@ parameter value
 gui$mpLabel 'currentMP_phaseIn'
 gui$nReps 3
 gui$quiet FALSE
-gui$scenarioLabel 'sableOpMod_age3'
+gui$scenarioLabel 'sableOpMod_age2'
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -66,9 +66,9 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(55,89,1)"
 mp$data$idxAges2 "c(55,89)"
 mp$data$indexType "c(1,1,1)"
-#mp$data$inputAges lisread('mserproject/history/age3/opModAges.dat')
-mp$data$inputCatch lisread('mserproject/history/age3/opModCatch.dat')
-mp$data$inputIndex lisread('mserproject/history/age3/opModIndex.dat')
+#mp$data$inputAges lisread('mserproject/history/age2/opModAges.dat')
+mp$data$inputCatch lisread('mserproject/history/age2/opModCatch.dat')
+mp$data$inputIndex lisread('mserproject/history/age2/opModIndex.dat')
 mp$data$k1Ages "c(1,1,1)"
 mp$data$k1Index "c(1,1,1)"
 mp$data$k2Ages "c(1,1,1)"
@@ -157,9 +157,9 @@ opMod$dgFuture c(0.16,0.35,1.6,0,0)
 opMod$endM 0.08
 opMod$futureAvoid FALSE
 opMod$futureOption 2
-opMod$repFile lisread('mserproject/history/age3/sableopmod.rep')
-opMod$estQdevs lisread('mserproject/history/age3/sableopmod.rep')
-opMod$estRecDevs lisread('mserproject/history/age3/sableopmod.rep')
+opMod$repFile lisread('mserproject/history/age2/sableopmod.rep')
+opMod$estQdevs lisread('mserproject/history/age2/sableopmod.rep')
+opMod$estRecDevs lisread('mserproject/history/age2/sableopmod.rep')
 opMod$fg c(1.0000000,1.22315243,0.4361168,0.1,0.1)
 opMod$firstRepYear 1
 opMod$gammaM 0
@@ -190,7 +190,7 @@ opMod$pulseMFrq 0
 opMod$qg c(0.420787,1,1,0.32876,0.889852)
 opMod$recDevsOffset 0
 opMod$recruitmentOption "Beverton-Holt"
-opMod$repFileName "mserproject/history/age3/sableopmod.rep"
+opMod$repFileName "mserproject/history/age2/sableopmod.rep"
 opMod$rSeed 1234
 opMod$rSteepness 0.602901
 opMod$selAge FALSE

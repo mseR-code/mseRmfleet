@@ -90,7 +90,7 @@ options(useFancyQuotes = FALSE)        # Required for parameter eval
 .ISCAMFLAG <- FALSE
 
 # Herring related objective depletion values
-.BlimHerring  <- .3
+.BlimHerring  <- .4
 .USRHerring   <- .6
 .TRPHerring   <- .75
 
