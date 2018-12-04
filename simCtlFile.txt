@@ -1,6 +1,6 @@
-# simCtlBat6.txt: mseR parameter file written Tue Nov  7 21:15:15 2017.
+# simCtlFile.txt: base sim control file for 2018/2019 Sablefish operating model
 parameter value
-gui$mpLabel 'currentMP_phaseIn'
+gui$mpLabel 'test_dataBased'
 gui$nReps 3
 gui$quiet FALSE
 gui$scenarioLabel 'sableOpMod_age2'
@@ -44,7 +44,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 3
+mp$assess$methodId 1
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -145,7 +145,7 @@ opMod$allocProp c(0.417027,0.475627,0.099525,0.002995,0.004826)
 opMod$aMat50 5.002
 opMod$aMat95 12
 opMod$avoidProb c(0,0,0)
-opMod$B0 50.4573
+opMod$B0 47.08
 opMod$baranovIter 4
 opMod$baranovSteps c(0.8,0.5,0.8,0.4,0.4)
 opMod$bootTolSD 0
@@ -171,14 +171,14 @@ opMod$initKnots 3
 opMod$initMaxF 1
 opMod$initScale 0.1
 opMod$L1 c(32.5,32.5)
-opMod$L50Cg1 c(63.0258,62.3968,44.572,49.9002,65.5534)
+opMod$L50Cg1 c(62.132,62.7584,41.8997,49.8431,51.9225)
 opMod$L50Cg2 c(40,40,40,48.40,89.99)
 opMod$L50Dg c(55,55,55,21,21)
-opMod$L95Cg1 c(7.5428,6.9355,11.643,50.90228,78.38200)
+opMod$L95Cg1 c(7.54149,5.83733,10.92,54.425,64.5918)
 opMod$L95Cg2 c(50,50,50,40,40)
 opMod$L95Dg c(45.87976,45.87976,45.87976,20,20)
 opMod$Linf c(68,72)
-opMod$M c(0.0458245,0.0813024)
+opMod$M c(0.0338156,0.0753226)
 opMod$maxF 2
 opMod$nAges 35
 opMod$nGear 5
@@ -187,12 +187,12 @@ opMod$nT 89
 opMod$powerg c(1,1,1,1,1)
 opMod$pulseM 0
 opMod$pulseMFrq 0
-opMod$qg c(0.420787,1,1,0.32876,0.889852)
+opMod$qg c(0.339313,1,1,0.296229,0.798766)
 opMod$recDevsOffset 0
 opMod$recruitmentOption "Beverton-Holt"
 opMod$repFileName "mserproject/history/age2/sableopmod.rep"
 opMod$rSeed 1234
-opMod$rSteepness 0.602901
+opMod$rSteepness 0.68889
 opMod$selAge FALSE
 opMod$selType c(2,2,2,1,1)
 opMod$sigmaLinf 0.12
@@ -200,9 +200,9 @@ opMod$sigmaM 0.0
 opMod$sigmaR 1.0
 opMod$sizeLim c(55,55,55,20,20)
 opMod$sizeLimFuture c(54.5,54.5,54.5,20,20)
-opMod$tauAgeg c(0.551127,0.616477,0.590496)
-opMod$tauIndexg c(0.16386,0.507205,0.173959)
-opMod$tauReleaseg c(0.444536,0.316758,0.56123,0,0)
+opMod$tauAgeg c(0.5643635,0.5364210,0.4252535)
+opMod$tauIndexg c(0.312149,0.517552,0.191728)
+opMod$tauReleaseg c(0.423162,0.321752,0.664416,0,0)
 opMod$tMP 55
 opMod$useBoot FALSE
 opMod$volSizeRelease c(65,65,65,65,65)
