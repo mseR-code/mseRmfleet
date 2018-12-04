@@ -4474,12 +4474,12 @@ iscamWrite <- function ( obj )
  
   # Update lower and upper HCR control points.
 
-  if(ctlList$mp$hcr$rule == "herring")
+  if(ctlList$mp$hcr$rule == "minE")
   {
-    if( ctlList$mp$hcr$herringCutoffType == "absolute" )
-      mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
-    if( ctlList$mp$hcr$herringCutoffType == "relative") 
-      mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
+    if( ctlList$mp$hcr$minECutoffType == "absolute" )
+      mp$hcr$lowerBound[t] <- ctlList$mp$hcr$minECutoffVal
+    if( ctlList$mp$hcr$minECutoffType == "relative") 
+      mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$minECutoffVal
 
     mp$hcr$upperBound[t] <- mp$hcr$lowerBound[t] / (1 - targHR)  
   }
@@ -4502,6 +4502,8 @@ iscamWrite <- function ( obj )
       rule$biomass      <- stockAssessment$biomass
       rule$ccBiomass    <- mp$data$Itg[1:(t-1),5]
       rule$Dt           <- om$Ct[1:(t-1)]
+      rule$maxF         <- ctlList$opMod$maxF
+      rule$assessFailed <- FALSE
       
       # ccRule lifted from previous LRP paper
       if( ctlList$gui$mpLabel == "ccRule" )
@@ -4523,7 +4525,7 @@ iscamWrite <- function ( obj )
   {
     # Build harvest control rule object, need to check that legalBiomass input.
     # Most recent survey spawning biomass estimate (i.e.,from t-1)
-    if( ctlList$mp$hcr$rule == "herring")
+    if( ctlList$mp$hcr$rule == "minE")
     {
       rule                  <- mp$hcr
       rule$assessMethod     <- ctlList$mp$assess$methodId

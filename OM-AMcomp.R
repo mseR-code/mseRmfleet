@@ -38,7 +38,7 @@ plotOMAMcomp <- function(sim = "sim15102018142711")
             col = c("red","black"),
             legend = c("OM Reconstruction","ADMB rep file"))
 
-  plot( x = range(years), y = c(-1,1),
+  plot( x = range(years), y = range(RE*100),
         type=  "n", xlab = "", ylab = "", las =1, axes = F )
     abline(v = vertLines, lty =4, lwd = .5, col = "grey70")
     axis( side = 1 )
@@ -51,7 +51,7 @@ plotOMAMcomp <- function(sim = "sim15102018142711")
 }
 
 # age 2
-plotOMAMcomp("sim15102018081550")
+plotOMAMcomp("sim04122018200526")
 
 # age3
-plotOMAMcomp("sim15102018142711")
+# plotOMAMcomp("sim15102018142711")

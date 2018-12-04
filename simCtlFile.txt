@@ -44,7 +44,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 1
+mp$assess$methodId 3
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -109,6 +109,8 @@ mp$hcr$lowerTrendPct 0.1
 mp$hcr$maxDeltaTACc NULL
 mp$hcr$maxDeltaTACf NULL
 mp$hcr$minDeltaTACup 0.2
+mp$hcr$minECutoffType NULL
+mp$hcr$minECutoffVal NULL
 mp$hcr$deltaTACcType "relative"
 mp$hcr$nMCMC 5000
 mp$hcr$nProjYears 5
