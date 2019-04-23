@@ -1,2 +1,7 @@
 # mseR-ISCAM .gitignore file
 # Add file names or regular expressions to ignore when updating git repo
+*.DS_Store
+*.dat
+*.std
+*.par
+*.pin
