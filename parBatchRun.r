@@ -1,13 +1,8 @@
 library(parallel)
 # set number of batch files to use
 # nBatchFiles <- 30
-<<<<<<< HEAD
-# batchFiles <- 1:8
-batchFiles <- c(2,3,6,7)
-=======
-batchFiles <- c(1:24)
-# batchFiles <- c(9:12,21:24)
->>>>>>> master
+batchFiles <- c(1:12)
+nCores <- 7
 nBatchFiles <- length(batchFiles)
 batchFolderNames <- paste("mseRBat",batchFiles,sep = "")
 
@@ -56,7 +51,7 @@ for (i in 1:length(batchFiles))
 }
 
 # Now set # of cores and make a cluster
-nCores  <- min(nBatchFiles,detectCores()-1)
+nCores  <- min(nBatchFiles,detectCores()-1,nCores)
 cl      <- makePSOCKcluster(nCores)
 # Run parallel batch
 cat ("Running ", nBatchFiles, " simulations in parallel on ",
@@ -72,11 +67,7 @@ tmp     <- parLapplyLB(cl, X=batchFolderNames, fun=doBatchRun)
 stopCluster(cl)
 
 require(stringr)
-<<<<<<< HEAD
-for (i in 1:nBatchFiles )
-=======
-for (idx in (1:length(batchFiles)))
->>>>>>> master
+for (idx in 1:nBatchFiles )
 {
   i <- batchFiles[idx]
   # Find the sim output folder in the project file

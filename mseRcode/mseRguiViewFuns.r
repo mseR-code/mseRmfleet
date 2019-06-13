@@ -643,7 +643,7 @@ guiView <- function()
   act     <- getWinAct()[1]                      # Last menu window action
  
   ctlList <- .createList( obj$ctlPars )
-  schedules <- .calcSchedules( ctlList$opMod ) 
+  schedules <- .calcSchedules( obj$ctlList$opMod ) 
   
   nReps     <- ctlList$gui$nReps           # Number of replicates.
   methodId  <- ctlList$mp$assess$methodId  # Assessment method ID code.

@@ -1692,7 +1692,7 @@
 {
   Bmsy <- obj$refPtList$ssbFmsy
 
-  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]  
 
@@ -1823,8 +1823,8 @@
 
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
-  LRP <- .BlimHerring
-  TRP <- .TRPHerring
+  LRP <- .4
+  TRP <- 1.0
   
 
   # X-axis limits.
@@ -1847,7 +1847,7 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=c(LRP*B0, TRP*B0), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+  abline( h=c(LRP*Bmsy, TRP*Bmsy), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
           col = c(.LrpCOL, .TrpCOL) )
   panLegend(  x = 0.8, y = 0.9,
               legTxt = c("LRP", "TRP"), 
@@ -1907,9 +1907,8 @@
   
   Bmsy <- obj$refPtList$ssbFmsy
 
-  Mt <- obj$om$Mt[ iRep,(2:ncol(obj$om$Mt)) ]
 
-  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$FBt)) ]
+  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$FBt)) ]
   B0 <- obj$ctlList$opMod$B0
   
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
@@ -2446,7 +2445,7 @@
                       doLegend=TRUE, xLim=NULL, yLim=NULL ) )
 {
   Rt <- obj$om$Rt[ iRep,(2:ncol(obj$om$Rt)) ]
-  Bt <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
 
   if( !is.null(obj$ctlList$opMod$posteriorDraws) )
   {
@@ -3790,7 +3789,7 @@
   tMP  <- obj$ctlList$opMod$tMP
 
   # Operating model.
-  Bt   <- obj$om$SBt[ iRep,(2:ncol(obj$om$Bt)) ]
+  Bt   <- obj$om$Bt[ iRep,(2:ncol(obj$om$Bt)) ]
   
   # Multi-gear model, there is no exploitable biomass that is easy - use legal.
   Bleg      <- obj$om$legalB[ iRep,(2:ncol(obj$om$legalB)) ]
@@ -5311,6 +5310,113 @@
   return( invisible() )
 }     # END function .plotTulipDis
 
+
+# .plotTulipVtg        (tulip simulation envelope for landed/discarded value)
+# Purpose:            Display tulip (envelope) V for one simulation.
+# Parameters:         obj is the object containing the Rdata blob list.
+#                     Allow percentiles to be specified.
+# Returns:            NULL (invisibly)
+# Source:             S.D.N. Johnson
+.plotTulipVal_tg <- function( obj, traces=NULL, qProbs=c(0.05,0.1,0.5,0.9,0.95),
+                              annotate=TRUE, quantity = "valCtg",
+                              allQuants=TRUE,
+                              gfx=list( annotate=TRUE, grids=FALSE, doLegend=TRUE,
+                                        showProj=TRUE, xLim=NULL, 
+                                        yLim=NULL, useYears=NULL, bygears = TRUE), 
+                              ...)
+{
+  # Get landed and discarded value - remove surveys
+  if( quantity == "valCtg" )
+    val_tg    <- obj$om$valCtg[,,1:3]
+  if( quantity == "valDtg" )
+  val_tg    <- obj$om$valDtg[,,1:3]
+
+  nReps     <- obj$ctlList$gui$nReps
+  nT        <- obj$ctlList$opMod$nT
+
+  gearNames <- c("Trap", "Hook", "Trawl")
+
+  # Sum over gears and keep lost dimension so that remainder
+  # of plotting code works.
+  if( !gfx$bygears )
+  {
+    val_tg_tmp  <- apply( X = val_tg, FUN = sum, MARGIN = c(1,2) )
+    val_tg      <- array( NA, dim = c(nReps, nT, 1) )
+    val_tg[,,1] <- val_tg_tmp
+    gearNames   <- "Commercial"
+  }
+  
+  # Count gears
+  nGears    <- dim(val_tg)[3]
+
+  # Time indices.
+  tMP   <- obj$ctlList$opMod$tMP
+  nT    <- obj$ctlList$opMod$nT
+
+  tVec  <- 1:nT
+  years <- seq( from = .INITYEAR, length = nT, by = 1 )
+
+  # Specify axis limits for plots
+  xLim <- gfx$xLim
+  yLim <- gfx$yLim
+
+  if( is.null(xLim) )
+    xLim <- range( years )
+  if( is.null(yLim) )
+    yLim <- c( 0, max( val_tg, na.rm = TRUE ) )
+  if( gfx$showProj )
+  {
+    xLim <- range( years[(tMP-1):nT] )
+  }
+  
+
+  # Need to make some envelopes
+  envVal_tg <- apply(X = val_tg, FUN = quantile, probs = qProbs, MARGIN = c(2,3) )
+
+  gearCols <- brewer.pal(n = nGears, "Dark2" )
+
+  if( nGears == 1 )
+    gearCols <- "grey15"
+
+  transparentGearCols <- scales::alpha( gearCols, 0.4)
+
+  # Ok, let's make the plotting area
+
+  plot( x = xLim, y = yLim, type = "n", axes = FALSE,
+        xlab = "", ylab = "" )
+    # Make axes if in the last row or first column
+    mfg <- par("mfg")
+    if( mfg[1] == mfg[3] )
+      axis( side = 1 )
+    axis( side = 2, las = 1 )
+    box()
+    # Plot value polygons for each gear
+    for( gIdx in 1:nGears )
+    {
+      # Plot polygon
+      polygon(  x = c(years, rev(years)),
+                y = c(envVal_tg[1,,gIdx],rev(envVal_tg[5,,gIdx])),
+                border = NA, col = transparentGearCols[gIdx] )
+      lines( x = years, y = envVal_tg[3,,gIdx], col = gearCols[gIdx],
+              lwd = 3 )
+      
+      if(!is.null(traces))
+        for( tIdx in traces )
+          lines( x = years, y = val_tg[tIdx,,gIdx], col = gearCols[gIdx], lwd = .8 )
+    }
+    abline( v = years[tMP], lty = 2, lwd = .8 )
+
+    if(gfx$bygears)
+      legend( x = "topright", bty = "n",
+              col = gearCols, 
+              pt.bg = transparentGearCols,
+              pt.lwd = 0,
+              pch = 22, cex = 1,
+              pt.cex = 2,
+              lty = 1, lwd = 3,
+              legend = gearNames )
+
+}
 
 # .plotTulipF        (tulip simulation envelope for fishing mortality)
 # Purpose:            Display tulip (envelope) F for one simulation.
@@ -8973,6 +9079,8 @@
     yRange <- gfx$yLim
   
   nGear   <- obj$nGear
+
+  browser()
   
   # Initial values.
   L50Cg1  <- obj$L50Cg1
@@ -10197,6 +10305,8 @@
 {
   # Stock status zone boundaries.
   yieldFmsy  <- obj$refPtList$yieldFmsy
+
+  browser()
 
   Ct <- obj$om$Ct[ iRep,(2:ncol(obj$om$Ct)) ]
   Dt <- apply( obj$om$Dtg,c(1,2),sum )[ iRep, ]
@@ -12211,7 +12321,7 @@ plotRefPts <- function( obj )
 
   B0         <- ctlList$opMod$B0
 
-  omBt       <- obj$om$SBt
+  omBt       <- obj$om$Bt
   omBt       <- omBt[ iRep, (2:ncol(omBt)) ]
   retroExpBt <- obj$mp$assess$retroSpawnBt
   retroExpBt <- retroExpBt[ retroExpBt[,"iRep"]==iRep, ]
@@ -13504,7 +13614,7 @@ plotRefPts <- function( obj )
                                  showProj=FALSE, xLim=NULL, yLim=NULL, useYears=FALSE ),... )                                 
 {
   # Get the spawning biomass and number of replicates.
-  Bt    <- obj$om$SBt[ , c(2:ncol(obj$om$SBt)) ]
+  Bt    <- obj$om$Bt[ , c(2:ncol(obj$om$Bt)) ]
 
   nReps <- nrow( Bt )
 
@@ -13664,7 +13774,7 @@ plotRefPts <- function( obj )
   usr <- par( "usr" )
   if ( !is.null(depMSY) && refPts )
   {
-    urs <- par( "usr" )
+    usr <- par( "usr" )
     points( c(usr[1],usr[2]), c(depMSY,depMSY), xpd=T, bg=.BmsyBG, cex=.BmsyCEX, col=.BmsyCOL, pch=.BmsyPCH )
   }
 

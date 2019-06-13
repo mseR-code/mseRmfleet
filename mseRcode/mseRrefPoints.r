@@ -34,7 +34,7 @@ calcRefPoints <- function( opModList )
 
   # Indices
   A           <- obj$nAges
-  obj$piOne   <- 1/obj$nGrps
+  obj$piOne   <- 1
 
   # salgPars: used to compute selectivity for age a, growth-group l, by gear g.
   obj$L50Cg1  <- obj$L50Cg1
@@ -54,7 +54,15 @@ calcRefPoints <- function( opModList )
   obj$dg      <- obj$dg
 
   # Add life history schedules to parameters.
-  obj <- .calcSchedules( obj )
+  obj       <- .calcSchedules( obj )
+  if( !is.null(obj$landedValue))
+  {
+    obj$Val   <- .calcValAge( obj$Wal, valMtx = obj$landedValue,
+                              dressedProp = obj$dressedProp )
+  } else {
+    obj$Val <- matrix(1, nrow = A, ncol = obj$nGrps )
+  }
+
   # Add SPR and YPR.
   obj <- deref( .calcPerRecruit( f=0, objRef=as.ref(obj) ) )
 
@@ -240,6 +248,7 @@ calcRefPoints <- function( opModList )
     if ( selType[g] == 2 )     # Use dome-shaped function (normal).
     {
       Salg[,,g] <- exp(-(L50Cg1[g] - Lal)^2/2/L95Cg1[g]/L95Cg1[g])
+      Salg[,,g] <- Salg[,,g] / max(Salg[,,g])
       # tmp1 <- exp( (-1.)*log(19.0)*(Lal-L50Cg1[g])/(L95Cg1[g] - L50Cg1[g]) )
       # tmp2 <- exp( (-1.)*log(19.0)*(Lal-L50Cg2[g])/(L95Cg2[g] - L50Cg2[g]) )
       # tmpS <- (1./(1.+tmp1))*(1./(1.+tmp2))
@@ -249,6 +258,17 @@ calcRefPoints <- function( opModList )
     {
       tmp1 <- exp( (-1.)*log(19.0)*(Lal-L50Cg1[g])/(L95Cg1[g] - L50Cg1[g]) )
       Salg[,,g] <- 1.0 / ( 1.0+tmp1 )
+      Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
+    }
+
+    if ( selType[g] == 3 )   # Use gamma function
+    {
+      for( l in 1:dim(Salg)[2])
+      {
+        tmp1        <- Lal[,l]^(L50Cg1[g] - 1) * exp( - Lal[,l] / L95Cg1[g] )  
+        Salg[,l,g]  <- tmp1
+      }
+
       Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
     }
 
@@ -354,6 +374,37 @@ calcRefPoints <- function( opModList )
   }
   Wal  ###Path Specific scaling here???
 }
+
+# .calcValAge    ( Calculate landed value-at-age by growth-group )
+# Purpose:       Converts weight-at-age in kg to value at age for multiple growth-groups.
+# Parameters:    Wal, weight-at-age by group; valMtx, value for weight ranges
+# Returns:       Val, matrix of values-at-age by growth-group.
+# Source:        S.D.N Johnson
+.calcValAge <- function( Wal, valMtx, dressedProp )
+{
+  # Copy Wal for Val matrix
+  Val <- Wal
+
+  # First, convert Wal from kg to pounds
+  Wal <- Wal * 2.2
+
+  # Then, we need to loop over ages and growth groups
+  # to check what weight class we're in
+  nAge  <- nrow(Wal)
+  nGrps <- ncol(Wal)
+  
+  for( a in 1:nAge)
+    for( g in 1:nGrps )
+    {
+      wtClass     <- which.min( Wal[a,g] <= valMtx$Max )
+      poundPrice  <- valMtx$Value[wtClass]
+      Val[a,g]    <- Wal[a,g] * dressedProp * poundPrice
+    }
+
+  # Return value per kg of round weight fish.
+  Val
+}
+
 
 # .calcSchedules ( Calculate life history schedules )
 # Purpose:       Calculate length-, weight-, and maturity-at-age vectors.

@@ -251,7 +251,10 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   # Read rep file if included
   if( !is.null(ctlList$opMod$repFileName) )
   {
-    ctlList$opMod$repFile <- read.rep(ctlList$opMod$repFileName)
+    ctlList$opMod$repFile <- lisread(ctlList$opMod$repFileName)
+
+    if(ctlList$opMod$fillFromRep) 
+      ctlList <- fillOpmodFromRep( obj = ctlList )
   }
   
   opMod <- ctlList$opMod
@@ -377,6 +380,50 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   return( invisible() )
 }     # END function runMSE
 
+# fillOpmodFromRep()
+# Automates filling the operating model sublist
+# of the control list, avoiding changing ctlList
+# parameters when switching rep files.
+fillOpmodFromRep <- function( obj )
+{
+  repFile <- obj$opMod$repFile
+
+  # Get leading pars
+  obj$opMod$B0          <- repFile$SSB0
+  obj$opMod$M           <- c(repFile$M_m, repFile$M_f)
+  obj$opMod$rSteepness  <- repFile$h
+
+  tMP <- obj$opMod$tMP
+
+  # Calculate allocProp from last 20 years of fishing
+  Ctg <- cbind( repFile$landedCtg1,
+                repFile$landedCtg2,
+                repFile$landedCtg3,
+                repFile$landedCtg4,
+                repFile$landedCtg5 )
+  # 
+  allocProp <- colSums(Ctg[(tMP-15):(tMP-1),])
+  allocProp <- allocProp/sum(allocProp)
+  obj$opMod$allocProp <- allocProp
+
+  # Selectivity
+  obj$opMod$L50Cg1 <- repFile$alpha_gt_m[,1]
+  obj$opMod$L95Cg1 <- repFile$beta_gt_m[,1]
+
+  # Now add the step parameter for asymptotic
+  obj$opMod$selType <- repFile$selType
+  selType           <- repFile$selType
+  obj$opMod$L95Cg1[which(selType == 1)] <- obj$opMod$L95Cg1[which(selType == 1)] + obj$opMod$L50Cg1[which(selType == 1)]
+
+  # Obs model variance
+  obj$opMod$tauAgeg     <- (repFile$tauAge_m + repFile$tauAge_f)/2
+  obj$opMod$tauIndexg   <- repFile$tauIndex
+
+  obj$opMod$qg[c(1,4,5)] <- repFile$qg
+
+  return(obj)
+}
+
 #------------------------------------------------------------------------------#
 #-- Age-structured operating model helper functions.                           #
 #------------------------------------------------------------------------------#
@@ -499,6 +546,7 @@ ageLenOpMod <- function( objRef, t )
   obj <- deref( objRef )
   
   ctlList <- obj$ctlList
+  opMod   <- ctlList$opMod
   
   tmpTimes <- .calcTimes( ctlList )
   
@@ -520,6 +568,9 @@ ageLenOpMod <- function( objRef, t )
   nGrps <- ctlList$opMod$nGrps
   Lal   <- obj$refPtList$Lal
   Wal   <- obj$refPtList$Wal
+
+  # Get landed value matrix
+  Val <- obj$refPtList$Val
   
   # Maturity ogive parameters
   A50   <- ctlList$opMod$aMat50
@@ -626,11 +677,15 @@ ageLenOpMod <- function( objRef, t )
   Ct      <- obj$om$Ct      # vector of total landed catch biomass
   Dt      <- obj$om$Dt      # vector of total discard biomass.
   Datg    <- obj$om$Datg    # array of dead discard biomass-at-age
-  Dtg   <- obj$om$Dtg     # matrix of gear-specific total discarded biomass
-  Ftg   <- obj$om$Ftg     # matrix of gear-specific fishing mortality
-  Zalt  <- obj$om$Zalt    # array of total mortality by age-/length-group
+  Dtg     <- obj$om$Dtg     # matrix of gear-specific total discarded biomass
+  Ftg     <- obj$om$Ftg     # matrix of gear-specific fishing mortality
+  Zalt    <- obj$om$Zalt    # array of total mortality by age-/length-group
 
-
+  # Value of catch and discards
+  valCatg   <- obj$om$valCatg
+  valCtg    <- obj$om$valCtg
+  valDatg   <- obj$om$valDatg
+  valDtg    <- obj$om$valDtg
 
   if( t == 1 )
   {
@@ -724,6 +779,9 @@ ageLenOpMod <- function( objRef, t )
     Ntot[t] <- sum( Nalt[,,t] )
   }  # end t>1 ifelse
 
+  if( t < tMP ) 
+    Ctg[t,] <- Ctg[t,]/1000.
+
   
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
@@ -756,12 +814,9 @@ ageLenOpMod <- function( objRef, t )
     # Also, still getting SSB way higher here than SCAL output for 1998
     # Also, the post-tMP simulated biomass seems too consistent 
     # among 3 trial reps
-
-    if( t < tMP ) 
-        Ctg[t,] <- Ctg[t,]/1000.
         
-    solveF <- .solveBaranovNum( B=Balt[,,t], S=Salg, P=Palg, D=dg, F=initF, M=Mt[,t],
-                                C=Ctg[t,], lam=ctlList$opMod$baranovSteps )
+    solveF <- .solveBaranov1(  B=Balt[,,t], S=Salg, P=Palg, D=dg, F=initF, M=Mt[,t],
+                                    C=Ctg[t,], lam=ctlList$opMod$baranovSteps )
 
     solveF[ solveF > 1 ] <- 1.
     if( any( solveF < 0 ) )
@@ -782,7 +837,7 @@ ageLenOpMod <- function( objRef, t )
   for( g in 1:(nGear-2) )
     Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]*(dg[g]*Palg[,,g] - Palg[,,g] + 1.)
 
-  # Catch- and dead-discards-at-age 
+  # Catch- (Cal), dead-discards (Dal), and total-discards-at-age (Discal)
   legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
   sublegalDisc <- c(0.,0.,0.)
   for( g in 1:(nGear-2) )
@@ -793,18 +848,25 @@ ageLenOpMod <- function( objRef, t )
     
     # catch-age/year/gear
     Catg[,t,g]    <- rowSums( Cal )
+    valCatg[,t,g] <- rowSums( (Cal / Wal) * Val + opMod$collarPrice * Cal/Wal )
     Datg[,t,g]    <- rowSums( Dal )
+    valDatg[,t,g] <- rowSums( (Dal / Wal) * Val + opMod$collarPrice * Dal/Wal )
+
     Discatg[,t,g] <- rowSums( Discal )
 
     # catch-year/gear
     capCtg[t,g] <- sum( Catg[,t,g] )
+    valCtg[t,g] <- sum( valCatg[,t,g] )
     Dtg[t,g]    <- sum( Datg[,t,g] )
+    valDtg[t,g] <- sum( valDatg[,t,g] )
     Disctg[t,g] <- sum( Discatg[,t,g] )
     
     # accumulate legal catch, legal dead discards, and sublegal total dead discards
     legalC    <- legalC + sum( Cal*obj$refPtList$Legal )
     legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
     sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
+
+    Ctg[t,g]  <- capCtg[t,g]
 
     # Now sum sublegal discards
     sublegalDisc[g] <- sublegalDisc[g] + sum( Discal*(1.-obj$refPtList$Legal) )
@@ -860,12 +922,16 @@ ageLenOpMod <- function( objRef, t )
           
           # catch-age/year/gear
           Catg[,t,g]    <- rowSums( Cal )
+          valCatg[,t,g] <- rowSums( (Cal / Wal) * Val + opMod$collarPrice * Cal/Wal  )
           Datg[,t,g]    <- rowSums( Dal )
+          valDatg[,t,g] <- rowSums( (Dal / Wal) * Val + opMod$collarPrice * Dal/Wal )
           Discatg[,t,g] <- rowSums( Discal )
 
           # catch-year/gear
           capCtg[t,g]   <- sum( Catg[,t,g] )
+          valCtg[t,g]   <- sum( valCatg[,t,g] )
           Dtg[t,g]      <- sum( Datg[,t,g] )
+          valDtg[t,g]   <- sum( valDatg[,t,g] )
           Disctg[t,g]   <- sum( Discatg[,t,g] )
           
           # accumulate legal catch, legal dead discards, and sublegal total dead discards
@@ -888,7 +954,7 @@ ageLenOpMod <- function( objRef, t )
       noDisc[,,1:3] <- noDisc[,,5]
       initF <- c(rep(0.05,3),0,0)
       if( any(underUtilized > 0) )
-        topUpF <- .solveBaranovNum( B=capBalt, S=Salg, P=noDisc, D=dg, F=initF, M=M,
+        topUpF <- .solveBaranov1( B=capBalt, S=Salg, P=noDisc, D=dg, F=initF, M=M,
                                     C=underUtilized, lam=ctlList$opMod$baranovSteps )
       else topUpF <- rep(0,5)
 
@@ -904,13 +970,17 @@ ageLenOpMod <- function( objRef, t )
           Ctg[t,g] <- capCtg[t,g]
         else {
           # top up catch at age, legnth, gear and time
-          topUpCal    <- capBalt * ( 1 - exp(-topUpZ) ) *Salg[,,g]*topUpF[g]/topUpZ
-          topUpCatg   <- rowSums( topUpCal )
+          topUpCal      <- capBalt * ( 1 - exp(-topUpZ) ) *Salg[,,g]*topUpF[g]/topUpZ
+          topUpCatg     <- rowSums( topUpCal )
+          topUpValCatg  <- rowSums( (topUpCal / Wal) * Val + opMod$collarPrice * topUpCal/Wal )
             
           # This is the reported quantity
-          Ctg[t,g]    <- capCtg[t,g] + sum( topUpCatg )
-          legalC      <- legalC + sum(topUpCal*obj$refPtList$Legal)
-          sublegalC   <- sublegalC + sum(topUpCal*(1-obj$refPtList$Legal))  
+          Ctg[t,g]      <- capCtg[t,g] + sum( topUpCatg )
+          Catg[,t,g]    <- Catg[,t,g] + topUpCatg
+          valCatg[,t,g] <- valCatg[,t,g] + topUpValCatg
+          valCtg[t,g]   <- valCtg[t,g] + sum( topUpValCatg )
+          legalC        <- legalC + sum(topUpCal*obj$refPtList$Legal)
+          sublegalC     <- sublegalC + sum(topUpCal*(1-obj$refPtList$Legal))  
         }
       }
       # Now add total mortality at age and length for next time step
@@ -930,6 +1000,9 @@ ageLenOpMod <- function( objRef, t )
   legalHR    <- (legalC+legalD)/legalB
   sublegalHR <- (sublegalD+sublegalC)/sublegalB
 
+  if(any(!is.na(obj$om$Itg[1:(tMP-20),5])))
+    browser()
+
   # Gear-specific cpue, catch, discards, and sample age-proportions
   for( i in 1:length(useIndex) )
   {
@@ -941,14 +1014,12 @@ ageLenOpMod <- function( objRef, t )
     #     obj$mp$data$Itg[t,g] <- obj$om$Itg[t,g]*exp( tauIndexg[i]*epsilontg[t,g] - tauIndexg[i]*tauIndexg[i]/2. )        
     # }
     # Changed tMP to tMP-1 to impute survey values for tMP.
-    if( !.INDEXSERIESINPUT | (t >= (tMP-1)) ) 
+    if( !.INDEXSERIESINPUT | (t > (tMP-1)) ) 
     {
-      
       # Only impute a tMP point for indices active in the future.
       if ( k2Index[i] > 0 )
       {
          obj$om$Itg[t,g] <- qg[g]*sum( Salg[,,g]*Balt[,,t] )^powerg[g]
-         # browser()
       }
       if( attr(obj$mp$data$Itg,"indexOn")[t,g]==TRUE )
         obj$mp$data$Itg[t,g] <- obj$om$Itg[t,g]*exp( tauIndexg[i]*epsilontg[t,g] - tauIndexg[i]*tauIndexg[i]/2. )        
@@ -971,7 +1042,6 @@ ageLenOpMod <- function( objRef, t )
     }
   }
 
-  
   # Update all objects in obj for this time step.
   obj$om$Nalt  <- Nalt    # numbers-at-age
   obj$om$Balt  <- Balt    # biomass-at-age
@@ -997,7 +1067,14 @@ ageLenOpMod <- function( objRef, t )
   obj$om$Disctg  <- Dtg
   obj$om$capCtg  <- Ctg
   obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
+
+  # Update value OM matrices
+  obj$om$valCtg   <- valCtg
+  obj$om$valCatg  <- valCatg
+  obj$om$valDtg   <- valDtg
+  obj$om$valDatg  <- valDatg
   
+
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
   # obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
   obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
@@ -1045,7 +1122,7 @@ ageLenOpMod <- function( objRef, t )
   return( assessment )
 }    # END function .assessModMA
 
-# .assessModMA       
+# .callProcedureMovingAvg       
 # Purpose:        wrapper function for the MovAvg MP
 # Parameters:     obj=list containing om and mp lists
 #                 t=current time step
@@ -1088,7 +1165,12 @@ ageLenOpMod <- function( objRef, t )
   return( assessment )
 }    # END function .assessModMA
 
-
+# .callProcedureSP       
+# Purpose:        wrapper function for the Surplus Production MP
+# Parameters:     obj=list containing om and mp lists
+#                 t=current time step
+# Returns:        stock assessment output from .assessModSP()
+# Source:         S.P. Cox
 callProcedureSP <- function( obj, t )
 {
   # Input object is from .createMP, it is NOT a blob.
@@ -1164,6 +1246,9 @@ callProcedureSP <- function( obj, t )
                        obj$mp$hcr$binQuota )
 
   spObj$idxCtlPts <- obj$mp$hcr$idxCtlPts      # From .calcTimes function.
+
+  # Silence SP model output?
+  spObj$quiet     <- obj$gui$quiet
   
   # -- Call the Surplus production model.
   
@@ -1190,7 +1275,9 @@ callProcedureSP <- function( obj, t )
   repFile  <- file.path( getwd(), paste( exeName,".rep", sep="" ) )  
   stdFile  <- file.path( getwd(), paste( exeName,".std", sep="" ) )  
   
-  t <- spObj$t
+  t     <- spObj$t
+
+  quiet <- spObj$quiet
 
   # (1) Extract and write the model parameters to pin file.
 
@@ -1268,10 +1355,10 @@ callProcedureSP <- function( obj, t )
     if( .Platform$OS.type=="unix" )
     { 
       system( command=paste( exeName," ",mcmcString," -iprint 100 -maxfn 5000",sep="" ),
-              intern=TRUE, wait=TRUE, ignore.stdout=T  )
+              intern=TRUE, wait=TRUE, ignore.stdout=quiet, ignore.stderr = quiet )
 
       system( command=paste( exeName," ","-mceval",sep="" ),
-              intern=TRUE, wait=TRUE, ignore.stdout=T  )
+              intern=TRUE, wait=TRUE, ignore.stdout=T, ignore.stderr = quiet )
     }
     else     # Windows branch call to "system".
     {
@@ -1383,6 +1470,7 @@ callProcedureSP <- function( obj, t )
   elapsed <- difftime( endtime,starttime )   # Elapsed minimization time.  
 
   assessment <- assessSP
+  assessment$SBt <- c(assessSP$Bt, assessSP$projExpBio)
 
   assessment$mpdPars <- list( objFun  = assessSP$objFun,
                               totLike = assessSP$total_likelihood,
@@ -1424,630 +1512,507 @@ callProcedureSP <- function( obj, t )
   return( assessment )
 }     # END function .assessModPmod
 
-# assessModISCAM
+# .callProcedureCAA       
+# Purpose:        wrapper function for the assessCA MP
+# Parameters:     obj=list containing om and mp lists
+#                 t=current time step
+# Returns:        stock assessment output from .assessModCAA()
+# Source:         S.P. Cox, updated for mseRmfleet by SDN Johnson
+.callProcedureCAA <- function( obj, t )
+{
+  # Input object is from .createMP, it is NOT a blob.  So obj$opMod has all
+  # reference points and life history schedules.
+
+  caObj     <- list()                        # List to pass to assessModCAA
+
+  assessCtl <- obj$ctlList$mp$assess
+
+  # Fit control pars
+  caObj$maxPhase    <- assessCtl$caaMaxPhase
+  caObj$silent      <- assessCtl$caaSilent
+  caObj$calcSD      <- TRUE
+  caObj$maxEval     <- 1e4
+  caObj$maxIter     <- 1e4
+
+  # Pull opMod and om
+  opMod           <- obj$ctlList$opMod
+  om              <- obj$om
+
+  # Get ages
+  caObj$A         <- opMod$nAges
+  minAge          <- obj$ctlList$mp$data$minAge
+  patg            <- obj$mp$data$Xatg[,(1:(t-1)),]
+
+  # Coerce missing ages to -1
+  patg[is.na(patg)] <- -1
+  patg[1,,] <- 0
+
+  # Get times
+  caObj$t         <- t                # Current time step.
+  caObj$nT        <- opMod$nT         # Total number of time steps
+  tMP             <- opMod$tMP        # Year MP first applied, tMP.
+  
+  # Get indices
+  I_tg              <- om$Itg[1:(caObj$t-1),]
+  I_tg[is.na(I_tg)] <- -1
+
+  # Observed weight at age
+  wtAge_ta          <- obj$om$Wta[1:(caObj$t-1),]
+  wtAge_ta[,1]      <- 0.02
+
+  
+  
+  # (1) Data.
+  caObj$data          <- list()
+
+  # Populate data
+  caObj$data$I_tg                 <- I_tg
+  caObj$data$C_tg                 <- om$Ctg[1:(caObj$t-1),]
+  caObj$data$A_atg                <- patg
+  caObj$data$survType_g           <- c(-1,-1,-1,2,2)
+  caObj$data$indexType_g          <- c(-1,-1,-1,0,1)
+  caObj$data$calcIndex_g          <- c(0,0,0,1,1)
+  caObj$data$selType_g            <- c(0,0,0,0,0)
+  caObj$data$selX_g               <- c(0,0,0,0,0)
+  caObj$data$fleetTiming          <- c(.48,.49,.5,.98,0.99)
+  caObj$data$initCode             <- 1
+  caObj$data$posPenFactor         <- 1e4
+  caObj$data$firstRecDev          <- 2
+  caObj$data$minAgeProp           <- .02
+  caObj$data$wtAge_ta             <- wtAge_ta
+  caObj$data$spawnTiming          <- 1
+  caObj$data$nYearsAveProj        <- assessCtl$caaMoveAveYrs
+
+  checkNA <- function( x )
+  {
+    cond <- any(is.na(x))
+    
+    cond 
+  }
+
+  naData <- lapply(X = caObj$data, FUN = checkNA )
+  if(any(naData))
+  {
+    whichData <- which(naData)
+    cat("\n NAs found in data object", whichData, "\n")
+    browser()
+  }
+
+
+  IGa <- .1
+  IGmode <- c(.9306,1.0856) * .461853
+  IGb <- IGmode * (1 + IGa)
+
+  IGa_R     <- .1
+  IGmode_R  <- .706
+  IGb_R     <- IGmode_R * (1 + IGa_R)
+
+
+  # (2) pars
+  caObj$pars <- list()
+  # Populate init pars
+  caObj$pars$lnB0                 <- 5
+  caObj$pars$logit_ySteepness     <- 0
+  caObj$pars$lnM                  <- -.79
+  caObj$pars$log_initN_mult       <- rep(0,caObj$A)
+  caObj$pars$lnSelAlpha_g         <- log(c(2.66622,2.91102,4.67541,0,0))
+  caObj$pars$lnSelBeta_g          <- log(c(3.549228,3.902951,5.862269,0.01,0.01))
+  caObj$pars$effSampleSize_g      <- rep(100,5)
+  caObj$pars$recDevs_t            <- rep(0,caObj$t - 3 )
+  caObj$pars$lnsigmaR             <- 0
+  caObj$pars$omegaM_t             <- rep(0,caObj$t-2)
+  caObj$pars$lnsigmaM             <- log(.1)
+  caObj$pars$obstau2IGa           <- rep(IGa,5)
+  caObj$pars$obstau2IGb           <- rep(IGb,5)
+  caObj$pars$sig2RPrior           <- c(IGa_R,IGb_R)
+  caObj$pars$sig2MPrior           <- c(1,0.02)
+  caObj$pars$rSteepBetaPrior      <- c(10,4.92)
+  caObj$pars$initMPrior           <- c(-.79,.4)
+  caObj$pars$mq                   <- c(1,1,1,.5,0.1)
+  caObj$pars$sdq                  <- c(2,2,2,2,0.01)
+  caObj$pars$aMat                 <- c(2.55,3.12)
+  caObj$pars$Linf                 <- c(20)
+  caObj$pars$L1                   <- c(4)
+  caObj$pars$vonK                 <- c(.275)
+  caObj$pars$lenWt                <- c(1.04e-5,3.07)
+  caObj$pars$mSelMode_g           <- c(3.549228,3.902951,5.862269,2.202222,2.202222)
+  caObj$pars$selModeCV            <- 1
+
+  # Random effects
+  caObj$random                    <- assessCtl$caaRandomEff
+
+  # (3) Map 
+  # list for identifying/switching off parameters
+  # Only need to define "special" maps here 
+  # e.g. selectivity
+  caObj$map <- list()
+
+  # selMap
+  selMap <- c(101,102,103,NA,NA)
+
+  # Populate
+  caObj$map$lnSelAlpha_g          <- factor(selMap)
+  caObj$map$lnSelBeta_g           <- factor(selMap + 10)
+
+  # Phases
+  caObj$phases$lnB0               <- 1
+  caObj$phases$logit_ySteepness   <- 2
+  caObj$phases$lnM                <- 2
+  caObj$phases$log_initN_mult     <- 1
+  caObj$phases$lnSelAlpha_g       <- 4
+  caObj$phases$lnSelBeta_g        <- 4
+  caObj$phases$recDevs_t          <- 3
+  caObj$phases$lnsigmaR           <- 6
+  caObj$phases$omegaM_t           <- 5
+  caObj$phases$lnsigmaM           <- -1
+
+  # Check that map and par lengths match
+  parLen <- lapply( X = caObj$pars, FUN = length)
+  mapLen <- lapply( X = caObj$map, FUN = length)
+  parLen <- parLen[names(parLen) %in% names(mapLen)]
+
+  lenDiff <- unlist(parLen[names(mapLen)]) - unlist(mapLen)
+
+  if(any(lenDiff != 0) )
+  {
+    whichDiff <- which(lenDiff != 0)
+    cat("\n Map and par lengths don't match for ", names(whichDiff) ," \n") 
+
+    browser()
+  }
+
+  if(obj$ctlList$mp$assess$writeOut)
+  {
+    cat("\n Saving asessCA lists to working directory. \n")
+    save(caObj,file = "assessCALists.RData")
+  }
+  
+
+  # -- Call assessment model, which will do its own estimation procedure
+  result <- .assessModCAA( caObj )
+
+  result  
+}     # END function callProcedureCAA
+
+# .assessModCAA
 # Purpose:       Runs a statistical catch-age model to estimate biomass       #
 #                and fishery reference points if required.
 # Parameters:    obj=list containing everything, because this thing needs it  #
 # Returns:       current biomass estimate, stock dynamics and parameters,     #
 #                minimization details, yield and ref pt calcs                 #
 # Notes:         Execution is platform-dependent - see system() call          #
-# Source:        S.P. Cox (1-May-10)                                          #
-assessModISCAM <- function( caObj )
+# Source:        S.P. Cox (1-May-10) updated by SDN Johnson, 12-Jun-19        #
+.assessModCAA <- function( caObj )
 {
   # Statistical catch-age model.
-  # This implmentation is a wrapper that simply calls the ISCAM estimation
-  # procedure, reads the output and returns the assessmemt
+  # This implmentation is a wrapper that applies the assessCA
+  # model using a phased minimisation procedure TMBPhase()
   #
-  # (1) Extract and write the model parameters and data using iscamWrite()
-  # (3) Make a system call to the ADMB program (mac=./iscam_ageM).
-  # (4) Read the ADMB report file (iscamCtl.rep).
-  # (5) Update the pars list component and tack on some ADMB minimizer details.
   #
-  nT <- caObj$nT
-  t <- caObj$t
-  exeName <- caObj$exeName
-  
-  mcOut <- NA
-  
-  # mcmcString <- ""
-  mcmcString <- paste( " -mcmc ", caObj$nMCMC," -mcsave ",caObj$nThin, sep="" )
+  nT  <- caObj$nT
+  t   <- caObj$t
 
-  datFileFull  <- file.path( getwd(), "iscam_top.dat" )
-  datFile      <- "iscam_top.dat"
-  exeFile  <- file.path( getwd(), exeName )
-  mcmcFile <- file.path( getwd(), paste(exeName,".mcmc",sep = "") )
-  # pinFile  <- file.path( getwd(), paste( exeName,".pin", sep="" ) )  
-  # repFile  <- file.path( getwd(), paste( exeName,".rep", sep="" ) )  
-  # stdFile  <- file.path( getwd(), paste( exeName,".std", sep="" ) )
+  # Load the TMB model
+  dyn.load(dynlib("assessCA")) 
 
-  # Set start time for optimization
-  starttime <- Sys.time()
-  
-  xFactor <- 0.2
-  for ( i in 1:4 )
-  {
-    iscamWrite(caObj)
-    hessPosDef <- TRUE
-    assessComplete <- TRUE
-    if( .Platform$OS.type=="unix" )
-    { 
-      runModel <- paste( "./", exeName, " -ind ",datFile, 
-                         " -iprint 100 ", mcmcString, sep="" )
-      system(  command=runModel,
-                wait=TRUE, ignore.stdout = TRUE, ignore.stderr = TRUE )
+  # Run TMBphase
+  phzList <- TMBphase(  data = caObj$data, 
+                        parameters = caObj$pars, 
+                        random = caObj$random,
+                        phases = caObj$phases, 
+                        base_map = caObj$map,
+                        maxPhase = caObj$maxPhase,
+                        model_name = "assessCA",
+                        optimizer = "nlminb",
+                        silent = caObj$silent,
+                        calcSD = caObj$calcSD,
+                        maxEval = caObj$maxEval,
+                        maxIter = caObj$maxIter ) 
 
-      mcEval <- paste( "./", exeName, " -ind ", datFile, " -mceval", sep = "" )
-      system( command=mcEval,
-              wait=TRUE, ignore.stdout = TRUE, ignore.stderr = TRUE )
-    }
-    else     # Windows branch call to "system".
-    {
-      system( paste( exeFile,".exe -ind ",datFile," -iprint 100 -maxfn 5000"), wait=TRUE,
-              show.output.on.console=.SHOWOUTPUTONCONSOLE )
-            
-      system( command=paste( exeFile," ","-mceval",sep="" ),
-              show.output.on.console=.SHOWOUTPUTONCONSOLE, wait=TRUE, ignore.stdout=T  )
-    }
-    # Check if there is a valid mcmc output file, i.e., was the Hessian positive
-    # definite, if not must use old mcmc output file and set hessPosDef to FALSE.
-    # This condition is then flagged in mp$assess$runStatus$hessPosDef (T,F).
-    tmpMCMC  <- try( read.table( mcmcFile, header=T, sep="",
-                      strip.white = TRUE ), silent=TRUE ) 
 
-    tmpFit <- try(read.rep(paste(exeFile,".rep",sep = "")))
+  assessment  <- phzList$repOpt
+  sdrep       <- phzList$sdrep
 
-    # Increment starting R0 and R value to hopefully get convergence
-    if ( class( tmpMCMC )=="try-error" | class(tmpFit) == "try-error" )
-    {
-      caObj$R0 <- exp(log(caObj$R0)*(1.0+i*xFactor))
-      caObj$M <- exp( log(caObj$M) + i*xFactor )
-      assessComplete <- FALSE
-      hessPosDef <- FALSE
-    }
-    
-    if ( hessPosDef )
-      break
-  }
-  
-  if ( class( tmpMCMC )=="try-error" )
-  {
-    hessPosDef <- FALSE
-    cat( "\nHessian not positive definite, using last good mcout.dat","\n" )
-    mcmcFile <- file.path( getwd(), "mcout.bck" )          
-    if ( file.exists( mcmcFile ) )
-      tmpMCMC <- read.table( mcmcFile, header=T )
-  } else {
-    # Save the mcout.dat file in case the next Hessian is not positive definite.
-    file.copy( mcmcFile,"mcout.bck", overwrite=TRUE )  
-    system( paste("rm ", mcmcFile, sep = "" ) )
-    system( paste("rm ", exeFile, ".psv", sep = "" ) )
-  }    
+  assessment$sbt <- assessment$SB_t
 
-  if ( class( tmpFit )=="try-error" )
-  {
-    cat( "\nISCAM hung on a bad parameter value, using last good report file","\n" )
-    browser()
-    assessComplete <- FALSE
-    repFile <- file.path( getwd(), "rep.bck" )          
-    if ( file.exists( repFile ) )
-    {
-      tmpFit <- read.rep( repFile )
-      system( paste( "rm", repFile ) )
-    }
-    else cat( "t == tMP, no backup rep file, fix it!!\n" )
-    
-  } else {
-    admbOut <- read.admb(exeFile)
-    # Save the <exeFile>.rep file in case the next time step has a bad par value
-    if( t < nT)
-      file.copy( paste(exeFile,".rep", sep = ""),"rep.bck", overwrite=TRUE )  
-    system( paste("rm ", exeFile,".rep", sep = "" ) )
-  } 
-
-  
-  mcOut <- tmpMCMC[1,]     # First row of MCMC output are the MLEs.
-
-  # Set end time for optimization
-  endtime <- Sys.time()       
-  
-  # Calculate elapsed time
-  elapsed <- difftime( endtime,starttime )
-
-  # failure flag
-  assessFailed <- !assessComplete
-
- 
-  # d) Save assessment results to output list
-
-  # SPC (26-Jan-13) This list (i.e., rep file output) always contains 
-  # projSpawnBio and projExpBio which are 1-year ahead projections of each.
-  assessment        <- tmpFit
-      #cat("\n Printing assessment list from rep file \n")
-      #print(assessment)
-
-  assessment$mpdPars <- list( objFun        = tmpFit$fit$nlogl,
-                              R0            = exp(mcOut["log.ro"]),
-                              SSB0          = mcOut["sbo"],
-                              B0            = mcOut["bo"],
-                              Msy           = tmpFit$msy,
-                              q             = tmpFit$q,
-                              projExpBio    = sum(tmpFit$future_sbt),
-                              lastDt        = tmpFit$sbt[t]/tmpFit$sbo )
+  assessment$mpdPars <- list( objFun        = phzList$objFun,
+                              R0            = assessment$R0,
+                              SSB0          = assessment$B0,
+                              B0            = assessment$B0,
+                              q             = assessment$qhat_g,
+                              projExpBio    = assessment$SB_t[t],
+                              lastDt        = assessment$D_t[t-1] )
                               
-  assessment$mcOut                    <- mcOut                                          
-  assessment$runStatus                <- tmpFit$fit[c("nopar","nlogl","maxgrad","npar","logDetHess")]
-  assessment$runStatus$hessPosDef     <- hessPosDef
-  assessment$runStatus$objFun         <- tmpFit$f
+  assessment$mcOut                    <- NULL                                          
+  # assessment$runStatus                <- tmpFit$fit[c("nopar","nlogl","maxgrad","npar","logDetHess")]
+  assessment$runStatus$maxGrad        <- phzList$maxGrad
+  assessment$runStatus$hessPosDef     <- sdrep$pdHess
+  assessment$runStatus$objFun         <- phzList$objFun
   assessment$runStatus$fisheryClosed  <- NA
   assessment$runStatus$deadFlag       <- NA
-  assessment$runStatus$assessFailed   <- assessFailed 
+  assessment$runStatus$assessFailed   <- !phzList$success 
+  assessment$phzList                  <- phzList
 
-  assessment$exploitBt <- tmpFit$bt[t]
-  assessment$spawnBt   <- tmpFit$sbt[t]
+  assessment$exploitBt <- assessment$SB_t[t]
+  assessment$spawnBt   <- assessment$SB_t[t]
+
+  dyn.unload(dynlib("assessCA"))          # Dynamically link the C++ code
 
 
   return( assessment )
-}     # END function assessModCA
+}     # END function assessModCAA
 
-callProcedureISCAM <- function( obj, t )
+
+
+# .callProcedureDD       
+# Purpose:        wrapper function for the Delay Difference MP
+# Parameters:     obj=list containing om and mp lists
+#                 t=current time step
+# Returns:        stock assessment output from .assessModMA()
+# Source:         S.D.N. Johnson 12-Jun-19
+callProcedureDD <- function( obj, t )
 {
   # Input object is from .createMP, it is NOT a blob.  So obj$opMod has all
   # reference points and life history schedules.
 
-  caObj    <- list()                        # List to pass to assessModProd
+  ddObj     <- list()                        # List to pass to assessModDD
 
-  opMod     <- obj$ctlList$opMod
-  om        <- obj$om
+  assessCtl <- obj$ctlList$mp$assess
 
-  years <- .INITYEAR:(.INITYEAR + t - 2)
+  # Fit control pars
+  ddObj$calcSD      <- FALSE
+  ddObj$maxEval     <- 1e4
+  ddObj$maxIter     <- 1e4
+
+  # Pull opMod and om
+  opMod           <- obj$ctlList$opMod
+  om              <- obj$om
+
   
-  caObj$t  <- t                             # Current time step.
-  caObj$nT <- opMod$nT
-  tMP      <- opMod$tMP                 # Year MP first applied, tMP.
+  # Get times
+  ddObj$t         <- t                # Current time step.
+  ddObj$nT        <- opMod$nT         # Total number of time steps
+  tMP             <- opMod$tMP        # Year MP first applied, tMP.
+  
+  # Get indices
+  useIndex          <- obj$ctlList$mp$data$useIndex
+  I_tg              <- om$Itg[1:(ddObj$t-1),useIndex]
+  I_tg[is.na(I_tg)] <- -1
+  nIndices          <- length(useIndex)
 
+
+  # Make FW pars
+  FWpars <- makeFWpars( vonK  = mean(opMod$vonK), 
+                        Linf  = mean(opMod$Linf), 
+                        L1    = mean(opMod$L1), 
+                        c1.lw = mean(opMod$c1), 
+                        c2.lw = mean(opMod$c2), 
+                        nAges = opMod$nAges )
+
+  # Set first estimated recruitment deviation
+  firstRecDev <- 10
+
+  
   # (1) Data.
+  ddObj$data          <- list()
 
-  caObj$A         <- opMod$nAges
-  minAge          <- obj$ctlList$mp$data$minAge
-  patg            <- obj$mp$data$Xatg[,(1:(t-1)),]
+  # Populate data
+  ddObj$data$I_tg                 <- I_tg
+  ddObj$data$C_tg                 <- apply(X = om$Ctg[1:(ddObj$t-1),], FUN = sum, MARGIN = 1)
+  ddObj$data$wbar_t               <- rep(-1, ddObj$t-1)
+  ddObj$data$kage                 <- FWpars$DDpars$DDpar.hi["kage"]
+  ddObj$data$alpha                <- FWpars$DDpars$DDpar.hi[2]
+  ddObj$data$rho                  <- FWpars$DDpars$DDpar.hi[3]
+  ddObj$data$wk                   <- FWpars$wtAge[kage]
+  ddObj$data$initBioCode          <- 1 - obj$ctlList$mp$assess$ddUnfished
+  ddObj$data$useWbar              <- 0
+  ddObj$data$survType_g           <- as.integer(rep(0,nIndices))
+  ddObj$data$indexType_g          <- as.integer(rep(0,nIndices))
+  ddObj$data$firstRecDev          <- firstRecDev
+  ddObj$data$pospenScale          <- 1e3 
 
-  # Age observation indices
-  useAges         <- eval(parse(text = obj$ctlList$mp$data$useAges) )
-  t1Ages          <- eval(parse(text = obj$ctlList$mp$data$t1Ages) )
-  t2Ages          <- eval(parse(text = obj$ctlList$mp$data$t2Ages) )
-  nAgeObs         <- t - t1Ages
-
-  pAtg            <- matrix( NA, nrow = sum(nAgeObs), ncol = caObj$A + 2 - minAge + 1)
-  initRow         <- 1
-  for(i in 1:length(useAges))
+  checkNA <- function( x )
   {
-    ageGear <- useAges[i]
-    rowIdx <- initRow:(initRow + nAgeObs[i] - 1)
-    pAtg[rowIdx,1] <- years[t1Ages[i]:(t-1)]
-    pAtg[rowIdx,2] <- ageGear
-    pAtg[rowIdx,3:(caObj$A+2-minAge + 1)] <- t(patg[minAge:caObj$A,,ageGear])
-    initRow <- initRow + nAgeObs[i]
+    cond <- any(is.na(x))
+    
+    cond 
   }
 
-  # Now get rid of rows with no age observations.
-  loseRows <- c()
-  for( rIdx in 1:nrow(pAtg))
+  naData <- lapply(X = ddObj$data, FUN = checkNA )
+  if(any(naData))
   {
-    if(any(is.na(pAtg[rIdx,])))
-      loseRows <- c(loseRows,rIdx)
-  }
-  pAtg <- pAtg[-loseRows,]
-  nAgeObs <- c()
-  for(i in 1:length(useAges))
-  {
-    ageGear <- useAges[i]
-    nAgeObs <- c(nAgeObs, sum(pAtg[,2] == ageGear) )
+    whichData <- which(naData)
+    cat("\n NAs found in data object", whichData, "\n")
+    browser()
   }
 
 
-  caObj$pAtg    <- pAtg
-  caObj$ageIdx  <- useAges
-  caObj$nAgeObs <- nAgeObs
 
-  # Extract survey index attributes before they are lost when It extracted.
-  surveyOn   <- attributes( obj$mp$data$It )$indexOn
+  IGa_R     <- .1
+  IGmode_R  <- opMod$sigmaR
+  IGb_R     <- IGmode_R * (1 + IGa_R)
 
-  # survey observations
-  Itg                 <- obj$mp$data$It[ c(1:(t-1)), ]  # Extract stock index values.
-  surveys             <- eval(parse(text = obj$ctlList$mp$data$useIndex) )
-  caObj$nSurv         <- length(surveys)
-  caObj$nObs          <- apply(X = !is.na(Itg), FUN = sum, MARGIN = 2 )[surveys]
-  caObj$surveyType    <- 3
+  # Get mode of obs error IG prior
+  tauObs  <- opMod$tauIndexg
+  tau2Obs <- tauObs^2
 
-  It <- matrix(NA, nrow = sum(caObj$nObs), ncol = 5 )
+  # Prior on q
+  mq  <- opMod$qg[useIndex]
+  sdq <- mq / 2
 
-  initRow <- 1
-  for(i in 1:length(surveys))
-  {
-    survIdx           <- surveys[i]
-    surveyOnIdx       <- which(!is.na(Itg[,survIdx])) 
-    idxLikeWeight     <- obj$ctlList$mp$data$inputIndex$it_wt[i,1]
-    It[initRow:(initRow + caObj$nObs[i] - 1), 1] <- years[surveyOnIdx]
-    It[initRow:(initRow + caObj$nObs[i] - 1), 2] <- Itg[surveyOnIdx,survIdx]
-    It[initRow:(initRow + caObj$nObs[i] - 1), 3] <- survIdx
-    It[initRow:(initRow + caObj$nObs[i] - 1), 4] <- idxLikeWeight
-    It[initRow:(initRow + caObj$nObs[i] - 1), 5] <- 1
-    initRow <- initRow + caObj$nObs[i]
-  }
-  
-  caObj$It       <- It                            # Stock index
+  # (2) pars
+  ddObj$pars <- list()
+  # Populate init pars
+  # Make parameter list
+  ddObj$pars$logith         <- 0,
+  ddObj$pars$lnB0           <- log(opMod$B0),
+  ddObj$pars$lnM            <- log(mean(opMod$M)),
+  ddObj$pars$recDevs_t      <- rep(0,nT - firstRecDev - kage),
+  ddObj$pars$lnsigmaR       <- 0,
+  ddObj$pars$gammaR         <- 0.,
+  ddObj$pars$lnFinit        <- -5,
+  ddObj$pars$sig2RPrior     <- c(1,2),
+  ddObj$pars$mM             <- obj$ctlList$mp$assess$ddPmM,
+  ddObj$pars$sdM            <- obj$ctlList$mp$assess$ddPsdM,
+  ddObj$pars$hPrior         <- c(22,18),
+  ddObj$pars$mq             <- mq,
+  ddObj$pars$sdq            <- sdq,
+  ddObj$pars$tau2ObsPriorA  <- c(1,1,1),
+  ddObj$pars$tau2ObsPriorB  <- tau2Obs * c(2,2,2)
 
-  caObj$initYear      <- .INITYEAR
-  caObj$lastYear      <- .INITYEAR + t - 2
-  caObj$fisheryFlag   <- opMod$allocProp
+  # Random effects
+  ddObj$random              <- "recDevs_t"
 
-  Ctg         <- obj$om$Ctg[1:(t-1),]           # Extract catch history.
-  Ctg[is.na(Ctg)] <- 0
-  Ctg <- cbind( seq(from = .INITYEAR, length = t-1), Ctg )
-  caObj$Ctg   <- Ctg
-  lastQuota   <- sum(Ctg[t-1,],na.rm=T)
-  # Will need to update surveys to 0 prop, renormalise
+  # (3) Map 
+  # list for identifying/switching off parameters
+  # Only need to define "special" maps here 
+  # e.g. selectivity
+  ddObj$map <- list()
 
-  caObj$catchType     <- 1 # hard coded to biomass
-  caObj$M             <- mean(opMod$endM)
+  # make prior variances inactive
+  ddObj$map$gammaR        <- factor(NA)
+  ddObj$map$lnFinit       <- factor(NA)
+  ddObj$map$sig2RPrior    <- factor(c(NA,NA))
+  ddObj$map$mM            <- factor(NA)
+  ddObj$map$sdM           <- factor(NA)
+  ddObj$map$hPrior        <- factor(c(NA,NA))
+  ddObj$map$mq            <- factor(rep(NA,3))
+  ddObj$map$sdq           <- factor(rep(NA,3))
+  ddObj$map$tau2ObsPriorA <- factor(rep(NA,3))
+  ddObj$map$tau2ObsPriorB <- factor(rep(NA,3)) 
 
-  # growth pars
-  VBt0 <- log ( (mean(opMod$Linf)-mean(opMod$L1))/mean(opMod$Linf))/mean(opMod$vonK) + 1
+  ctrl <- list( eval.max = ddObj$maxEval, 
+                iter.max = ddObj$maxIter )
 
-  caObj$VBgrowth      <- c(mean(opMod$Linf),mean(opMod$vonK),VBt0)
-  caObj$lengthWt      <- c(mean(opMod$c1),mean(opMod$c2))
-  caObj$matAgeLogPars <- c(opMod$aMat50,opMod$aMat95)
-  caObj$matAge        <- .calcMa( A=caObj$A, A95=opMod$aMat95, A50=opMod$aMat50 )
-
-
-  # Wt at age
-  caObj$nWtObs        <- t
-  wtAge               <- obj$om$Wta[1:t,2:caObj$A]
-  wtAge               <- cbind( seq(from = .INITYEAR, length = t), wtAge )
-  caObj$wtAge         <- wtAge
-
-  # browser()
-
-
-  # other stuff to make the model run
-  caObj$nMclass       <- 1
-  caObj$fixMdevs      <- matrix(rep(0,t-2),ncol = t-2, nrow = caObj$nMclass)
   
 
-  caObj$iscamCtrl <- obj$ctlList$mp$assess$iscam
+  # Check that map and par lengths match
+  parLen <- lapply( X = ddObj$pars, FUN = length)
+  mapLen <- lapply( X = ddObj$map, FUN = length)
+  parLen <- parLen[names(parLen) %in% names(mapLen)]
 
+  lenDiff <- unlist(parLen[names(mapLen)]) - unlist(mapLen)
 
-  caObj$R0          <- exp(obj$ctlList$mp$assess$iscam$initPar$logR0)
-  caObj$Rbar        <- exp(obj$ctlList$mp$assess$iscam$initPar$logRbar)
-  caObj$Rinit       <- exp(obj$ctlList$mp$assess$iscam$initPar$logRinit)
-  caObj$h           <- obj$ctlList$mp$assess$iscam$initPar$h
-  caObj$M           <- exp(obj$ctlList$mp$assess$iscam$initPar$logm)
-  caObj$rho         <- obj$ctlList$mp$assess$iscam$initPar$rho
-  caObj$kappa       <- obj$ctlList$mp$assess$iscam$initPar$kappa
+  if(any(lenDiff != 0) )
+  {
+    whichDiff <- which(lenDiff != 0)
+    cat("\n Map and par lengths don't match for ", names(whichDiff) ," \n") 
 
-  caObj$nMCMC     <- obj$ctlList$mp$hcr$nMCMC
-  caObj$nThin     <- obj$ctlList$mp$hcr$nThin
+    browser()
+  }
 
-  if( obj$ctlList$mp$assess$methodId == .CAAMOD )
-    caObj$exeName <- "iscam_ageM"
-  if( obj$ctlList$mp$assess$methodId == .ISCAMRW )
-    caObj$exeName <- "iscam_ageM_rw"
+  if(obj$ctlList$mp$assess$writeOut)
+  {
+    cat("\n Saving assessDD lists to working directory. \n")
+    save(ddObj,file = "assessDDLists.RData")
+  }
+  
 
   # -- Call assessment model, which will do its own file read/write
-  result <- assessModISCAM( caObj )
+  result <- assessModDD( ddObj )
 
   result  
-}     # END function callProcedureCAA
+}     # END function callProcedureDD
+
+# assessModDD
+# Purpose:       Runs a delay difference TMB model to estimate stock status   #
+#                and calculate fishery reference points
+# Parameters:    obj=list containing everything the model needs               #
+# Returns:       current biomass estimate, stock dynamics and parameters,     #
+#                minimization details, yield and ref pt calcs                 #
+# Source:        S. D. N. Johnson (modified from assessModCAA, June 12 2019)  #
+assessModDD <- function( caObj )
+{
+  # Schnute-Deriso Delay Difference model
+  # This implmentation is a wrapper that calls the nlminb estimation
+  # procedure, with the TMB model as the gradient function, and 
+  # returns the assessmemt
+  #
+  nT  <- ddObj$nT
+  t   <- ddObj$t
+
+  # Load the TMB model
+  dyn.load(dynlib("assessDD")) 
+
+  browser()
+
+  objFE <- MakeADFun( data=dat,parameters=par,map=map, 
+                    random = NULL, silent = FALSE )
+                    # random=c("omegaR_t") )
+
+  fitFE <- try( nlminb (  start     = objFE$par,
+                          objective = objFE$fn,
+                          gradient  = objFE$gr,
+                          control   = ctrl ) )
+
+  objRE <- MakeADFun( data=dat,parameters=par,map=map, 
+                      random=c("recDevs_t","lnsigmaR","lnFinit"), 
+                      silent = FALSE )
+
+  bestPars <- fitFE$par[names(fitFE$par) %in% names(objRE$par)]
+
+  fitRE <- try( nlminb (  start     = bestPars,
+                          objective = objRE$fn,
+                          gradient  = objRE$gr,
+                          control   = ctrl ) )
+
+  repFE <- objFE$report()
+  repRE <- objRE$report()
+  sdrepFE <- sdreport(objFE)
+  sdrepRE <- sdreport(objRE)
+
+  assessment <- list( fixedEff  = repFE,
+                      randEff   = repRE  )
 
 
-# iscamWrite()
-# Function that writes dat and ctl files for iscam from the contents
-# of the operating model list.
-# inputs:   obj=ctlList from runSimEst()
-# ouputs:   NULL
-# usage:    to prepare data for the estimator
-iscamWrite <- function ( obj )
-{ 
-  # Calculate nGear
-  nGear <- length(obj$fisheryFlag)
+  assessment$sbt <- repRE$B_t
 
-  # file names
-  datFile <- "iscam_ageM.dat"
-  ctlFile <- "iscam_ageM.ctl"
-  pfcFile <- "iscam_ageM.pfc"
+  assessment$mpdPars <- list( objFun        = repRE$objFun,
+                              R0            = repRE$R0,
+                              SSB0          = repRE$B0,
+                              q             = repRE$qhat_g,
+                              projExpBio    = repRE$B_t[t],
+                              lastDt        = repRE$D_t[t-1] )
+                              
+  assessment$mcOut                    <- NULL                                          
+  # assessment$runStatus                <- tmpFit$fit[c("nopar","nlogl","maxgrad","npar","logDetHess")]
+  assessment$runStatus$maxGrad        <- max(abs(objRE$gr()))
+  assessment$runStatus$hessPosDef     <- sdrepRE$pdHess
+  assessment$runStatus$objFun         <- repRE$objFun
+  assessment$runStatus$fisheryClosed  <- NA
+  assessment$runStatus$deadFlag       <- NA
+  assessment$runStatus$assessFailed   <- NULl
+  assessment$phzList                  <- phzList
 
-  # Write dat file (taken from RL's code)
-  cat( file=datFile, "## simulation for Herring SOG " )
-  cat( file=datFile, "## written:",date(),"\n", append=T )
-  cat( file=datFile, "## ____Model Dimensions____","\n", append=T )
-  cat( file=datFile, "## first year of data","\n", append=T )
-  cat( file=datFile, obj$initYear,"\n", append=T )
-  cat( file=datFile, "## last year of data","\n", append=T )
-  cat( file=datFile, obj$lastYear,"\n", append=T )
-  cat( file=datFile, "## age of youngest age class","\n", append=T )
-  cat( file=datFile, obj$iscamCtrl$minAge,"\n", append=T )
-  cat( file=datFile, "## age of plus group","\n", append=T )
-  cat( file=datFile, obj$A,"\n", append=T )
-  cat( file=datFile, "## number of gears (ngear)","\n", append=T )
-  cat( file=datFile, nGear,"\n", append=T )                       ### see 
-  cat( file=datFile, "## flags for fishery (1) or survey (0) in ngears","\n", append=T )
-  cat( file=datFile, obj$fisheryFlag,"\n", append=T )  ## include in runSimSca
-  cat( file=datFile, "## NEW: Catch type","\n", append=T )
-  cat( file=datFile, "## 1 = biomass","\n", append=T )
-  cat( file=datFile, "## 2 = catch in numbers","\n", append=T )
-  cat( file=datFile, "## 3 = roe removed (expressed as tons of spawning biomass equivalents)","\n", append=T )
-  cat( file=datFile, rep(obj$catchType,nGear),"\n", append=T )                     ## include in runSimSca
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## natural mortality rate (m)","\n", append=T )
-  cat( file=datFile, obj$M,"\n", append=T )                             ##### check this value 
-  cat( file=datFile, "## growth parameters (linf,k,to)","\n", append=T )
-  # cat( file=datFile, c(27.0,",", 0.48,",", 0),"\n", append=T )
-  cat( file=datFile, obj$VBgrowth,"\n", append=T )   ## include in runSimSca
-  cat( file=datFile, "## length-weight allometry (a,b)","\n", append=T )  
-  # cat( file=datFile, c(4.5e-6,",", 3.1270),"\n", append=T )                  ## include in runSimSca
-  cat( file=datFile, obj$lengthWt,"\n", append=T )
-  cat( file=datFile, "## maturity at age (am=log(3)/k) & gm=std for logistic","\n", append=T )
-  # cat( file=datFile, c(2.055,",",0.05),"\n", append=T )                  ## include in runSimSca
-  cat( file=datFile, obj$matAgeLogPars,"\n", append=T )                  ## include in runSimSca
-  cat( file=datFile, "## init_vector mat(sage,nage)     input maturity vector (**not used)","\n", append=T )
-  # cat( file=datFile, c(0.001, 0.24974, 0.90, 1, 1, 1, 1, 1, 1, 1),"\n", append=T )   ## include in runSimSca
-  cat( file=datFile, obj$matAge[obj$iscamCtrl$minAge:obj$A],"\n", append=T )   ## include in runSimSca
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## Time series data observed catch","\n", append=T )
-  cat( file=datFile, "## Year P1 P2 P3 S1 S2","\n", append=T )
-  write.table(  file=datFile, x = round(obj$Ctg,10), quote = FALSE, append = TRUE, col.names=FALSE, 
-                row.names = FALSE )
+  assessment$exploitBt <- assessment$SB_t[t]
+  assessment$spawnBt   <- assessment$SB_t[t]
 
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## Relative Abundance index from fisheries independent survey (it)","\n", append=T )
-  cat( file=datFile, "## nit","\n", append=T )
-  cat( file=datFile, obj$nSurv,"\n", append=T )
-  cat( file=datFile, "## nit_nobs","\n", append=T )
-  cat( file=datFile, obj$nObs,"\n", append=T ) 
-  cat( file=datFile, "## 1 = survey is proportional to vulnerable numbers","\n", append=T )
-  cat( file=datFile, "## 2 = survey is proportional to vulnerable biomass","\n", append=T )
-  cat( file=datFile, "## 3 = survey is proportional to spawning biomass (e.g., herring spawn survey)","\n", append=T )
-  cat( file=datFile, rep(obj$surveyType,obj$nSurv),"\n", append=T ) 
-  cat( file=datFile, "## iyr  it  gear  wt  survey_timing","\n", append=T )
-  write.table( file=datFile, round( obj$It,4), quote=FALSE, row.names=FALSE, col.names=FALSE, append=T )
-  
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## ________________________","\n", append=T )
-  cat( file=datFile, "## Age composition data by year, gear (ages 2-15+)","\n", append=T )
-  cat( file=datFile, "## na_gears","\n", append=T )
-  cat( file=datFile, length(obj$ageIdx),"\n", append=T )
-  cat( file=datFile, "## na_nobs","\n", append=T )
-  cat( file=datFile, obj$nAgeObs,"\n", append=T ) 
-  cat( file=datFile, "##  a_sage","\n", append=T )
-  cat( file=datFile, rep(obj$iscamCtrl$minAge,length(obj$ageIdx)),"\n", append=T )
-  cat( file=datFile, "## a_page","\n", append=T )
-  cat( file=datFile, rep(obj$A,length(obj$ageIdx)),"\n", append=T )
-  cat(file = datFile, "#yr gear      V2   V3   V4   V5  V6  V7  V8 V9 V10  #Number aged\n",append=T)
-  write.table( file=datFile, round( obj$pAtg,4), quote=FALSE, row.names=FALSE, col.names=FALSE, append=T )  
-
-  cat( file=datFile, "## ________________________","\n", append=T ) 
-  cat( file=datFile, "## n_wt_obs","\n", append=T )
-  cat( file=datFile, obj$nWtObs,"\n", append=T )                       #### ## include in runSimSca
-  cat( file=datFile, "## Mean weight-at-age in kilograms ","\n", append=T )
-  for(j in 1:obj$nWtObs)
-  {
-    cat( file=datFile, signif(obj$wtAge[j,],12), "\n", append=T )  
-  }
-  cat( file=datFile, "## ________________________","\n", append=T ) 
-  
-  cat( file=datFile, "## n_m_class\n", append="T")
-  cat( file=datFile, obj$nMclass, "\n", append=TRUE)  
-
-  cat( file=datFile, "## fix_m_devs\n", append="T")
-  write.table( file=datFile, obj$fixMdevs, row.names = FALSE, col.names=FALSE, quote=FALSE, append=TRUE)  
-
-  cat( file=datFile, "## eof","\n", append=T )
-  cat( file=datFile, 999,"\n", append=T ) 
-
-  priorVars <- obj$iscamCtrl$priors
-  recInitPhz <- ifelse( obj$iscamCtrl$unfished == 1, -1, 1)
-
-  initPars <- obj$iscamCtrl$initPar
-
-  # Now write control file (code taken from RL's original)
-  #              ival      lb   ubp  phz    prior       p1     p2            # parameter name
-  par_r0     <-c(  log(obj$R0),  -5, 15   ,4     ,0           ,-5.0   ,15)        # log_r0
-  par_ste    <-c(  obj$h,   0.2, 1.0  ,4     ,3    ,priorVars$steepnessBeta1, priorVars$steepnessBeta2 )      # steepness
-  par_m      <-c(  log(obj$M),-5.0, 5.0,3,1,priorVars$meanInitM, priorVars$sdInitM)       # log.m
-  par_avgrec <-c(  log(obj$Rbar) ,  -5.0, 15   ,1     ,0           ,-5.0   ,15 )       # log_avgrec
-  par_recini <-c(  log(obj$Rinit),  -5.0, 15   ,recInitPhz     ,0           ,-5.0   ,15)        # log_recinit
-  par_rho    <-c(  obj$rho, 0.001, 0.999 ,3,3  ,17.08696  ,39.0559)     # rho
-  par_kappa  <-c(  obj$kappa,  0.01, 5.0  ,3,4 ,25.0   ,28.75)     # kappa
-
-  #OTHER MISCELLANEOUS CONTROLS
-  ADMB_output<-0              ## 1 verbose ADMB output (0=off, 1=on)
-  Rec_mod<-1                  ## 2 recruitment model (1=beverton-holt, 2=ricker)
-  sd_catch_1phase<- 0.100     ## 3 std in observed catches in first phase.
-  sd_catch_last_phase<- 0.0707 ## 4 std in observed catches in last phase.
-  # unfish_1year<-0             ## 5 Assume unfished in first year (0=FALSE, 1=TRUE)
-  min_age_prop<-0.02          ## 6 Minimum proportion to consider in age-proportions for dmvlogistic
-  mean_F<-0.20                ## 7 Mean fishing mortality for regularizing the estimates of Ft
-  mean_f_1phase<- 0.01        ## 8 std in mean fishing mortality in first phase
-  mean_f_last_phase<-2.00     ## 9 std in mean fishing mortality in last phase
-  # phase_m_devs<- 3 ## 10 phase for estimating m_deviations (use -1 to turn off mdevs)
-  sd_m<-0.1                   ## 11 std in deviations for natural mortality
-  # numb_nodes_m<-12        ## 12 number of estimated nodes for deviations in natural mortality
-  fraction_F<-1.00            ## 13 fraction of total mortality that takes place prior to spawning
-  age_comp_like<-1            ## 14 switch for age-composition likelihood (1=dmvlogistic,2=dmultinom)
-  selx_renorm <- 0
-
-  cat( file=ctlFile, "## CTL file written by herringM sim-est procedure", append=F)
-  cat( file=ctlFile, "## _______________________________________________________________________________________\n", append=T )
-  cat( file=ctlFile, "##                         GENERIC HERRING CONTROLS\n", append=T )
-  cat( file=ctlFile, "##                            written:",date(),"\n", append=T )
-  cat( file=ctlFile, "## ___________________________CONTROLS FOR ESTIMATED PARAMETERS__________________________\n" , append=T)
-  cat( file=ctlFile, "##   Prior descriptions:\n" , append=T)
-  cat( file=ctlFile, "##                    -0 uniform (0,0)\n", append=T )
-  cat( file=ctlFile, "##                    -1 normal (p1=mu,p2=sig)\n", append=T )
-  cat( file=ctlFile, "##                    -2 lognormal (p1=log(mu),p2=sig)\n", append=T )
-  cat( file=ctlFile, "##                    -3 beta (p1=alpha,p2=beta)\n", append=T )
-  cat( file=ctlFile, "##                    -4 gamma(p1=alpha,p2=beta)\n" , append=T)
-  cat( file=ctlFile, "## ______________________________________________________________________________________\n", append=T )
-  cat( file=ctlFile, 7 - 1 + obj$nMclass, "","# npar","\n", append=T )
-  cat( file=ctlFile, "##    ival  lb   ub  phz  prior  p1  p2  parameter name \n", append=T )
-  cat( file=ctlFile, "## ______________________________________________________________________________________\n", append=T )
-  cat( file=ctlFile, par_r0, "","# log_r0","\n", append=T )
-  cat( file=ctlFile, par_ste, "","# steepness","\n", append=T )
-  cat( file=ctlFile, par_m, "","# log.m","\n", append=T )
-  cat( file=ctlFile, par_avgrec, "","# log_avgrec","\n", append=T )
-  cat( file=ctlFile, par_recini, "","# log_recinit","\n", append=T )
-  cat( file=ctlFile, par_rho, "","# rho","\n", append=T )
-  cat( file=ctlFile, par_kappa, "","# kappa (precision)","\n", append=T )
-  if( obj$nMclass > 1 )
-  {
-    for( k in 2:obj$nMclass)
-    {
-      par_m <- c(assess$ctl$m_priorMean[k],-5.0, 5.0,assess$ctl$m_phz[k],assess$ctl$m_prior[k],assess$ctl$m_priorMean[k],assess$ctl$m_priorSD[k])
-      cat( par_m, " # log.m", k ,"\n", append=T, file=ctlFile  )
-    } 
-  }
-  cat( file=ctlFile, "## ______________________________________________________________________________________\n", append=T )
-  cat( file=ctlFile, "## ____________________________________________________________\n", append=T )
-  cat( file=ctlFile, "## _________________________SELECTIVITY PARAMETERS_______________________________________\n", append=T )
-  cat( file=ctlFile, "##  OPTIONS FOR SELECTIVITY:\n", append=T )
-  cat( file=ctlFile, "##              1) logistic selectivity parameters\n" , append=T)
-  cat( file=ctlFile, "##              2) selectivity coefficients\n", append=T )
-  cat( file=ctlFile, "##              3) a constant cubic spline with age-nodes\n", append=T )
-  cat( file=ctlFile, "##              4) a time varying cubic spline with age-nodes\n" , append=T)
-  cat( file=ctlFile, "##              5) a time varying bicubic spline with age & year nodes\n" , append=T)
-  cat( file=ctlFile, "##              6) fixed logistic (set isel_type=6, and estimation phase to -1)\n", append=T )
-  cat( file=ctlFile, "##              7) logistic function of body weight.\n", append=T )
-  cat( file=ctlFile, "##              sig=0.05 0.10 0.15 0.20 0.30 0.40 0.50\n" , append=T)
-  cat( file=ctlFile, "##              wt =200. 50.0 22.2 12.5 5.56 3.12 2.00\n" , append=T)
-
-  cat( file=ctlFile, "## Gear 1:3 fishery:       Gear 4-5 survey\n" , append=T)
-  cat( file=ctlFile, "## isel_typ \n", append=T )
-  cat( file=ctlFile, c(1,1,1,6,6), "\n", append=T )
-  cat( file=ctlFile, "## Age at 50% selectivity (logistic) \n", append=T )
-  cat( file=ctlFile, c(3,3,4,2.055,2.055 ), "\n", append=T )
-  # cat( file=ctlFile, age_50, "\n", append=T )
-  cat( file=ctlFile, "## STD at 50% selectivity (logistic) \n", append=T )
-  # cat( file=ctlFile, std_50_sel, "\n", append=T )
-  cat( file=ctlFile, c(0.25,0.25,0.25,0.05,0.05 ), "\n", append=T )
-  cat( file=ctlFile, "## No. of age nodes for each gear (0 to ignore). \n", append=T )
-  cat( file=ctlFile, c(5,5,5,0,0 ), "\n", append=T )
-  cat( file=ctlFile, "## No. of year nodes for each gear (0 to ignore).\n", append=T )
-  cat( file=ctlFile, c(12,3,10,0,0 ), "\n", append=T )
-  cat( file=ctlFile, "## Estimation phase\n", append=T )
-  cat( file=ctlFile, c(2,2,2,-1,-1 ), "\n", append=T )
-  # cat( file=ctlFile, c(-1,-1,-1,-1,-1), "\n", append=T )
-  cat( file=ctlFile, "## Penalty weight for 2nd differences w=1/(2*sig^2)\n", append=T )
-  cat( file=ctlFile, c(125,125,12.5,12.5,12.5 ), "\n", append=T )
-  cat( file=ctlFile, "## Penalty weight for dome-shaped selectivity 1=1/(2*sig^2)\n", append=T )
-  cat( file=ctlFile, c(50,50,200,200,200 ), "\n", append=T )
-
-  cat( file=ctlFile, "##_________________________________________##\n", append=T )
-  cat( file=ctlFile, "##_________________________________________##\n" , append=T)
-  cat( file=ctlFile, "##           Priors for Survey q           ##\n" , append=T)
-  cat( file=ctlFile, "##_________________________________________##\n" , append=T)
-  cat( file=ctlFile, "## nits  #number of surveys\n", append=T )
-  cat( file=ctlFile, obj$nSurv, "\n", append=T )
-  cat( file=ctlFile, "## priors 0=uniform density   1=normal density\n", append=T )
-  cat( file=ctlFile, priorVars$logqdensity, "\n", append=T )
-  cat( file=ctlFile, "## prior log(mean)\n", append=T )
-  cat( file=ctlFile, priorVars$logqPrior1, "\n", append=T )
-  cat( file=ctlFile, "## prior sd\n", append=T )
-  cat( file=ctlFile, priorVars$logqPrior2, "\n", append=T )
-
-  cat( file=ctlFile, "##______________________________________________________________________________##\n", append=T )
-  cat( file=ctlFile, "##_______OTHER MISCELLANEOUS CONTROL_______##\n", append=T )
-  cat( file=ctlFile, ADMB_output, ""," ## 1 verbose ADMB output (0=off, 1=on)","\n", append=T )
-  cat( file=ctlFile, Rec_mod, ""," ## 2 recruitment model (1=beverton-holt, 2=ricker)","\n", append=T )
-  cat( file=ctlFile, sd_catch_1phase, ""," ## 3 std in observed catches in first phase","\n", append=T )
-  cat( file=ctlFile, sd_catch_last_phase, ""," ## 4 std in observed catches in last phase","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$unfished, "","         ## 5 Assume unfished in first year (0=FALSE, 1=TRUE)","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$minAgeProp, "","         ## 6 Minimum proportion to consider in age-proportions for dmvlogistic","\n", append=T )
-  cat( file=ctlFile, mean_F, "","  ## 7 Mean fishing mortality for regularizing the estimates of Ft","\n", append=T )
-  cat( file=ctlFile, mean_f_1phase, ""," ## 8 std in mean fishing mortality in first phase","\n", append=T )
-  cat( file=ctlFile, mean_f_last_phase, ""," ## 9 std in mean fishing mortality in last phase","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$mDevPhz, ""," ## 10 phase for estimating m_deviations (use -1 to turn off mdevs)","\n", append=T )
-  cat( file=ctlFile, sd_m, ""," ## 11 std in deviations for natural mortality","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$mDevNodes, ""," ## 12 number of estimated nodes for deviations in natural mortality","\n", append=T )
-  cat( file=ctlFile, fraction_F, ""," ## 13 fraction of total mortality that takes place prior to spawning","\n", append=T )
-  cat( file=ctlFile, age_comp_like, ""," ## 14 switch for age-composition likelihood (1=dmvlogistic,2=dmultinom)","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$selxRenorm, ""," ## 15 switch for selectivity renormalisation factor (0=mean,1=max,2=none)","\n", append=T )
-
-  cat( file=ctlFile, "##_________________________________________##\n", append=T )
-
-  
-  cat( file = ctlFile, "# mDevPhz \n", append = T)
-  cat( file = ctlFile, obj$iscamCtrl$mDevPhz, "\n", append = T)
-  cat( file = ctlFile, "# mAges \n", append = T)
-  cat( file = ctlFile, obj$A, "\n", append = T)
-
-  cat( file=ctlFile, "##operational control points for harvest control rule\n", append=T)
-  cat( file=ctlFile, obj$iscamCtrl$cutoff, "","   ##cutoff_fraction prop of prefishery biomass to unfished biomass used to calculate cutoff ","\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$targHR,"","   ##target_hr","\n", append=T )
-  cat( file=ctlFile, "#fixed_cutoff (tonnes)\n", append=T )
-  cat( file=ctlFile, obj$iscamCtrl$fixCutoff, "\n", append=T )
-  cat( file=ctlFile, "## eofc\n", append=T )
-  cat( file=ctlFile, 999, "\n", append=T )
-
-  ## Now copy in the new projection control file
-
-  #########################################
-  ## modify Projection file control (pfc) ##
-  #########################################
-  
-  lastNyear = 4 
-  
-  cat( file=pfcFile, "## simulation for Herring SOG " )
-  cat( file=pfcFile, "## written:",date(),"\n", append=T )
-  cat( file=pfcFile, "## Projection file control (pfc) ##","\n", append=T )
-  cat( file=pfcFile, "## n_tac  length of catch vector","\n", append=T )
-  cat( file=pfcFile, 15,"\n", append=T )
-  cat( file=pfcFile, "## tac vector (1000 mt)","\n", append=T )
-  cat( file=pfcFile, "0 10.0 10.6 12.6 17.0 18.25 21.8 22.5 25.0 25.9 30.0 38.0 40.0 46.5 50.0 \n", append=T )
-  cat( file=pfcFile, "## Control options ##","\n", append=T )
-  cat( file=pfcFile, "## Length of control vector","\n", append=T )
-  cat( file=pfcFile, 8,"\n", append=T )
-  cat( file=pfcFile, "## - 1) Start year for mean natural mortality rate","\n", append=T )
-  cat( file=pfcFile, 2011,"\n", append=T )
-  cat( file=pfcFile, "## - 2)  Last year for mean natural mortality rate","\n", append=T )
-  cat( file=pfcFile, obj$lastYear,"\n", append=T )
-  cat( file=pfcFile, "## - 3) Start year for average fecundity/weight-at-age in projections","\n", append=T )
-  cat( file=pfcFile, 2011,"\n", append=T )
-  cat( file=pfcFile, "## - 4)  Last year for average fecundity/weight-at-age in projections","\n", append=T )
-  cat( file=pfcFile, obj$lastYear,"\n", append=T )
-  cat( file=pfcFile, "##not currently used","\n", append=T )
-  cat( file=pfcFile, "## - 5) Start year for average recruitment period in projections.","\n", append=T )
-  cat( file=pfcFile, obj$initYear,"\n", append=T )  
-  cat( file=pfcFile, "## - 6)   End year for average recruitment period in projections.","\n", append=T )
-  cat( file=pfcFile, 2012,"\n", append=T ) ### I modify this line
-  ### no idea about these options
-  cat( file=pfcFile, "## - 7) start of reference period","\n", append=T )
-  cat( file=pfcFile, 2000,"\n", append=T ) 
-  cat( file=pfcFile, "## - 8) end of reference period","\n", append=T )
-  cat( file=pfcFile, 2006,"\n", append=T ) 
-  cat( file=pfcFile, "## eof","\n", append=T )
-  cat( file=pfcFile, -999,"\n", append=T )
+  dyn.unload(dynlib("assessDD"))          # Dynamically link the C++ code
 
 
-  # file.copy (assess$pfc,pfcFile,overwrite=TRUE)
+  return( assessment )
+}     # END function assessModDD
 
-
-  # Now just create the top-level dat file
-  topDat <- paste("iscam_top.dat", sep = "")
-  cat ( file=topDat, "# Main dat file ISCAM \n", sep = "", append=F)
-  cat ( file=topDat, "# Updated ", date(), "\n", sep = "", append=T)
-  cat ( file=topDat, "# order as: .dat, .ctl, .pfc", append = T)
-  cat ( file=topDat, "\n", sep = "", append = T)
-  cat ( file=topDat, datFile, "\n", append = T)
-  cat ( file=topDat, ctlFile, "\n", append = T)
-  cat ( file=topDat, pfcFile, "\n", append = T)
-
-  # if( !ctlList$gui$quiet )
-  #   cat ("\nMSG (writeISCAM) EM dat and ctl files created.\n", sep = "")
-  return()
-}
 
 
 #------------------------------------------------------------------------------#
@@ -2086,7 +2051,7 @@ iscamWrite <- function ( obj )
 
   # Change for slow up rule: overwrite legal biomass (3+ fish in year t)
   # with the spawning biomass estimate in years 1:t from the AM
-  legalBiomass <- c(obj$sbt)[recentYears]
+  legalBiomass <- c(obj$SBt)[recentYears]
 
   # Calculate hockey-stock legal harvest rule, with slow up
   # rule enforced (normal rule is if slowUpYears = 1)
@@ -2347,6 +2312,7 @@ iscamWrite <- function ( obj )
               SBt = NULL,     FBt=NULL,
               Nt=NULL,        Btot=NULL,      Ntot=NULL,    Rt=NULL,
               uCatg=NULL,     Ct=NULL,        Ctg=NULL,     Catg=NULL,
+              valCtg=NULL,    valCatg=NULL,   valDtg=NULL,  valDatg=NULL,
               Dt=NULL,        Dtg=NULL,       Mt=NULL,      Ft=NULL,        
               Ftg=NULL,       legalHR=NULL, sublegalHR=NULL, spawnHR = NULL,
               legalB=NULL,    sublegalB=NULL, legalC=NULL,  legalD=NULL,
@@ -2370,11 +2336,18 @@ iscamWrite <- function ( obj )
   om$Ct         <- rep( NA,nT )
   om$Dt         <- rep( NA,nT )
 
+  # Gear- and age-specific fishing mortality, catch, and discards
   om$Ftg        <- matrix( NA, nrow=nT, ncol=nGear )
   om$Ctg        <- matrix( NA, nrow=nT, ncol=nGear )
   om$Catg       <- array( data=NA, dim=c(nAges,nT,nGear) )
   om$Dtg        <- matrix( NA, nrow=nT, ncol=nGear )
   om$Datg       <- array( data=NA, dim=c(nAges,nT,nGear) )
+
+  # Value of catch-at-age and discards-at-age
+  om$valCtg        <- matrix( NA, nrow=nT, ncol=nGear )
+  om$valCatg       <- array( data=NA, dim=c(nAges,nT,nGear) )
+  om$valDtg        <- matrix( NA, nrow=nT, ncol=nGear )
+  om$valDatg       <- array( data=NA, dim=c(nAges,nT,nGear) )
 
   om$legalHR    <- rep(NA,nT)
   om$spawnHR    <- rep(NA,nT)
@@ -2793,8 +2766,14 @@ iscamWrite <- function ( obj )
               Rt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ct         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ctg        = array( data=NA,dim=c(nReps,nT,nGear) ),
+              valCtg     = array( data=NA,dim=c(nReps,nT,nGear) ),
+              Catg       = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
+              valCatg    = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
               Dt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Dtg        = array( data=NA,dim=c(nReps,nT,nGear) ),
+              valDtg     = array( data=NA,dim=c(nReps,nT,nGear) ),
+              Datg       = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
+              valDatg    = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
               Ftg        = array( data=NA,dim=c(nReps,nT,nGear) ),
               uCatg      = array( data=NA,dim=c(nReps,nAges,nT,nGear) ),
               legalHR    = matrix( NA, nrow=nReps, ncol=(nT+1) ),
@@ -3003,7 +2982,12 @@ iscamWrite <- function ( obj )
     blob$om$Ct[i,]         <- c( i, obj$om$Ct )
     blob$om$Dt[i,]         <- c( i, obj$om$Dt )
     blob$om$Ctg[i,,]       <- obj$om$Ctg
+    blob$om$valCtg[i,,]    <- obj$om$valCtg
+    blob$om$Catg[i,,,]     <- obj$om$Catg
+    blob$om$valCatg[i,,,]  <- obj$om$valCatg
     blob$om$Dtg[i,,]       <- obj$om$Dtg
+    blob$om$valDtg[i,,]    <- obj$om$valDtg
+    blob$om$valDatg[i,,,]  <- obj$om$valDatg
     blob$om$Ftg[i,,]       <- obj$om$Ftg
     blob$om$Itg[i,,]       <- obj$om$Itg
     blob$om$uCatg[i,,,]    <- obj$om$uCatg
@@ -3305,6 +3289,7 @@ iscamWrite <- function ( obj )
   rep   <- ctlList$opMod$rep
   nGear <- ctlList$opMod$nGear
   nGrps <- ctlList$opMod$nGrps
+
 
 
   # initialise from MCMC draws if provided
@@ -3711,7 +3696,8 @@ iscamWrite <- function ( obj )
 .solveBaranovNum <- function( B, S, P, D, F, M, C, nIter=10, lam=0.5, quiet=TRUE )
 {
     nGear  <- length(F)
-    if(class(B) == "numeric") B <- as.matrix(B, nrow = length(B), ncol = 1)
+    if(class(B) == "numeric") 
+      B <- as.matrix(B, nrow = length(B), ncol = 1)
     # Znew <- matrix ( M, nrow = nrow ( B), ncol = ncol(B), byrow=TRUE )
     # for( g in 1:(nGear-2) ) # SJ: Again, too path specific.
     # {    
@@ -3721,17 +3707,17 @@ iscamWrite <- function ( obj )
     # }
     diff <- function( F )
     {
-        Z <- matrix(M, byrow = TRUE, ncol = ncol(B), nrow = nrow(B))
+        Znew <- matrix(M, byrow = TRUE, ncol = ncol(B), nrow = nrow(B))
         Fg <- exp(F)
         for( g in 1:(nGear-2) )
         {
-            Z <- Z + S[,,g]*Fg[g]
+            Znew   <- Znew + S[,,g]*Fg[g]*(D[g]*P[,,g] - P[,,g] + 1.)
         }
         f <- 0
         for( g in 1:(nGear-2) )
         {
             Bprime <- B*(1.-P[,,g])
-            tmp    <- Bprime*S[,,g]*Fg[g]*(1.-exp(-Z))/Z
+            tmp    <- Bprime*S[,,g]*Fg[g]*(1.-exp(-Znew))/Znew
             f   <- f + (C[g] - sum(tmp))^2
         }  
         return(f)    
@@ -3747,41 +3733,44 @@ iscamWrite <- function ( obj )
 }     # END function .solveBaranovNum
 
 
-.solveBaranovMfleet <- function(  B, S, F, M, C, nIter = 5, lam = rep(.5,3), 
-                                  quiet = TRUE, fisheryTiming = 0 )
+.solveBaranovMfleet <- function(  B, S, F, M, C, P, D,
+                                  nIter = 10, lam = rep(.5,3), 
+                                  quiet = TRUE )
 {
   # Follow other functions, but use new derivation of J
-  B <- B * exp(-fisheryTiming*M)
-
   nGear <- length(F)
-  Znew  <- (1 - fisheryTiming)*M
+  nAge  <- nrow(B)
+  nGrps <- ncol(B) 
+  Znew  <- matrix(M, nrow = nAge, ncol = nGrps, byrow = TRUE)
 
-
-
-  for( g in 1:(nGear-2) )
+  for( g in 1:(nGear-2) ) # SJ: Again, too path specific.
   {    
-    Bprime <- B*S[,,g]
-    F[g]   <- C[g]/sum(Bprime)
-    Znew   <- Znew + S[,,g]*F[g]
+      Bprime <- B*S[,,g]*(1.-P[,,g])
+      F[g]   <- C[g]/sum(Bprime)
+      Znew   <- Znew + S[,,g]*F[g]*(D[g]*P[,,g] - P[,,g] + 1.)
   }
 
   for( iter in 1:nIter )
   {
     Z <- Znew; 
-    Znew <- M
+    Znew <- matrix(M, nrow = nAge, ncol = nGrps, byrow = TRUE)
     for( g in 1:(nGear-2) )
     {
-        Bprime <- B*S[,,g]
+        # Compute estimated removals
         tmp    <- Bprime*F[g]*(1.-exp(-Z))/Z
         f      <- C[g] - sum(tmp); 
-        tmpJ   <- - ( (1 - exp(-Z)) * (Z * Bprime - Bprime*S[,,g]*F[g]) / Z^2 +
-                      Bprime*F[g]*S[,,g] * exp(-Z) / Z )
-        J      <- sum(tmpJ);
-        F[g]   <- F[g] - lam[g]*f/J
-        Znew   <- Znew + S[,,g]*F[g]
+        # Compute dZdF for helping in the following calcs
+        dZdF   <- S[,,g] * (D[g] * P[,,g] - P[,,g] + 1)
+        # Split Jacobian up
+        tmpJ1  <- Bprime
+        tmpJ2  <- Z * (1 - exp(-Z)) + F[g] * Z * dZdF * exp(-Z)
+        tmpJ3  <- F[g] * (1 - exp(-Z)) * dZdF
+        
+        J       <- -1*sum(tmpJ1 * (tmpJ2 - tmpJ3)/Z^2);
+        F[g]    <- F[g] - lam[g]*f/J
+        Z       <- Z + S[,,g]*F[g]
         tmp    <- 0
         tmpJ   <- 0
-        #if( baranovTime > 20 ) browser()
     }
   } 
     #F[ F > 1.0 ] <- 1.0 
@@ -3828,7 +3817,7 @@ iscamWrite <- function ( obj )
 .solveBaranov1 <- function( B, S, P, D, F, M, C, nIter=5, lam=0.5, quiet=TRUE )
 {
   nGear  <- length(F)
-  Znew <- M
+  Znew <- matrix(M, byrow = TRUE, nrow = nrow(B), ncol = ncol(B))
 
     for( g in 1:(nGear-2) )
     {    
@@ -3840,7 +3829,8 @@ iscamWrite <- function ( obj )
     }
     for( iter in 1:nIter )
     {
-        Z <- Znew; Znew <- M
+        Z <- Znew
+        Znew <- matrix(M, byrow = TRUE, nrow = nrow(B), ncol = ncol(B))
         for( g in 1:(nGear-2) )
         {
             Bprime <- B*S[,,g]*(1.-P[,,g])
@@ -4099,6 +4089,7 @@ iscamWrite <- function ( obj )
     # ARK (08-Sep-13) This is slightly less than Ct because of correction for
     # size limit.  Should this not be total landings?
     tmp$Ct              <- om$legalC[1:(t-1)]
+    tmp$quiet           <- ctlList$gui$quiet
     
     hcrType             <- ctlList$mp$hcr$hcrType
     tmp$hcrType         <- hcrType
@@ -4116,8 +4107,9 @@ iscamWrite <- function ( obj )
     if ( hcrType == "declineRisk" )
       tmp$nProjYears <- ctlList$mp$hcr$nProjYears
 
-    tmp$trendYears   <- ctlList$mp$hcr$trendYears
-    tmp$rSeed        <- ctlList$opMod$rSeed 
+    tmp$t             <- t
+    tmp$trendYears    <- ctlList$mp$hcr$trendYears
+    tmp$rSeed         <- ctlList$opMod$rSeed 
 
     # Add in parameters to control MLE or MCMC in ADMB.
     tmp$nMCMC         <- ctlList$mp$hcr$nMCMC
@@ -4162,11 +4154,21 @@ iscamWrite <- function ( obj )
     
   }     # ENDIF methodId=.PMOD
 
-  if ( ctlList$mp$assess$methodId == .CAAMOD | ctlList$mp$assess$methodId == .ISCAMRW )
+  if( ctlList$mp$assess$methodId == .DDMOD )
+  {
+    # Call DD AM using wrapper function, which
+    # will arrange all the simulated data into
+    # the right form
+    stockAssessment <- callProcedureDD( obj, t )
+
+
+  }
+
+  if ( ctlList$mp$assess$methodId == .CAAMOD )
   {
     # Take the shortcut provided by the newer version of mseR,
     # will need grooming to work with multiple fleets
-    stockAssessment <- callProcedureISCAM( obj, t)
+    stockAssessment <- .callProcedureCAA( obj, t)
 
     tRow <- t - tMP + 1
 
@@ -4182,16 +4184,23 @@ iscamWrite <- function ( obj )
     # ARK (17-Nov-10) Update ItgScaled from ISCAM.
     for ( i in 1:length(tmpTimes$useIndex) )
     {
-      val <- (stockAssessment$pit[i,]/stockAssessment$q[i])[!is.na(stockAssessment$pit[i,])]
-      idx <- tmpTimes$useIndex[i]
+      idx       <- tmpTimes$useIndex[i]
+      survType  <- stockAssessment$survType_g[idx]
+      if( survType == 0 )
+        val <- stockAssessment$vulnB_tg[1:(t-1),idx]
+      if( survType == 1 )
+        val <- stockAssessment$vulnN_tg[1:(t-1),idx]
+      if( survType == 2 )
+        val <- stockAssessment$SB_t[1:(t-1)]
+
       indexOn <- !is.na(obj$om$Itg[,idx])[1:(t-1)]
-      mp$assess$ItgScaled[tmpTimes$useIndex[i],which(indexOn)] <- val
+      mp$assess$ItgScaled[idx,which(indexOn)] <- val[indexOn]
     }
     
     # Fill next row of "stepwise" (i.e., retrospective) biomass estimates
-    val <- c( t,stockAssessment$sbt )
+    val <- c( t,stockAssessment$SB_t )
     mp$assess$retroExpBt[ tRow, c(1:length(val)) ] <- val
-    val <- c( t,stockAssessment$sbt )
+    val <- c( t,stockAssessment$SB_t )
     if(is.null(mp$assess$retroSpawnBt)) 
       mp$assess$retroSpawnBt <- mp$assess$retroExpBt
     mp$assess$retroSpawnBt[ tRow, c(1:length(val))] <- val
@@ -4207,9 +4216,13 @@ iscamWrite <- function ( obj )
     mp$assess$retroBio3plus[tRow,1:(t+1)] <- c(t,stockAssessment$sbt)
     mp$assess$retroBio3plus[tRow,t+1] <- stockAssessment$mpdPars$projExpBio
 
+    # Make a new list saving the assessment info so 
+    # we can compare it to other things later
+
+    mp$saveAssessment[[tRow]] <- stockAssessment
 
 
-  }     # ENDIF methodId=.CAAMOD.
+  }     # ENDIF methodId=.CAAMOD
 
   # 4. Extract estimated control points for HCR (if required)
 
@@ -4317,7 +4330,7 @@ iscamWrite <- function ( obj )
       {
         if( t < ctlList$mp$hcr$phaseFtime )
         {
-            fmult <- 0.08/ctlList$mp$hcr$inputF - 1.
+            fmult <- ctlList$mp$hcr$phaseFinitF/ctlList$mp$hcr$inputF - 1.
             f1    <- fmult/(ctlList$mp$hcr$phaseFtime - tMP)        
             mp$hcr$remRate[t] <- max(ctlList$mp$hcr$inputF*(1. + f1*(ctlList$mp$hcr$phaseFtime-t)),
                                      ctlList$mp$hcr$inputF)                 
@@ -4332,25 +4345,9 @@ iscamWrite <- function ( obj )
       
   }  # ENDIF remRefSource != "rrSrceEquil"
  
-  # Update lower and upper HCR control points.
-  targHR <- ctlList$mp$hcr$targHRHerring
-  mp$hcr$remRate[t]  <- ctlList$mp$hcr$targHRHerring
-
-  if(ctlList$mp$hcr$rule == "herring")
-  {
-    if( ctlList$mp$hcr$herringCutoffType == "absolute" )
-      mp$hcr$lowerBound[t] <- ctlList$mp$hcr$herringCutoffVal
-    if( ctlList$mp$hcr$herringCutoffType == "relative") 
-      mp$hcr$lowerBound[t] <- mp$hcr$Bref[t] * ctlList$mp$hcr$herringCutoffVal
-
-    mp$hcr$upperBound[t] <- mp$hcr$lowerBound[t] / (1 - targHR)  
-  }
-  if( ctlList$mp$hcr$rule == "linear")
-  {
-    mp$hcr$lowerBound[t] <- ctlList$mp$hcr$lowerBoundMult * mp$hcr$Bref[t]
-    mp$hcr$upperBound[t] <- ctlList$mp$hcr$upperBoundMult * mp$hcr$Bref[t]
-  }
-
+  # Update control points
+  mp$hcr$lowerBound[t] <- ctlList$mp$hcr$lowerBoundMult * mp$hcr$Bref[t]
+  mp$hcr$upperBound[t] <- ctlList$mp$hcr$upperBoundMult * mp$hcr$Bref[t]
   
                   
   # HCRs based on Empirical methods
@@ -4408,9 +4405,9 @@ iscamWrite <- function ( obj )
       rule$assessMethod     <- ctlList$mp$assess$methodId
       rule$slowUpYears      <- ctlList$mp$hcr$nYearsAboveCutoff
       rule$t                <- t
-      rule$sbt              <- stockAssessment$sbt
+      rule$SBt              <- stockAssessment$SBt
       rule$biomass          <- stockAssessment$mpdPars$projExpBio
-      rule$maxF             <- log(1/(1-ctlList$mp$hcr$targHRHerring))
+      rule$maxF             <- mp$hcr$remRate[t]
       rule$targHR           <- ctlList$mp$hcr$targHRHerring
       rule$assessFailed     <- FALSE
 

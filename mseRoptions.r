@@ -63,7 +63,6 @@ library(RColorBrewer)
 .EXIT3CEX <- 1.8      #  Character expansion for Exit code 3 
 .MAXGRADCRIT <- 0.0001      #  Maximum gradient value for convergence 
 .MAXFUNCALLS <- 500      #  Maximum function calls (plot value only) 
-.INITYEAR <- 1951      #  Initial calendar year for time axes 
 .MAXREP <- 200      #  Maximum replications 
 .MINREP <- 1      #  Minimum replications 
 .MAXSIM <- 50      #  Maximum number of simulations 

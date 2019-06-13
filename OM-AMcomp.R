@@ -2,7 +2,7 @@
 source("mseRtools.r")
 
 # Load blob
-load("./mseRproject/sim15102018064052/sim15102018064052.Rdata")
+load("./mseRproject/sim11062019170333/sim11062019170333.Rdata")
 
 library(scales)
 
@@ -32,7 +32,7 @@ plot( x = c(1965,2018), y = c(0,max(Bt,fitBt)),
           col = c("red","black"),
           legend = c("OM Reconstruction","ADMB rep file"))
 
-plot( x = range(years), y = c(-1,1),
+plot( x = range(years), y = c(-5,5),
       type=  "n", xlab = "", ylab = "", las =1, axes = F )
   abline(v = vertLines, lty =4, lwd = .5, col = "grey70")
   axis( side = 1 )

@@ -1,16 +1,53 @@
-## mseR batch file written: 23-11-2016
+## mseR batch file written: 23-4-2019
 #
 parameter value
 #
-# Scenario 1: baseTest
+# Scenario 1: idxTrap79
 #
 scenario$scenario1$gui$nReps 100
-scenario$scenario1$gui$scenarioLabel "baseTest"
+scenario$scenario1$gui$scenarioLabel 'idxTrap79'
+#
+# Scenario 2: tvSelComm_commRelDev
+#
+scenario$scenario2$gui$nReps 100
+scenario$scenario2$gui$scenarioLabel 'tvSelComm_commRelDev'
+scenario$scenario2$mp$data$inputCatch lisread('mserproject/history/tvSelComm_commRelDev/opModCatch.dat')
+scenario$scenario2$mp$data$inputIndex lisread('mserproject/history/tvSelComm_commRelDev/opModIndex.dat')
+scenario$scenario2$opMod$repFile lisread('mserproject/history/tvSelComm_commRelDev/sableopmod.rep')
+scenario$scenario2$opMod$estQdevs lisread('mserproject/history/tvSelComm_commRelDev/sableopmod.rep')
+scenario$scenario2$opMod$estRecDevs lisread('mserproject/history/tvSelComm_commRelDev/sableopmod.rep')
+scenario$scenario2$opMod$repFileName "mserproject/history/tvSelComm_commRelDev/sableopmod.rep"
+#
+# Scenario 3: sampleConv
+#
+scenario$scenario3$gui$nReps 100
+scenario$scenario3$gui$scenarioLabel 'bestFit'
+scenario$scenario3$mp$data$inputCatch lisread('mserproject/history/sampleConv/opModCatch.dat')
+scenario$scenario3$mp$data$inputIndex lisread('mserproject/history/sampleConv/opModIndex.dat')
+scenario$scenario3$opMod$repFile lisread('mserproject/history/sampleConv/sableopmod.rep')
+scenario$scenario3$opMod$estQdevs lisread('mserproject/history/sampleConv/sableopmod.rep')
+scenario$scenario3$opMod$estRecDevs lisread('mserproject/history/sampleConv/sableopmod.rep')
+scenario$scenario3$opMod$repFileName "mserproject/history/sampleConv/sableopmod.rep"
 #
 ## Management Procedures
 #
 ## Management Procedure 1: NoFish
 #
-mp$mp1$gui$mpLabel "NoFish"
+mp$mp1$gui$mpLabel 'NoFish'
 #
-# File Ends <not run>.
+## Management Procedure 2: currMP
+#
+mp$mp2$gui$mpLabel 'currMP'
+#
+## Management Procedure 3: fullAvoid
+#
+mp$mp3$gui$mpLabel 'fullAvoid'
+mp$mp3$opMod$avoidProb c(1,1,1)
+mp$mp3$opMod$futureAvoid TRUE
+##
+### Management Procedure 4: fullRetention
+##
+mp$mp4$gui$mpLabel 'fullJuveRetention'
+mp$mp4$mp$hcr$juveCap 0
+##
+## File Ends <not run>.

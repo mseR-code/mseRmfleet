@@ -1795,7 +1795,6 @@ plotScenarioClevelands <- function( scenarioName = "WCVI_Mbar10",
 
 }
 
-<<<<<<< HEAD
 plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_HR.1_cap2",
                                       mps = c("minE.5B0_HR.1_cap2","minE.5B0_HR.1_cap2_slowUp2","minE.5B0_HR.1_cap2_slowUp3","minE.5B0_HR.1_cap2_slowUp4","minE.5B0_HR.1_cap2_slowUp5"), 
                                       traces = 3,
@@ -1810,18 +1809,6 @@ plotDepCatchHRMultiPanel <- function( simFolder = "../WCVI_slowUp_HR.1_cap2",
   # Read in sims
   sims <- list.files(file.path(simFolder))
   sims <- sims[grepl("sim",sims)]
-=======
-plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
-                                      scenarios = scenList, df = info.df, gfx,
-                                      traces = 3 )
-{
-  if(!is.null(traces))
-    traces <- sample(1:100, size = traces)
-  for( scenIdx in 1:length(scenarios) )
-  {
-    scen <- scenarios[scenIdx]
->>>>>>> master
-
   readInfoFile <- function( sim )
   {
     infoPath <- file.path(simFolder,sim,paste(sim, ".info", sep = "") ) 
@@ -1863,7 +1850,6 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
     # Load blob
     load(simPath)
 
-<<<<<<< HEAD
     obj <<- blob
 
     tMP <- blob$ctlList$opMod$tMP
@@ -1871,26 +1857,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
     if( mpIdx > 1 )
       gfx$doLegend <- FALSE
-=======
-      .plotTulipDepCat( blob, gfx = gfx, yLimD = c(0,2), yLimC = c(0,50),
-                        refPts = FALSE, traces = traces )
 
-      # Now rescale blob$Bt if
-      if( mp != "NoFish" & !is.na(noFishID) )
-      {
-
-        blob$om$SBt <- blob$om$SBt / noFishBlob$om$SBt
-        blob$ctlList$opMod$B0 <- 1
-
-        if( !is.null(blob$ctlList$opMod$mcmcPar) )
-          blob$ctlList$opMod$mcmcPar[,"sbo"] <- 1
-
-        mpList[[mpListIdx]] <- blob
-        names(mpList)[mpListIdx] <- mp
-        mpListIdx <- mpListIdx + 1
-      }
-    }
->>>>>>> master
 
     .plotTulipDepCat( blob, gfx = gfx, yLimD = yLimD, yLimC = yLimC,
                       refPts = FALSE, traces = traces )
@@ -1907,15 +1874,7 @@ plotDepCatchMultiPanels <- function(  MPnames = MPs, plotNameRoot = "DepCatch",
 
 
   }
-
-<<<<<<< HEAD
   if(saveFile)
-=======
-      .plotTulipDepCat( mpList[[idx]], gfx = gfx, yLimD = c(0,1), yLimC = c(0,50),
-                        refPts = FALSE, DepLab = expression(SSB / SSB[NoFish]),
-                        traces = traces )
-    }
->>>>>>> master
     dev.off()
 
 }
