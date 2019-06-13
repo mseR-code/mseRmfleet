@@ -30,7 +30,7 @@ mp$assess$ddkAge 3
 mp$assess$ddM 0.07
 mp$assess$ddPmM 0.07
 mp$assess$ddPmSteep 0.55
-mp$assess$ddPsdM 0.03
+mp$assess$ddPsdM 0.007
 mp$assess$ddPsdSteep 0.05
 mp$assess$ddUnfished TRUE
 mp$assess$idxLikeWeight "rep(1,4)"
@@ -55,6 +55,7 @@ mp$assess$spRhoEiv 0.95
 mp$assess$spSurveyRel TRUE
 mp$assess$t1Method 54
 mp$assess$t2Method 89
+mp$assess$writeOut TRUE
 mp$data$chkAges1 FALSE
 mp$data$chkAges2 FALSE
 mp$data$chkIndex1 FALSE
@@ -108,6 +109,7 @@ mp$hcr$deltaTACcType "relative"
 mp$hcr$nMCMC 5000
 mp$hcr$nProjYears 5
 mp$hcr$nThin 10
+mp$hcr$nYearsAboveCutoff 1
 mp$hcr$optRefPt "useSnow"
 mp$hcr$paAdj FALSE
 mp$hcr$qIndex 0.5

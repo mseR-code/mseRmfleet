@@ -98,8 +98,9 @@ Type objective_function<Type>::operator() ()
   PARAMETER(lnB0);       // log-scale unfished biomass
   PARAMETER(lnM);        // log-scale natural mortality rate
 
-  // Observation model pars will
-  // be conditional MLEs
+  // Obs error Sd
+  PARAMETER_VECTOR(lntauObs_g);   // Observation error SD
+  PARAMETER_VECTOR(lnq_g);        // Observation model catchability scalar
   
   // Random Effects //
   // Recruitment
@@ -124,9 +125,6 @@ Type objective_function<Type>::operator() ()
   // q prior
   PARAMETER_VECTOR(mq);           // Average q prior mean
   PARAMETER_VECTOR(sdq);          // Average q prior sd
-  // IG obs error var prior
-  PARAMETER_VECTOR(tau2ObsPriorA);// alpha pars for obs error var IG prior
-  PARAMETER_VECTOR(tau2ObsPriorB);// beta pars for obs error var IG prior
 
   // Transform pars //
   Type ySteep   = invLogit(logith, Type(1.), Type(0.));
@@ -135,6 +133,12 @@ Type objective_function<Type>::operator() ()
   Type M        = exp(lnM);
   Type sigmaR   = exp(lnsigmaR);
   Type Finit    = exp(lnFinit);
+
+  vector<Type>  tauObs_g(nG);     // obs error SD
+  vector<Type>  q_g(nG);          // conditional MLE of Catchability (survey, species)
+                
+  tauObs_g  = exp(lntauObs_g);
+  q_g       = exp(lnq_g);
   
   // Define derived variables //
   // Eqbm values
@@ -176,9 +180,7 @@ Type objective_function<Type>::operator() ()
   vector<Type>   zSum_g(nG);       // sum of residuals
   vector<Type>   SSR_g(nG);        // sum of squared residuals
   array<Type>    z_tg(nT,nG);      // yearly resid by gear
-  vector<Type>   tauObs_g(nG);     // obs error SD
-  vector<Type>   lnqhat_g(nG);     // log conditional MLE of Catchability (survey, species)
-  vector<Type>   qhat_g(nG);       // conditional MLE of Catchability (survey, species)
+  
 
   // Avg weight observations
   Type    wSSR    = 0.0;
@@ -196,6 +198,7 @@ Type objective_function<Type>::operator() ()
   R0     = N0 * (Type(1) - S0);
   reca   = Type(4) * h * R0 / ( B0 * ( Type(1) - h ) );
   recb   = ( Type(5) * h - Type(1) ) / ( B0 * ( Type(1) -h ) );
+
 
   // Fill omegaR_t with 0s
   omegaR_t.fill(0.0);
@@ -301,7 +304,6 @@ Type objective_function<Type>::operator() ()
   // Calculate observation model likelihood, including catch
   // Fill with 0s
   validObs_g.fill(0.0);
-  zSum_g.fill(0.0);
   ss_g.fill(0.0);
   z_tg.fill(0.0);
   SSR_g.fill(0.0);
@@ -319,35 +321,15 @@ Type objective_function<Type>::operator() ()
 
     // years/timesteps
     for( int t = 0; t < nT; t++ )
-    {
       // only add a contribution if the data exists (It < 0 is missing)
       if (I_tg(t,g) > 0) 
-      {
-        validObs_g(g) += int(1);
-        z_tg(t,g) = log( I_tg( t, g ) ) - log( idxState( t ) );
-        zSum_g(g) += z_tg(t,g);
-      }       
-    }
-    // Now calculate the concentrated lnqhat for each survey/species
-    if( indexType_g(g) == 0 )
-      lnqhat_g(g) = zSum_g(g) / validObs_g(g);
-
-    // And loop back over t to calculate obs likelihood
-    for( int t = 0; t < nT; t++ )
-      if( I_tg(t,g) > 0) 
-        z_tg(t,g) -= lnqhat_g(g);
-
-    // Now calc conditional MLE of obs err sd
-    // take SSR
-    for(int t = 0; t < nT; t++ )
-      if( I_tg(t,g) > 0) 
-        SSR_g(g)    += square(z_tg(t,g));
-    // compute cond MLE of tauObs
-    tauObs_g(g) = sqrt(SSR_g(g) / validObs_g(g));
-
+        z_tg(t,g) = log( I_tg( t, g ) ) - log( idxState( t ) ) - lnq_g(g);
+    
+    
     // Add contribution to nllObs
     // nllObs_g(g) += SSR_g(g)/0.01;
-    nllObs_g(g) = 0.5*(validObs_g(g) * 2 * log(tauObs_g(g))  + validObs_g(g)  );
+    vector<Type> tmpVec = z_tg.col(g);
+    nllObs_g(g) -= dnorm( tmpVec, Type(0), tauObs_g(g), true).sum();
 
   }
 
@@ -403,18 +385,13 @@ Type objective_function<Type>::operator() ()
   // nlph               += steepness_nlp;
   nlph += (1 - hPrior(0)) * log(h) + (1 - hPrior(1)) * log(1-h);
 
-  // Finally, q and tauObs_g priors
-  qhat_g = exp(lnqhat_g);
+  // Finally, q prior
   for( int g = 0; g < nG; g++ )
-  {
-    nlpq += .5* square( ( qhat_g(g) - mq(g) ) / sdq(g) );  
-    // IG prior on survey obs err variance
-    nlptau2_g(g) += (tau2ObsPriorA(g)+Type(1))*2*log(tauObs_g(g)) + tau2ObsPriorB(g)/square(tauObs_g(g));
-  }
+    nlpq += .5* square( ( q_g(g) - mq(g) ) / sdq(g) );  
+
 
   // // Apply Jeffreys prior to B0
   Type nlpB0 = 0.;
-  // nlpB0 += B0;
   
   // Add priors to objective function
   objFun += nlpq + nlph + nlpM + nlptau2_g.sum() + nlpB0;
@@ -439,7 +416,8 @@ Type objective_function<Type>::operator() ()
   ADREPORT(lnM);
   ADREPORT(logith);
   ADREPORT(lnFinit);
-  ADREPORT(lnqhat_g);
+  ADREPORT(lnq_g);
+  ADREPORT(tauObs_g);
   ADREPORT(lnN_t);
   ADREPORT(lnB_t);
 
@@ -493,12 +471,11 @@ Type objective_function<Type>::operator() ()
   REPORT( Finit );        // CR estimates of initial total mortality
   
   // Observation model
-  REPORT( qhat_g );       // Survey and species catchability
+  REPORT( q_g);           // Survey catchability
   REPORT( tauObs_g );     // Survey observation error
   REPORT( tauWbar );      // Mean weight observation error sd
   REPORT( validObs_g );   // Number of valid observations in each survey
   REPORT( SSR_g );        // Sum of squared resids
-  REPORT( zSum_g );       // sum of residuals
   REPORT( z_tg );         // matrix of residuals
 
   // Random Effects
@@ -518,6 +495,9 @@ Type objective_function<Type>::operator() ()
   REPORT( mq );           // Average q prior mean
   REPORT( sdq );          // Average q prior sd
 
+  // Switches
+  REPORT(survType_g);     // Survey type
+
   // Objective Function quantities
   REPORT( objFun );
   REPORT( nllObs_g );
@@ -525,8 +505,8 @@ Type objective_function<Type>::operator() ()
   REPORT( nlph );
   REPORT( nlpq );
   REPORT( nlpM );
+  REPORT( nlpB0 );
   // REPORT( nlpRt );
-  REPORT( nlptau2_g );
   REPORT( pospen );
 
   

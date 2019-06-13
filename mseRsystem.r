@@ -1777,7 +1777,9 @@ callProcedureDD <- function( obj, t )
 
   ddObj     <- list()                        # List to pass to assessModDD
 
-  assessCtl <- obj$ctlList$mp$assess
+  assessCtl   <- obj$ctlList$mp$assess
+
+  ddObj$quiet <- obj$ctlList$gui$quiet
 
   # Fit control pars
   ddObj$calcSD      <- FALSE
@@ -1795,19 +1797,21 @@ callProcedureDD <- function( obj, t )
   tMP             <- opMod$tMP        # Year MP first applied, tMP.
   
   # Get indices
-  useIndex          <- obj$ctlList$mp$data$useIndex
+  useIndex          <- eval( parse( text=obj$ctlList$mp$data$useIndex ) )
   I_tg              <- om$Itg[1:(ddObj$t-1),useIndex]
   I_tg[is.na(I_tg)] <- -1
   nIndices          <- length(useIndex)
 
 
   # Make FW pars
-  FWpars <- makeFWpars( vonK  = mean(opMod$vonK), 
-                        Linf  = mean(opMod$Linf), 
-                        L1    = mean(opMod$L1), 
-                        c1.lw = mean(opMod$c1), 
-                        c2.lw = mean(opMod$c2), 
-                        nAges = opMod$nAges )
+  FWpars  <- .makeFWpars( vonK  = mean(opMod$vonK), 
+                          Linf  = mean(opMod$Linf), 
+                          L1    = mean(opMod$L1), 
+                          c1.lw = mean(opMod$c1), 
+                          c2.lw = mean(opMod$c2), 
+                          nAges = opMod$nAges )
+
+  kage    <- FWpars$DDpars$DDpar.hi["kage"]
 
   # Set first estimated recruitment deviation
   firstRecDev <- 10
@@ -1817,19 +1821,20 @@ callProcedureDD <- function( obj, t )
   ddObj$data          <- list()
 
   # Populate data
-  ddObj$data$I_tg                 <- I_tg
-  ddObj$data$C_tg                 <- apply(X = om$Ctg[1:(ddObj$t-1),], FUN = sum, MARGIN = 1)
-  ddObj$data$wbar_t               <- rep(-1, ddObj$t-1)
-  ddObj$data$kage                 <- FWpars$DDpars$DDpar.hi["kage"]
-  ddObj$data$alpha                <- FWpars$DDpars$DDpar.hi[2]
-  ddObj$data$rho                  <- FWpars$DDpars$DDpar.hi[3]
-  ddObj$data$wk                   <- FWpars$wtAge[kage]
-  ddObj$data$initBioCode          <- 1 - obj$ctlList$mp$assess$ddUnfished
-  ddObj$data$useWbar              <- 0
-  ddObj$data$survType_g           <- as.integer(rep(0,nIndices))
-  ddObj$data$indexType_g          <- as.integer(rep(0,nIndices))
-  ddObj$data$firstRecDev          <- firstRecDev
-  ddObj$data$pospenScale          <- 1e3 
+  ddObj$data$I_tg            <- I_tg
+  ddObj$data$C_t             <- apply(X = om$Ctg[1:(ddObj$t-1),], FUN = sum, MARGIN = 1)
+  ddObj$data$wbar_t          <- rep(-1, ddObj$t-1)
+  ddObj$data$kage            <- FWpars$DDpars$DDpar.hi["kage"]
+  ddObj$data$alpha           <- FWpars$DDpars$DDpar.hi[2]
+  ddObj$data$rho             <- FWpars$DDpars$DDpar.hi[3]
+  ddObj$data$wk              <- FWpars$wtAge[kage]
+  ddObj$data$initBioCode     <- 1 - obj$ctlList$mp$assess$ddUnfished
+  ddObj$data$useWbar         <- 0
+  ddObj$data$survType_g      <- as.integer(rep(0,nIndices))
+  ddObj$data$indexType_g     <- as.integer(rep(0,nIndices))
+  ddObj$data$firstRecDev     <- firstRecDev
+  ddObj$data$pospenScale     <- 1e3 
+
 
   checkNA <- function( x )
   {
@@ -1839,9 +1844,9 @@ callProcedureDD <- function( obj, t )
   }
 
   naData <- lapply(X = ddObj$data, FUN = checkNA )
-  if(any(naData))
+  if(any(unlist(naData)))
   {
-    whichData <- which(naData)
+    whichData <- which(unlist(naData))
     cat("\n NAs found in data object", whichData, "\n")
     browser()
   }
@@ -1865,9 +1870,11 @@ callProcedureDD <- function( obj, t )
   # Populate init pars
   # Make parameter list
   ddObj$pars$logith         <- 0
-  ddObj$pars$lnB0           <- log(opMod$B0)
+  ddObj$pars$lnB0           <- log(sum(ddObj$data$C_t))
   ddObj$pars$lnM            <- log(mean(opMod$M))
-  ddObj$pars$recDevs_t      <- rep(0,nT - firstRecDev - kage)
+  ddObj$pars$lntauObs_g     <- log(tauObs)
+  ddObj$pars$lnq_g          <- log(mq)
+  ddObj$pars$recDevs_t      <- rep(0, t - 1 - firstRecDev - kage)
   ddObj$pars$lnsigmaR       <- 0
   ddObj$pars$gammaR         <- 0.
   ddObj$pars$lnFinit        <- -5
@@ -1877,8 +1884,7 @@ callProcedureDD <- function( obj, t )
   ddObj$pars$hPrior         <- c(22,18)
   ddObj$pars$mq             <- mq
   ddObj$pars$sdq            <- sdq
-  ddObj$pars$tau2ObsPriorA  <- c(1,1,1)
-  ddObj$pars$tau2ObsPriorB  <- tau2Obs * c(2,2,2)
+  
 
   # Random effects
   ddObj$random              <- "recDevs_t"
@@ -1890,19 +1896,17 @@ callProcedureDD <- function( obj, t )
   ddObj$map <- list()
 
   # make prior variances inactive
+  ddObj$map$lnsigmaR      <- factor(NA)
   ddObj$map$gammaR        <- factor(NA)
   ddObj$map$lnFinit       <- factor(NA)
   ddObj$map$sig2RPrior    <- factor(c(NA,NA))
   ddObj$map$mM            <- factor(NA)
   ddObj$map$sdM           <- factor(NA)
   ddObj$map$hPrior        <- factor(c(NA,NA))
-  ddObj$map$mq            <- factor(rep(NA,3))
-  ddObj$map$sdq           <- factor(rep(NA,3))
-  ddObj$map$tau2ObsPriorA <- factor(rep(NA,3))
-  ddObj$map$tau2ObsPriorB <- factor(rep(NA,3)) 
+  ddObj$map$mq            <- factor(rep(NA,nIndices))
+  ddObj$map$sdq           <- factor(rep(NA,nIndices))
+  ddObj$map$lntauObs_g    <- factor(rep(NA,nIndices))
 
-  ctrl <- list( eval.max = ddObj$maxEval, 
-                iter.max = ddObj$maxIter )
 
   
 
@@ -1941,7 +1945,7 @@ callProcedureDD <- function( obj, t )
 # Returns:       current biomass estimate, stock dynamics and parameters,     #
 #                minimization details, yield and ref pt calcs                 #
 # Source:        S. D. N. Johnson (modified from assessModCAA, June 12 2019)  #
-assessModDD <- function( caObj )
+assessModDD <- function( ddObj )
 {
   # Schnute-Deriso Delay Difference model
   # This implmentation is a wrapper that calls the nlminb estimation
@@ -1954,60 +1958,125 @@ assessModDD <- function( caObj )
   # Load the TMB model
   dyn.load(dynlib("assessDD")) 
 
-  browser()
 
-  objFE <- MakeADFun( data=dat,parameters=par,map=map, 
-                    random = NULL, silent = FALSE )
-                    # random=c("omegaR_t") )
+  # Implement a refit routine here, then 
+  # we can say something about assessfailed.
+
+  ctrl <- list( eval.max = ddObj$maxEval, 
+                iter.max = ddObj$maxIter )
+
+  objFE <- MakeADFun( data=ddObj$data,
+                      parameters=ddObj$pars,
+                      map=ddObj$map, 
+                      random = NULL, silent = ddObj$quiet,
+                      DLL = "assessDD" )
 
   fitFE <- try( nlminb (  start     = objFE$par,
                           objective = objFE$fn,
                           gradient  = objFE$gr,
                           control   = ctrl ) )
 
-  objRE <- MakeADFun( data=dat,parameters=par,map=map, 
+  nTries <- 1
+
+  if( class(fitFE) == "try-error" )
+  {
+    # Try fitting again for nTries tries
+
+
+  } else {
+    # Save the fixed effects object as 
+    # the assessment object in case
+    # RE method fails
+    rpt     <- objFE$report()
+    sdrpt   <- sdreport(objFE)
+    maxGrad <- max(abs(objFE$gr()))
+
+    # attempt fitting with random effects
+    objRE <- MakeADFun( data=ddObj$data,
+                      parameters=ddObj$pars,
+                      map=ddObj$map, 
                       random=c("recDevs_t","lnsigmaR","lnFinit"), 
-                      silent = FALSE )
+                      silent = ddObj$quiet,
+                      DLL = "assessDD" )
 
-  bestPars <- fitFE$par[names(fitFE$par) %in% names(objRE$par)]
+    bestPars <- fitFE$par[names(fitFE$par) %in% names(objRE$par)]
 
-  fitRE <- try( nlminb (  start     = bestPars,
-                          objective = objRE$fn,
-                          gradient  = objRE$gr,
-                          control   = ctrl ) )
+    fitRE <- try( nlminb (  start     = bestPars,
+                            objective = objRE$fn,
+                            gradient  = objRE$gr,
+                            control   = ctrl ) )
+  
+    # Apply refitting procedure again
 
-  repFE <- objFE$report()
-  repRE <- objRE$report()
-  sdrepFE <- sdreport(objFE)
-  sdrepRE <- sdreport(objRE)
+    # If REs fit succesfully, then
+    # save RE object as assessment object
+    if( fitRE$convergence == 0 )
+    {
+      rpt   <- objRE$report()
+      sdrpt <- sdreport(objRE)
+      maxGrad <- max(abs(objRE$gr()))
+    }
+      
+  }
 
-  assessment <- list( fixedEff  = repFE,
-                      randEff   = repRE  )
+  dyn.unload(dynlib("assessDD"))  # Dynamically link the C++ code
+
+  dyn.load(dynlib("refPtsDD"))    # Dynamically link the ref pts optimiser
+
+  refPtsData <- list( rec_a = rpt$reca,
+                      rec_b = rpt$recb,
+                      M = rpt$M,
+                      alpha = rpt$alpha,
+                      rho = rpt$rho,
+                      w_k = rpt$wk )
+
+  refPtsPar <- list(Fmsy = 0.05 )
+
+  objRP <- MakeADFun( data = refPtsData,
+                      parameters = refPtsPar,
+                      map = NULL,
+                      DLL = "refPtsDD",
+                      silent = ddObj$quiet,
+                      random = NULL )
+
+  fitRP <- nlminb ( start     = objRP$par,
+                    objective = objRP$fn,
+                    gradient  = objRP$gr,
+                    control   = ctrl )
 
 
-  assessment$sbt <- repRE$B_t
+  # Start arranging things for output
+  assessment        <- rpt
+  assessment$sd     <- sdrpt
+  assessment$refPts <- objRP$report()
 
-  assessment$mpdPars <- list( objFun        = repRE$objFun,
-                              R0            = repRE$R0,
-                              SSB0          = repRE$B0,
-                              q             = repRE$qhat_g,
-                              projExpBio    = repRE$B_t[t],
-                              lastDt        = repRE$D_t[t-1] )
+  dyn.unload(dynlib("refPtsDD"))  # Unload the ref pts calc
+
+
+  assessment$sbt <- assessment$B_t
+
+  assessment$mpdPars <- list( objFun        = assessment$objFun,
+                              R0            = assessment$R0,
+                              SSB0          = assessment$B0,
+                              q             = assessment$q_g,
+                              projExpBio    = assessment$B_t[t],
+                              lastDt        = assessment$D_t[t-1],
+                              ssbFmsy       = assessment$refPts$Bmsy,
+                              yieldFmsy     = assessment$refPts$MSY,
+                              Fmsy          = assessment$refPts$Fmsy )
                               
   assessment$mcOut                    <- NULL                                          
-  # assessment$runStatus                <- tmpFit$fit[c("nopar","nlogl","maxgrad","npar","logDetHess")]
-  assessment$runStatus$maxGrad        <- max(abs(objRE$gr()))
-  assessment$runStatus$hessPosDef     <- sdrepRE$pdHess
-  assessment$runStatus$objFun         <- repRE$objFun
+  assessment$runStatus$maxGrad        <- maxGrad
+  assessment$runStatus$hessPosDef     <- assessment$sd$pdHess
+  assessment$runStatus$objFun         <- assessment$objFun
   assessment$runStatus$fisheryClosed  <- NA
   assessment$runStatus$deadFlag       <- NA
-  assessment$runStatus$assessFailed   <- NULl
-  assessment$phzList                  <- phzList
+  assessment$runStatus$assessFailed   <- FALSE
 
   assessment$exploitBt <- assessment$SB_t[t]
   assessment$spawnBt   <- assessment$SB_t[t]
 
-  dyn.unload(dynlib("assessDD"))          # Dynamically link the C++ code
+  
 
 
   return( assessment )
@@ -2038,6 +2107,8 @@ assessModDD <- function( caObj )
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- obj$maxF             # Maximum allowable F in case estimation fails.
   
+  browser()
+
   # ARK (13-Oct-13) Added catchFloor.
   catchFloor <- obj$catchFloor
 
@@ -4161,6 +4232,48 @@ assessModDD <- function( caObj )
     # the right form
     stockAssessment <- callProcedureDD( obj, t )
 
+    tRow <- t - tMP + 1
+
+    browser()
+
+    stockAssessment$runStatus[c("est","std","cor","cov","names")] <- NULL
+    val <- c( t, unlist( stockAssessment$runStatus ) )
+    mp$assess$runStatus[ tRow,c(1:length(val)) ] <- val
+    names( mp$assess$runStatus )[c(1:length(val))] <- c( "tStep",names(stockAssessment$runStatus) )
+
+    val <- c( t,unlist(stockAssessment$mpdPars) )
+    mp$assess$mpdPars[ tRow,c(1:length(val)) ] <- val
+    names( mp$assess$mpdPars )[c(1:length(val))] <- c( "tStep",names(unlist(stockAssessment$mpdPars)) )
+    
+    # Update ItgScaled from DD output
+    for ( i in 1:length(tmpTimes$useIndex) )
+    {
+      idx       <- tmpTimes$useIndex[i]
+      survType  <- stockAssessment$survType_g[i]
+      if( survType == 0 )
+        val <- stockAssessment$B_t[1:(t-1)]
+      if( survType == 1 )
+        val <- stockAssessment$N_t[1:(t-1)]
+
+      indexOn <- !is.na(obj$om$Itg[,idx])[1:(t-1)]
+      mp$assess$ItgScaled[idx,which(indexOn)] <- val[indexOn]
+    }
+    
+    # Fill next row of "stepwise" (i.e., retrospective) biomass estimates
+    val <- c( t,stockAssessment$B_t )
+    mp$assess$retroExpBt[ tRow, c(1:length(val)) ] <- val
+    val <- c( t,stockAssessment$B_t )
+    if(is.null(mp$assess$retroSpawnBt)) 
+      mp$assess$retroSpawnBt <- mp$assess$retroExpBt
+    mp$assess$retroSpawnBt[ tRow, c(1:length(val))] <- val
+
+    val <- c( t, stockAssessment$omegaR_t[1:(t-1)] )
+    mp$assess$retroRt[ tRow, c(1:length(val)) ] <- val
+    
+    # Make a new list saving the assessment info so 
+    # we can compare it to other things later
+
+    mp$saveAssessment[[tRow]] <- stockAssessment
 
   }
 
@@ -4273,6 +4386,8 @@ assessModDD <- function( caObj )
     # idxCtlPts is always 1.  Therefore, take the value in row 1 of the estimated
     # control points 3 times.  For tMP+4, tMP+5, tMP+5, take the value in the
     # 4th row of the estimated control points 3 times.
+
+    browser()
 
     if ( statusBase == "statusBaseBmsy" )
       mp$hcr$Bref[t] <- mp$assess$mpdPars$ssbFmsy[ idxCtlPts[tRow] ]
@@ -4470,6 +4585,8 @@ assessModDD <- function( caObj )
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
 
+  if( tmpTAC < sum(om$Ctg[t-1,] + ctlList$mp$hcr$minDeltaTACup) )
+    tmpTAC <- sum(om$Ctg[t-1,])
 
   if(tmpTAC < 0) tmpTAC <- 0
 
@@ -5317,4 +5434,71 @@ tsBoot <- function ( seed = NULL, x = histData, length = nT,
     }  
 
   samples
+}
+
+# makeFWpars()
+# Takes vonB and allometric length-weight parameters 
+# and outputs inflection age in the weight-at-age curve (model),
+# then estimates FW pars for the branch of the curve
+# above that age. Returns pars estimated from the 
+# integer ages above (ceiling) and below (floor) the
+# inflection point.
+# inputs: spec = 1-char species name root of data files.
+# outputs: out = list of DDpars.lo (floor) and DDpars.hi (ceiling)
+.makeFWpars <- function( vonK, Linf, L1,
+                        c1.lw, c2.lw, nAges = 35,
+                        plot = FALSE )
+{
+  # von bertalanffy growth function
+  vonB <- function( age, K, Linf, L1 )
+  {
+    Lt <- Linf + (L1 - Linf) * ( exp( -K * (age - 1)))
+    Lt
+  }
+
+  vonBcurve <- vonB(  age = 1:nAges, 
+                      K = vonK, Linf = Linf, L1 = L1 )
+
+  # Make wtAge curve
+  wtAge   <- c1.lw * vonBcurve ^ c2.lw
+
+  ages <- 1:nAges
+
+  # Make a spline, then solve for inflection point
+  wtAgeSpline     <- splinefun( x = ages, y = wtAge )
+  inflectionAge   <- uniroot( f = wtAgeSpline, interval = c(1,max(ages)),
+                              deriv = 2)$root
+
+  # Take the ceiling and floor of inflection
+  kage_lo <- floor(inflectionAge)
+  kage_hi <- ceiling(inflectionAge)
+
+  # Get max age
+  A <- max(ages)
+  # Now estimate FW pars
+  dat_lo <- data.frame( w1 = wtAge[kage_lo:(A-1)], w2 = wtAge[kage_hi:(A)]  )
+  dat_hi <- data.frame( w1 = wtAge[kage_hi:(A-1)], w2 = wtAge[(kage_hi+1):(A)]  )
+
+  floorFW <- lm( w2 ~ w1, data = dat_lo)
+  ceilFW <- lm( w2 ~ w1, data = dat_hi)
+
+  FW_lo <- coef(floorFW)
+  FW_hi <- coef(ceilFW)
+
+
+  
+
+  DDpars.lo <- c(kage = kage_lo, alpha = FW_lo[1], rho = FW_lo[2])
+  DDpars.hi <- c(kage = kage_hi, alpha = FW_hi[1], rho = FW_hi[2])
+
+
+  DDpars <- list( DDpar.lo = DDpars.lo, DDpar.hi = DDpars.hi)
+
+  out <- list()
+  out$DDpars    <- DDpars
+  out$lenAge    <- vonBcurve
+  out$wtAge     <- wtAge
+
+  return( out )
+
 }

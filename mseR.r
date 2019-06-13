@@ -18,3 +18,4 @@ library(TMB)
 
 compile("assessCA.cpp")
 compile("assessDD.cpp")
+compile("refPtsDD.cpp")
