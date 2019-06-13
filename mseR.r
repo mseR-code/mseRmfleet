@@ -14,6 +14,7 @@ source( "mseRrefPoints.r" )
 source( "mseRtools.r" )
 source( "read.admb.R" )
 require(ref)
+library(TMB)
 
 compile("assessCA.cpp")
 compile("assessDD.cpp")

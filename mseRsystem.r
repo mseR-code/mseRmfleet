@@ -1864,20 +1864,20 @@ callProcedureDD <- function( obj, t )
   ddObj$pars <- list()
   # Populate init pars
   # Make parameter list
-  ddObj$pars$logith         <- 0,
-  ddObj$pars$lnB0           <- log(opMod$B0),
-  ddObj$pars$lnM            <- log(mean(opMod$M)),
-  ddObj$pars$recDevs_t      <- rep(0,nT - firstRecDev - kage),
-  ddObj$pars$lnsigmaR       <- 0,
-  ddObj$pars$gammaR         <- 0.,
-  ddObj$pars$lnFinit        <- -5,
-  ddObj$pars$sig2RPrior     <- c(1,2),
-  ddObj$pars$mM             <- obj$ctlList$mp$assess$ddPmM,
-  ddObj$pars$sdM            <- obj$ctlList$mp$assess$ddPsdM,
-  ddObj$pars$hPrior         <- c(22,18),
-  ddObj$pars$mq             <- mq,
-  ddObj$pars$sdq            <- sdq,
-  ddObj$pars$tau2ObsPriorA  <- c(1,1,1),
+  ddObj$pars$logith         <- 0
+  ddObj$pars$lnB0           <- log(opMod$B0)
+  ddObj$pars$lnM            <- log(mean(opMod$M))
+  ddObj$pars$recDevs_t      <- rep(0,nT - firstRecDev - kage)
+  ddObj$pars$lnsigmaR       <- 0
+  ddObj$pars$gammaR         <- 0.
+  ddObj$pars$lnFinit        <- -5
+  ddObj$pars$sig2RPrior     <- c(1,2)
+  ddObj$pars$mM             <- obj$ctlList$mp$assess$ddPmM
+  ddObj$pars$sdM            <- obj$ctlList$mp$assess$ddPsdM
+  ddObj$pars$hPrior         <- c(22,18)
+  ddObj$pars$mq             <- mq
+  ddObj$pars$sdq            <- sdq
+  ddObj$pars$tau2ObsPriorA  <- c(1,1,1)
   ddObj$pars$tau2ObsPriorB  <- tau2Obs * c(2,2,2)
 
   # Random effects
