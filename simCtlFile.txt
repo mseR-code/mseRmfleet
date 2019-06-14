@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Tue Jun 11 12:09:04 2019 
 parameter value
-gui$mpLabel "currMP"
+gui$mpLabel "ddMP"
 gui$nReps 100
 gui$quiet TRUE
 gui$scenarioLabel "sableOpMod_releasesRepRate"
@@ -30,7 +30,7 @@ mp$assess$ddkAge 3
 mp$assess$ddM 0.07
 mp$assess$ddPmM 0.07
 mp$assess$ddPmSteep 0.55
-mp$assess$ddPsdM 0.007
+mp$assess$ddPsdM 0.015
 mp$assess$ddPsdSteep 0.05
 mp$assess$ddUnfished TRUE
 mp$assess$idxLikeWeight "rep(1,4)"

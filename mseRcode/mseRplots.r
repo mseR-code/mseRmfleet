@@ -1926,8 +1926,8 @@
 
   # Plot LRP and USR
   B0  <- obj$ctlList$opMod$B0
-  LRP <- .BlimHerring
-  TRP <- .USRHerring
+  LRP <- .4
+  TRP <- 1.0
   
 
   # X-axis limits.
@@ -1950,7 +1950,7 @@
   # Panel 1: Plot biomass and survey index.
   plot( xLim, yLim1, type="n", axes=FALSE, xlab="", ylab="" )
   lines( c(1:nT), Bt, col=.BtCOL, lty=.BtLTY, lwd=.BtLWD )
-  abline( h=c(LRP*B0, TRP*B0), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
+  abline( h=c(LRP*Bmsy, TRP*Bmsy), lty=c(.LrpLTY,.TrpLTY), lwd = c(.LrpLWD, .TrpLWD),
           col = c(.LrpCOL, .TrpCOL) )
   panLegend(  x = 0.8, y = 0.9,
               legTxt = c("LRP", "TRP"), 

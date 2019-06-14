@@ -1789,6 +1789,7 @@ callProcedureDD <- function( obj, t )
   # Pull opMod and om
   opMod           <- obj$ctlList$opMod
   om              <- obj$om
+  mp              <- obj$mp
 
   
   # Get times
@@ -1798,7 +1799,7 @@ callProcedureDD <- function( obj, t )
   
   # Get indices
   useIndex          <- eval( parse( text=obj$ctlList$mp$data$useIndex ) )
-  I_tg              <- om$Itg[1:(ddObj$t-1),useIndex]
+  I_tg              <- mp$data$Itg[1:(ddObj$t-1),useIndex]
   I_tg[is.na(I_tg)] <- -1
   nIndices          <- length(useIndex)
 
@@ -1881,7 +1882,7 @@ callProcedureDD <- function( obj, t )
   ddObj$pars$sig2RPrior     <- c(1,2)
   ddObj$pars$mM             <- obj$ctlList$mp$assess$ddPmM
   ddObj$pars$sdM            <- obj$ctlList$mp$assess$ddPsdM
-  ddObj$pars$hPrior         <- c(22,18)
+  ddObj$pars$hPrior         <- c(11,9)
   ddObj$pars$mq             <- mq
   ddObj$pars$sdq            <- sdq
   
@@ -1958,6 +1959,7 @@ assessModDD <- function( ddObj )
   # Load the TMB model
   dyn.load(dynlib("assessDD")) 
 
+  options( warn = -1 )
 
   # Implement a refit routine here, then 
   # we can say something about assessfailed.
@@ -1971,53 +1973,73 @@ assessModDD <- function( ddObj )
                       random = NULL, silent = ddObj$quiet,
                       DLL = "assessDD" )
 
-  fitFE <- try( nlminb (  start     = objFE$par,
+  initPars <- objFE$par
+
+  fitFE <- try( nlminb (  start     = initPars,
                           objective = objFE$fn,
                           gradient  = objFE$gr,
                           control   = ctrl ) )
 
   nTries <- 1
 
-  if( class(fitFE) == "try-error" )
+  while( class(fitFE) == "try-error" )
   {
-    # Try fitting again for nTries tries
-
-
-  } else {
-    # Save the fixed effects object as 
-    # the assessment object in case
-    # RE method fails
-    rpt     <- objFE$report()
-    sdrpt   <- sdreport(objFE)
-    maxGrad <- max(abs(objFE$gr()))
-
-    # attempt fitting with random effects
-    objRE <- MakeADFun( data=ddObj$data,
-                      parameters=ddObj$pars,
-                      map=ddObj$map, 
-                      random=c("recDevs_t","lnsigmaR","lnFinit"), 
-                      silent = ddObj$quiet,
-                      DLL = "assessDD" )
-
-    bestPars <- fitFE$par[names(fitFE$par) %in% names(objRE$par)]
-
-    fitRE <- try( nlminb (  start     = bestPars,
+    nPars <- length(initPars)
+    initPars <- initPars + exp(rnorm(nPars,0,1))
+    fitFE <- try( nlminb (  start     = initPars,
                             objective = objRE$fn,
                             gradient  = objRE$gr,
                             control   = ctrl ) )
-  
-    # Apply refitting procedure again
+  } 
 
-    # If REs fit succesfully, then
-    # save RE object as assessment object
-    if( fitRE$convergence == 0 )
-    {
-      rpt   <- objRE$report()
-      sdrpt <- sdreport(objRE)
-      maxGrad <- max(abs(objRE$gr()))
-    }
+  rpt     <- objFE$report()
+  sdrpt   <- sdreport(objFE)
+  maxGrad <- max(abs(objFE$gr()))
+
+
+  # else {
+  #   # Save the fixed effects object as 
+  #   # the assessment object in case
+  #   # RE method fails
+    
+
+  #   # attempt fitting with random effects
+  #   objRE <- MakeADFun( data=ddObj$data,
+  #                     parameters=ddObj$pars,
+  #                     map=ddObj$map, 
+  #                     random=c("recDevs_t","lnsigmaR","lnFinit"), 
+  #                     silent = ddObj$quiet,
+  #                     DLL = "assessDD" )
+
+  #   bestPars <- fitFE$par[names(fitFE$par) %in% names(objRE$par)]
+
+  #   fitRE <- try( nlminb (  start     = bestPars,
+  #                           objective = objRE$fn,
+  #                           gradient  = objRE$gr,
+  #                           control   = ctrl ) )
+
+  #   while(class(fitRE) == "try-error")
+  #   {
+  #     nPars <- length(bestPars)
+  #     bestPars <- bestPars + exp(rnorm(nPars,0,1))
+  #     fitRE <- try( nlminb (  start     = bestPars,
+  #                             objective = objRE$fn,
+  #                             gradient  = objRE$gr,
+  #                             control   = ctrl ) )
+  #   }
+  
+  #   # Apply refitting procedure again
+
+  #   # If REs fit succesfully, then
+  #   # save RE object as assessment object
+  #   if( fitRE$convergence == 0 )
+  #   {
+  #     rpt   <- objRE$report()
+  #     sdrpt <- sdreport(objRE)
+  #     maxGrad <- max(abs(objRE$gr()))
+  #   }
       
-  }
+  # }
 
   dyn.unload(dynlib("assessDD"))  # Dynamically link the C++ code
 
@@ -2039,10 +2061,13 @@ assessModDD <- function( ddObj )
                       silent = ddObj$quiet,
                       random = NULL )
 
-  fitRP <- nlminb ( start     = objRP$par,
-                    objective = objRP$fn,
-                    gradient  = objRP$gr,
-                    control   = ctrl )
+  fitRP <- try(nlminb ( start     = objRP$par,
+                        objective = objRP$fn,
+                        gradient  = objRP$gr,
+                        control   = ctrl ) )
+
+  if( class( fitRP ) == "try-error" )
+    browser()
 
 
   # Start arranging things for output
@@ -2053,7 +2078,9 @@ assessModDD <- function( ddObj )
   dyn.unload(dynlib("refPtsDD"))  # Unload the ref pts calc
 
 
-  assessment$sbt <- assessment$B_t
+  options(warn = 0)
+
+  assessment$SBt <- assessment$B_t
 
   assessment$mpdPars <- list( objFun        = assessment$objFun,
                               R0            = assessment$R0,
@@ -2073,8 +2100,8 @@ assessModDD <- function( ddObj )
   assessment$runStatus$deadFlag       <- NA
   assessment$runStatus$assessFailed   <- FALSE
 
-  assessment$exploitBt <- assessment$SB_t[t]
-  assessment$spawnBt   <- assessment$SB_t[t]
+  assessment$exploitBt <- assessment$B_t[t]
+  assessment$spawnBt   <- assessment$B_t[t]
 
   
 
@@ -2106,8 +2133,7 @@ assessModDD <- function( ddObj )
   # Safeguards to limit F in case assessment failed in a particular year
   fail         <- obj$assessFailed     # TRUE is assessment model failed
   maxF         <- obj$maxF             # Maximum allowable F in case estimation fails.
-  
-  browser()
+
 
   # ARK (13-Oct-13) Added catchFloor.
   catchFloor <- obj$catchFloor
@@ -4234,8 +4260,6 @@ assessModDD <- function( ddObj )
 
     tRow <- t - tMP + 1
 
-    browser()
-
     stockAssessment$runStatus[c("est","std","cor","cov","names")] <- NULL
     val <- c( t, unlist( stockAssessment$runStatus ) )
     mp$assess$runStatus[ tRow,c(1:length(val)) ] <- val
@@ -4386,8 +4410,6 @@ assessModDD <- function( ddObj )
     # idxCtlPts is always 1.  Therefore, take the value in row 1 of the estimated
     # control points 3 times.  For tMP+4, tMP+5, tMP+5, take the value in the
     # 4th row of the estimated control points 3 times.
-
-    browser()
 
     if ( statusBase == "statusBaseBmsy" )
       mp$hcr$Bref[t] <- mp$assess$mpdPars$ssbFmsy[ idxCtlPts[tRow] ]
@@ -4585,7 +4607,9 @@ assessModDD <- function( ddObj )
   tmpTAC     <- max( tmpTAC0, tacFloor )
   tmpTAC     <- min( tmpTAC, tacCeiling )
 
-  if( tmpTAC < sum(om$Ctg[t-1,] + ctlList$mp$hcr$minDeltaTACup) )
+  lastTAC <- sum(om$Ctg[t-1,])
+
+  if( tmpTAC > lastTAC & tmpTAC < sum(lastTAC + ctlList$mp$hcr$minDeltaTACup) )
     tmpTAC <- sum(om$Ctg[t-1,])
 
   if(tmpTAC < 0) tmpTAC <- 0
