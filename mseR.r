@@ -18,4 +18,6 @@ library(TMB)
 
 compile("assessCA.cpp")
 compile("assessDD.cpp")
+dyn.load(dynlib("assessDD"))
 compile("refPtsDD.cpp")
+dyn.load(dynlib("refPtsDD"))   # Dynamically link the ref pts optimiser

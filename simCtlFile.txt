@@ -1,6 +1,6 @@
 # mseRguiSim GUI parameters written Thu Aug 22 13:26:24 2019 
 parameter value
-gui$mpLabel "spMP"
+gui$mpLabel "ddMP"
 gui$nReps 3
 gui$quiet TRUE
 gui$scenarioLabel "sableOpMod_MLE_270819"
@@ -30,7 +30,7 @@ mp$assess$ddkAge 3
 mp$assess$ddM 0.07
 mp$assess$ddPmM 0.07
 mp$assess$ddPmSteep 0.55
-mp$assess$ddPsdM 0.015
+mp$assess$ddPsdM 0.007
 mp$assess$ddPsdSteep 0.05
 mp$assess$ddUnfished TRUE
 mp$assess$idxLikeWeight "rep(1,4)"
@@ -40,7 +40,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 3
+mp$assess$methodId 4
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -136,7 +136,7 @@ mp$hcr$upperTrendPct 0.9
 mp$hcr$useDLL FALSE
 mp$hcr$useMLE TRUE
 mp$hcr$useSnow TRUE
-mp$hcr$juveCapProp 1.0
+mp$hcr$juveCapProp 0.5
 mp$hcr$juveDiscAmortization 5
 mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
 opMod$allocProp c(0.417027,0.475627,0.099525,0.002995,0.004826)

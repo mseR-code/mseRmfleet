@@ -617,11 +617,19 @@ ageLenOpMod <- function( objRef, t )
                       L50Dg    = L50Dg,
                       L95Dg    = L95Dg,
                       nGrps    = nGrps,
-                      nGear    = nGear
-                  )
+                      nGear    = nGear,
+                      repFile  = repFile )
     tmpP <- .calcPalg(palgPars,A=A,Lal=Lal)
     Palg <- tmpP
   }
+
+  # Overwrite prob discarding if juveCapProp == 0
+  if( ctlList$mp$hcr$juveCapProp == 0 & t >= tMP )
+  {
+    Palg[,,1:(nGear - 2)] <- 0 
+  }
+
+
 
 
   sigmaR    <- ctlList$opMod$sigmaR     # std error in log-recruitment
@@ -671,6 +679,7 @@ ageLenOpMod <- function( objRef, t )
   Catg    <- obj$om$Catg    # array of gear-specific catchBiomass-at-age
   uCatg   <- obj$om$uCatg   # age-proportions in landed catch
   Ctg     <- obj$om$Ctg     # matrix of gear-specific total landed catch biomass
+  adjCtg  <- obj$om$adjCtg  # matrix of gear-specific total landed catch biomass
   Ct      <- obj$om$Ct      # vector of total landed catch biomass
   Dt      <- obj$om$Dt      # vector of total discard biomass.
   Datg    <- obj$om$Datg    # array of dead discard biomass-at-age
@@ -697,6 +706,13 @@ ageLenOpMod <- function( objRef, t )
 
   if( t > 1 )
     histAveDiscards <- obj$om$histAveDiscards
+
+  if( t == 1 )
+    overage_tg <- array( 0, dim = c(nT,nGear) )
+
+
+  if( t > 1 )
+    overage_tg <- obj$om$overage_tg
 
     
   fg    <- ctlList$opMod$fg       # Relative Fs by gear 
@@ -789,9 +805,13 @@ ageLenOpMod <- function( objRef, t )
     Ntot[t] <- sum( Nalt[,,t] )
   }  # end t>1 ifelse
 
-  if( t < tMP ) 
+  if( t < tMP )
     Ctg[t,] <- Ctg[t,]/1000.
 
+
+  # Adjust catch by amortized overage
+  if( t > tMP )
+    Ctg[t,] <- Ctg[t,] - overage_tg[t,]
   
 
   # Calc fishing mortality by age-/growth-group
@@ -865,6 +885,7 @@ ageLenOpMod <- function( objRef, t )
 
     Discatg[,t,g] <- rowSums( Discal )
 
+
     # catch-year/gear
     capCtg[t,g] <- sum( Catg[,t,g] )
     valCtg[t,g] <- sum( valCatg[,t,g] )
@@ -873,135 +894,50 @@ ageLenOpMod <- function( objRef, t )
     Disctg[t,g] <- sum( Discatg[,t,g] )
     
     # accumulate legal catch, legal dead discards, and sublegal total dead discards
-    legalC    <- legalC + sum( Cal*obj$refPtList$Legal )
-    legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
-    sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
+    legalC    <- legalC + sum( Cal )
+    legalD    <- legalD + sum( Dal )
+    sublegalD <- sublegalD + sum( Dal )
 
     Ctg[t,g]  <- capCtg[t,g]
 
     # Now sum sublegal discards
-    sublegalDisc[g] <- sublegalDisc[g] + sum( Discal*(1.-obj$refPtList$Legal) )
+    sublegalDisc[g] <- sum( Discal )
   }
+
+
 
   # Now apply the sublegal cap if catch is positive
-  if( sum( Ctg[t,1:3] ) > 0 & any( Ftg[t,] > 0) & !is.null(ctlList$mp$hcr$juveCapProp) )
+  if( !is.null(ctlList$mp$hcr$juveCapProp) & t >= tMP )
   { 
+    browser()
     juveCapProp <- ctlList$mp$hcr$juveCapProp
     sublegalC   <- 0.
-    if( t >= tMP )
+    sublegalCap <- juveCapProp * histAveDiscards * ctlList$mp$hcr$juveCapAlloc
+
+    amortPeriod <- ctlList$mp$hcr$juveDiscAmortization
+    for( g in 1:(nGear - 2) )
     {
-      sublegalCap <- juveCapProp * histAveDiscards * ctlList$mp$hcr$juveCapAlloc
+      # Calculate
+      tmpOver <- Disctg[t,g] - sublegalCap[g]
 
-      browser()
+      # Amortize
+      tmpOver <- tmpOver / amortPeriod
+      
+      # Add to overage calculation
+      nAmortYrs <- min(5, nT - t - 1 )
+      
+      if( nAmortYrs > 0)
+        overage_tg[ t + (1:nAmortYrs), g ] <- overage_tg[ t + (1:nAmortYrs), g ] + tmpOver
+    }
 
-      # Redefine Zalt
-      Zalt[,,t] <- matrix(M, ncol = nGrps, nrow = A, byrow = TRUE)
-
-      # Now loop over gear types, and check whether they
-      # hit their cap
-      adjust <- TRUE
-      legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
-      while( adjust )
-      {
-        for( gIdx in 1:(nGear - 2) )
-        {
-          if( sublegalCap[gIdx] == 0.0 ) 
-          {
-            capCtg[t,gIdx] <- 0.0
-            Ftg[t,gIdx]    <- 0.0
-          } else {
-            # Now check the discards against the cap
-            overDisc <- sublegalDisc[gIdx] - sublegalCap[gIdx]
-            if( overDisc > 0 ) 
-              Ftg[t,gIdx] <- Ftg[t,gIdx] * sublegalCap[ gIdx ] / sublegalDisc[ gIdx ]
-            # Add fishing mortality to Z
-            Zalt[,,t] <- Zalt[,,t] + Salg[,,g]*Ftg[t,g]*(dg[g]*Palg[,,g] - Palg[,,g] + 1.) 
-          }
-        }
-        # re compute Catch- and dead-discards-at-age
-        legalC <- 0.; legalD <- 0.; sublegalC <- 0.; sublegalD <- 0.
-        sublegalDisc <- c(0.,0.,0.)
-        for( g in 1:(nGear-2) )
-        {
-          Cal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*(1.-Palg[,,g])/Zalt[,,t]
-          Dal     <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*(1.-exp(-dg[g]))*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
-          Discal  <- Balt[,,t]*(1.-exp(-Zalt[,,t]))*Salg[,,g]*Ftg[t,g]*Palg[,,g]/Zalt[,,t]
-          
-          # catch-age/year/gear
-          Catg[,t,g]    <- rowSums( Cal )
-          valCatg[,t,g] <- rowSums( (Cal / Wal) * Val + opMod$collarPrice * Cal/Wal  )
-          Datg[,t,g]    <- rowSums( Dal )
-          valDatg[,t,g] <- rowSums( (Dal / Wal) * Val + opMod$collarPrice * Dal/Wal )
-          Discatg[,t,g] <- rowSums( Discal )
-
-          # catch-year/gear
-          capCtg[t,g]   <- sum( Catg[,t,g] )
-          valCtg[t,g]   <- sum( valCatg[,t,g] )
-          Dtg[t,g]      <- sum( Datg[,t,g] )
-          valDtg[t,g]   <- sum( valDatg[,t,g] )
-          Disctg[t,g]   <- sum( Discatg[,t,g] )
-          
-          # accumulate legal catch, legal dead discards, and sublegal total dead discards
-          legalC    <- legalC + sum( Cal*obj$refPtList$Legal )
-          legalD    <- legalD + sum( Dal*obj$refPtList$Legal )
-          sublegalD <- sublegalD + sum( Dal*(1.-obj$refPtList$Legal) )
-
-          # Now sum sublegal discards
-          sublegalDisc[g] <- sublegalDisc[g] + sum( Discal*(1.-obj$refPtList$Legal) )
-        }
-        underUtilized <- Ctg[t,] - capCtg[t,]
-        underUtilized[4:5] <- 0
-        if( all(sublegalDisc - sublegalCap < 1e-10 ) ) adjust <- FALSE
-      }
-
-      capBalt <- Balt[,,t]*(exp(-Zalt[,,t]))
-
-      # Now compute top up F and Z values
-      noDisc <- Palg
-      noDisc[,,1:3] <- noDisc[,,5]
-      initF <- c(rep(0.05,3),0,0)
-      if( any(underUtilized > 0) )
-        topUpF <- .solveBaranov1( B=capBalt, S=Salg, P=noDisc, D=dg, F=initF, M=M,
-                                    C=underUtilized, lam=ctlList$opMod$baranovSteps )
-      else topUpF <- rep(0,5)
-
-      topUpZ <- matrix( 0, ncol = nGrps, nrow = A, byrow = TRUE )
-      for( g in 1:(nGear - 2) )
-      topUpZ <- topUpZ + Salg[,,g]*topUpF[g]
-
-      # Add to landed catch using the topUp (discards won't change)
-
-      for( g in 1:(nGear-2))
-      {
-        if( all(topUpZ == 0) )
-          Ctg[t,g] <- capCtg[t,g]
-        else {
-          # top up catch at age, legnth, gear and time
-          topUpCal      <- capBalt * ( 1 - exp(-topUpZ) ) *Salg[,,g]*topUpF[g]/topUpZ
-          topUpCatg     <- rowSums( topUpCal )
-          topUpValCatg  <- rowSums( (topUpCal / Wal) * Val + opMod$collarPrice * topUpCal/Wal )
-            
-          # This is the reported quantity
-          Ctg[t,g]      <- capCtg[t,g] + sum( topUpCatg )
-          Catg[,t,g]    <- Catg[,t,g] + topUpCatg
-          valCatg[,t,g] <- valCatg[,t,g] + topUpValCatg
-          valCtg[t,g]   <- valCtg[t,g] + sum( topUpValCatg )
-          legalC        <- legalC + sum(topUpCal*obj$refPtList$Legal)
-          sublegalC     <- sublegalC + sum(topUpCal*(1-obj$refPtList$Legal))  
-        }
-      }
-      # Now add total mortality at age and length for next time step
-      Zalt[,,t] <- Zalt[,,t] + topUpZ
-      # And add top up F to the base F for an estimate of F
-      # in the reporting
-      Ftg[t,1:3] <- Ftg[t,1:3] + topUpF[1:3]
-    }  
-    Ftg[t,4:5] <- 0
+    # Now stop overage from going negative (avoid inflating legal TAC)
+    overage_tg[overage_tg < 0] <- 0
   }
 
+
   # Total landings and harvest rates.
-  legalB     <- sum( Balt[,,t]*obj$refPtList$Legal )
-  sublegalB  <- sum( Balt[,,t]*(1.-obj$refPtList$Legal) )
+  legalB     <- sum( Balt[,,t]*(1-Palg[,,1]) )
+  sublegalB  <- sum( Balt[,,t]*(Palg[,,1]) )
   Ct[t]      <- sum( Ctg[t,1:3] )
   Dt[t]      <- sum( Dtg[t,1:3] )
   legalHR    <- (legalC+legalD)/legalB
@@ -1063,27 +999,27 @@ ageLenOpMod <- function( objRef, t )
   if( t==1 )
     obj$om$avgR  <- avgR      # recruitment
 
-  obj$om$Ct    <- Ct      # landed catch in biomass
-  obj$om$Dt    <- Dt      # discards in biomass
-  obj$om$Ctg   <- Ctg     # landed catch in biomass by gear
-  obj$om$Catg  <- Catg    # landed catch by age/gear
-  obj$om$uCatg <- uCatg   # age-proportions in landed catch
-  obj$om$Dtg   <- Dtg     # dead discard in biomass by gear
-  obj$om$Datg  <- Datg    # dead discards by age/gear
-  obj$om$Discatg <- Discatg  # all discards by age/gear  
-  obj$om$Disctg  <- Dtg
-  obj$om$capCtg  <- Ctg
-  obj$om$Ftg   <- Ftg     # realized fishing mortality rate by gear
+  obj$om$Ct       <- Ct      # landed catch in biomass
+  obj$om$Dt       <- Dt      # discards in biomass
+  obj$om$Ctg      <- Ctg     # landed catch in biomass by gear
+  obj$om$adjCtg   <- adjCtg  # Adjusted (for discarded juves) catch in biomass by gear
+  obj$om$Catg     <- Catg    # landed catch by age/gear
+  obj$om$uCatg    <- uCatg   # age-proportions in landed catch
+  obj$om$Dtg      <- Dtg     # dead discard in biomass by gear
+  obj$om$Datg     <- Datg    # dead discards by age/gear
+  obj$om$Discatg  <- Discatg  # all discards by age/gear  
+  obj$om$Disctg   <- Disctg   # all discards
+  obj$om$capCtg   <- Ctg
+  obj$om$Ftg      <- Ftg     # realized fishing mortality rate by gear
 
   # Update value OM matrices
-  obj$om$valCtg   <- valCtg
-  obj$om$valCatg  <- valCatg
-  obj$om$valDtg   <- valDtg
-  obj$om$valDatg  <- valDatg
+  obj$om$valCtg     <- valCtg
+  obj$om$valCatg    <- valCatg
+  obj$om$valDtg     <- valDtg
+  obj$om$valDatg    <- valDatg
+  obj$om$overage_tg <- overage_tg
   
-
   obj$om$legalHR[t]        <- legalHR      # legal harvest rate
-  # obj$om$spawnHR[t]        <- spawnHR      # legal harvest rate\
   obj$om$sublegalHR[t]     <- sublegalHR   # sublegal harvest rate
   obj$om$legalB[t]         <- legalB       # legal biomass
   obj$om$sublegalB[t]      <- sublegalB    # sublegal biomass
@@ -1871,7 +1807,7 @@ callProcedureDD <- function( obj, t )
   tau2Obs <- tauObs^2
 
   # Prior on q
-  mq  <- opMod$qg[useIndex]
+  mq  <- rep(.5,3)
   sdq <- mq / 2
 
   # (2) pars
@@ -1880,7 +1816,7 @@ callProcedureDD <- function( obj, t )
   # Make parameter list
   ddObj$pars$logith         <- 0
   ddObj$pars$lnB0           <- log(sum(ddObj$data$C_t))
-  ddObj$pars$lnM            <- log(mean(opMod$M))
+  ddObj$pars$lnM            <- log(obj$ctlList$mp$assess$ddPmM)
   ddObj$pars$lntauObs_g     <- log(tauObs)
   ddObj$pars$lnq_g          <- log(mq)
   ddObj$pars$recDevs_t      <- rep(0, t - 1 - firstRecDev - kage)
@@ -1906,6 +1842,7 @@ callProcedureDD <- function( obj, t )
 
   # make prior variances inactive
   ddObj$map$lnsigmaR      <- factor(NA)
+  ddObj$map$lnM           <- factor(NA)
   ddObj$map$gammaR        <- factor(NA)
   ddObj$map$lnFinit       <- factor(NA)
   ddObj$map$sig2RPrior    <- factor(c(NA,NA))
@@ -1963,11 +1900,6 @@ assessModDD <- function( ddObj )
   #
   nT  <- ddObj$nT
   t   <- ddObj$t
-
-  # Load the TMB model
-  suppressWarnings(dyn.load(dynlib("assessDD")) )
-
-  options( warn = -1 )
 
   # Implement a refit routine here, then 
   # we can say something about assessfailed.
@@ -2048,10 +1980,7 @@ assessModDD <- function( ddObj )
   #   }
       
   # }
-
-  suppressWarnings(dyn.unload(dynlib("assessDD")))  # Dynamically link the C++ code
-
-  suppressWarnings(dyn.load(dynlib("refPtsDD")))    # Dynamically link the ref pts optimiser
+  
 
   refPtsData <- list( rec_a = rpt$reca,
                       rec_b = rpt$recb,
@@ -2082,11 +2011,6 @@ assessModDD <- function( ddObj )
   assessment        <- rpt
   assessment$sd     <- sdrpt
   assessment$refPts <- objRP$report()
-
-  suppressWarnings(dyn.unload(dynlib("refPtsDD")))  # Unload the ref pts calc
-
-
-  options(warn = 0)
 
   assessment$SBt <- assessment$B_t
 
@@ -2146,7 +2070,7 @@ assessModDD <- function( ddObj )
   # ARK (13-Oct-13) Added catchFloor.
   catchFloor <- obj$catchFloor
 
- # Calculate the slow-up rule
+  # Calculate the slow-up rule
   slowUpYears  <- obj$slowUpYears
   if( is.null(slowUpYears) )
     slowUpYears <- 1
@@ -2871,6 +2795,7 @@ assessModDD <- function( ddObj )
               Rt         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ct         = matrix( NA,nrow=nReps,ncol=(nT+1) ),
               Ctg        = array( data=NA,dim=c(nReps,nT,nGear) ),
+              overage_tg = array( data=NA,dim=c(nReps,nT,nGear) ),
               valCtg     = array( data=NA,dim=c(nReps,nT,nGear) ),
               Catg       = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
               valCatg    = array( data = NA, dim = c(nReps, nAges, nT, nGear)),
@@ -3076,34 +3001,35 @@ assessModDD <- function( ddObj )
     }
     
     # Fill current row of the blob for operating model components.
-    blob$om$Bt[i,]         <- c( i, obj$om$Bt )
-    blob$om$SBt[i,]        <- c( i, obj$om$SBt )
-    blob$om$FBt[i,]        <- c( i, obj$om$FBt )
-    blob$om$Nt[i,]         <- c( i, obj$om$Nt )
-    blob$om$Btot[i,]       <- c( i, obj$om$Btot )
-    blob$om$Ntot[i,]       <- c( i, obj$om$Ntot )
-    blob$om$Mt[i,,]        <- c( obj$om$Mt )    
-    blob$om$Rt[i,]         <- c( i, obj$om$Rt )
-    blob$om$Ct[i,]         <- c( i, obj$om$Ct )
-    blob$om$Dt[i,]         <- c( i, obj$om$Dt )
-    blob$om$Ctg[i,,]       <- obj$om$Ctg
-    blob$om$valCtg[i,,]    <- obj$om$valCtg
-    blob$om$Catg[i,,,]     <- obj$om$Catg
-    blob$om$valCatg[i,,,]  <- obj$om$valCatg
-    blob$om$Dtg[i,,]       <- obj$om$Dtg
-    blob$om$valDtg[i,,]    <- obj$om$valDtg
-    blob$om$valDatg[i,,,]  <- obj$om$valDatg
-    blob$om$Ftg[i,,]       <- obj$om$Ftg
-    blob$om$Itg[i,,]       <- obj$om$Itg
-    blob$om$uCatg[i,,,]    <- obj$om$uCatg
-    blob$om$legalHR[i,]    <- c(i,obj$om$legalHR)
-    blob$om$spawnHR[i,]    <- c(i,obj$om$spawnHR)
-    blob$om$sublegalHR[i,] <- c(i,obj$om$sublegalHR)
-    blob$om$legalB[i,]     <- c(i,obj$om$legalB)
-    blob$om$sublegalB[i,]  <- c(i,obj$om$sublegalB)
-    blob$om$legalC[i,]     <- c(i,obj$om$legalC)
-    blob$om$legalD[i,]     <- c(i,obj$om$legalD)
-    blob$om$sublegalD[i,]  <- c(i,obj$om$sublegalD)
+    blob$om$Bt[i,]          <- c( i, obj$om$Bt )
+    blob$om$SBt[i,]         <- c( i, obj$om$SBt )
+    blob$om$FBt[i,]         <- c( i, obj$om$FBt )
+    blob$om$Nt[i,]          <- c( i, obj$om$Nt )
+    blob$om$Btot[i,]        <- c( i, obj$om$Btot )
+    blob$om$Ntot[i,]        <- c( i, obj$om$Ntot )
+    blob$om$Mt[i,,]         <- c( obj$om$Mt )    
+    blob$om$Rt[i,]          <- c( i, obj$om$Rt )
+    blob$om$Ct[i,]          <- c( i, obj$om$Ct )
+    blob$om$Dt[i,]          <- c( i, obj$om$Dt )
+    blob$om$Ctg[i,,]        <- obj$om$Ctg
+    blob$om$overage_tg[i,,] <- obj$om$overage_tg
+    blob$om$valCtg[i,,]     <- obj$om$valCtg
+    blob$om$Catg[i,,,]      <- obj$om$Catg
+    blob$om$valCatg[i,,,]   <- obj$om$valCatg
+    blob$om$Dtg[i,,]        <- obj$om$Dtg
+    blob$om$valDtg[i,,]     <- obj$om$valDtg
+    blob$om$valDatg[i,,,]   <- obj$om$valDatg
+    blob$om$Ftg[i,,]        <- obj$om$Ftg
+    blob$om$Itg[i,,]        <- obj$om$Itg
+    blob$om$uCatg[i,,,]     <- obj$om$uCatg
+    blob$om$legalHR[i,]     <- c(i,obj$om$legalHR)
+    blob$om$spawnHR[i,]     <- c(i,obj$om$spawnHR)
+    blob$om$sublegalHR[i,]  <- c(i,obj$om$sublegalHR)
+    blob$om$legalB[i,]      <- c(i,obj$om$legalB)
+    blob$om$sublegalB[i,]   <- c(i,obj$om$sublegalB)
+    blob$om$legalC[i,]      <- c(i,obj$om$legalC)
+    blob$om$legalD[i,]      <- c(i,obj$om$legalD)
+    blob$om$sublegalD[i,]   <- c(i,obj$om$sublegalD)
 
     blob$om$errors$deltat[i,] <- c(i,obj$om$errors$deltat)
     blob$om$errors$omegat[i,] <- c(i,obj$om$errors$omegat)

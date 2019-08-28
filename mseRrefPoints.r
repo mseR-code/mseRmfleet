@@ -300,14 +300,27 @@ calcRefPoints <- function( opModList )
   L50Dg <- palgPars$L50Dg
   L95Dg <- palgPars$L95Dg
 
-  Palg <- array( data=NA, dim=c(A,nGrps,nGear) )
-  for( g in 1:nGear )
+  Palg <- array( data=0, dim=c(A,nGrps,nGear) )
+
+  if( is.null(palgPars$repFile))
   {
-    tmp  <- exp( (-1.)*log(19)*(Lal-L50Dg[g])/(L95Dg[g] - L50Dg[g]) )
-    tmpP <- (1./(1.+ tmp))
-    tmpP[ Lal < palgPars$sizeLim[g] ] <- 1.0
-    Palg[,,g] <- tmpP
+    
+    for( g in 1:nGear )
+    {
+      tmp  <- exp( (-1.)*log(19)*(Lal-L50Dg[g])/(L95Dg[g] - L50Dg[g]) )
+      tmpP <- (1./(1.+ tmp))
+      Palg[,,g] <- tmpP
+    }
   }
+
+  if( !is.null(palgPars$repFile))
+    for( g in 1:nGear-2 )
+    {
+      Palg[,1,g] <- 1 - repFile$pRet_m[1,]
+      Palg[,2,g] <- 1 - repFile$pRet_f[1,]    
+    } 
+
+
   return( Palg )
 }
 
@@ -444,11 +457,12 @@ calcRefPoints <- function( opModList )
                     avoidProb = c(0,0,0) #hardwired at 0 for history
                   )
 
-  palgPars <- list( sizeLim  = obj$sizeLim,
-                    L50Dg    = obj$L50Dg,
-                    L95Dg    = obj$L95Dg,
-                    nGrps    = obj$nGrps,
-                    nGear    = obj$nGear
+  palgPars <- list( sizeLim   = obj$sizeLim,
+                    L50Dg     = obj$L50Dg,
+                    L95Dg     = obj$L95Dg,
+                    nGrps     = obj$nGrps,
+                    nGear     = obj$nGear,
+                    repFile   = obj$repFile
                   )
 
   # Indices
