@@ -71,7 +71,6 @@ calcRefPoints <- function( opModList )
   rSteepness <- obj$rSteepness      # Steepness.
   obj$R0     <- B0/obj$ssbpr        # Unfished recruitment.
 
-
   # Beverton-Holt stock-recruitment parameters
   obj$rec.a  <- 4.*rSteepness*obj$R0 / ( B0*(1.-rSteepness) )
   obj$rec.b  <- (5.*rSteepness-1.) / ( B0*(1.-rSteepness) )
@@ -248,17 +247,15 @@ calcRefPoints <- function( opModList )
     if ( selType[g] == 2 )     # Use dome-shaped function (normal).
     {
       Salg[,,g] <- exp(-(L50Cg1[g] - Lal)^2/2/L95Cg1[g]/L95Cg1[g])
-      Salg[,,g] <- Salg[,,g] / max(Salg[,,g])
-      # tmp1 <- exp( (-1.)*log(19.0)*(Lal-L50Cg1[g])/(L95Cg1[g] - L50Cg1[g]) )
-      # tmp2 <- exp( (-1.)*log(19.0)*(Lal-L50Cg2[g])/(L95Cg2[g] - L50Cg2[g]) )
-      # tmpS <- (1./(1.+tmp1))*(1./(1.+tmp2))
+      # Salg[,,g] <- Salg[,,g] / max(Salg[,,g])
+      
       # Salg[,,g] <- tmpS/max( tmpS )
     }
     if ( selType[g] == 1 )   # Use asymptotic function.
     {
       tmp1 <- exp( (-1.)*log(19.0)*(Lal-L50Cg1[g])/(L95Cg1[g] - L50Cg1[g]) )
       Salg[,,g] <- 1.0 / ( 1.0+tmp1 )
-      Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
+      # Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
     }
 
     if ( selType[g] == 3 )   # Use gamma function
@@ -269,8 +266,12 @@ calcRefPoints <- function( opModList )
         Salg[,l,g]  <- tmp1
       }
 
-      Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
+      # Salg[,,g] <- Salg[,,g]/max(Salg[,,g])
     }
+
+    for( l in 1: 2)
+      Salg[,l,g] <- Salg[,l,g]/max(Salg[,l,g])
+
 
     subLegal <- Lal < 55
 
@@ -516,7 +517,6 @@ calcRefPoints <- function( opModList )
 
 
   Ma    <- obj$Ma
-  Ma[1] <- 0
   Lal   <- obj$Lal
   Wal   <- obj$Wal
   Legal <- obj$Legal

@@ -2880,6 +2880,8 @@
   # What stock assessment method?
   assessMethod <- obj$ctlList$mp$methodId
 
+  browser()
+
   omBt      <- obj$om$Bt
   omBt      <- omBt[ iRep, (2:ncol(omBt)) ]
 
@@ -3803,8 +3805,7 @@
   Bmsy          <- obj$refPtList$ssbFmsy
   landedFmsy    <- obj$refPtList$landedFmsy
   discardedFmsy <- obj$refPtList$discardedFmsy
-  
-  browser()
+
 
   # Management procedure.
   #Itg   <- obj$mp$assess$ItgScaled[ iRep,(2:ncol(obj$mp$assess$ItgScaled)), ]
@@ -3900,6 +3901,7 @@
   # Add lines for all retrospective biomass states
   retroBt   <- retroBt[ retroBt[,1]==iRep, ]
   runStatus <- runStatus[ runStatus[,1]==iRep, ]
+
   
   for ( j in 1:nrow(retroBt) )
   {
@@ -3975,6 +3977,7 @@
   # Add lines for all retrospective biomass states
   retroBt   <- retroBt[ retroBt[,1]==iRep, ]
   runStatus <- runStatus[ runStatus[,1]==iRep, ]
+
   
   iCount <- 3
   for ( j in c(1,nrow(retroBt)) )

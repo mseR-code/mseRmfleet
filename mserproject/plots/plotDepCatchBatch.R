@@ -59,7 +59,7 @@ nT <- 89
 
 # now plot the depCatch multi panels we want
 plotDepCatchHRMultiPanel( simFolder = "../",
-                          mps = c("currMP"), 
+                          mps = c("currMP","ddMP"), 
                           traces = 3,
                           scenario = c("sableOpMod_MLE_110619"),
                           years = 1965:2054,

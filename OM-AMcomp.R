@@ -2,13 +2,13 @@
 source("mseRtools.r")
 
 # Load blob
-load("./mseRproject/sim11062019170333/sim11062019170333.Rdata")
+load("./mseRproject/sim28082019115529/sim28082019115529.Rdata")
 
 library(scales)
 
-Bt <- blob$om$Bt[1,2:55]
+Bt <- blob$om$Bt[2,2:55]
 
-repFile <- lisread(blob$ctlList$opMod$repFileName)
+repFile <- blob$ctlList$opMod$repFile
 fitBt <- repFile$SSBt
 
 RE <- (Bt - fitBt)/fitBt

@@ -2,7 +2,6 @@
 # Task and Issue List:
 # (1) Cannot use legalC and Ct (sum Ctg) interchangeably - they are different.
 #     SPC feeds legalC into SP, but then calculates lastCatch from Ctg. Very
-
 #     similar but should pick one or the other - or explain it in the code.
 
 # (2) Need to check deterministic (almost) behavior of procedures.
@@ -191,12 +190,12 @@
 # (1) Add a new operating model:                                               #
 #                                                                              #
 #     (a) Create a new operating model function (xxxOMod) that follows format  #
-#         of the current ageLenOpMod() function.                                    #
-#           similar format as the current ageLenOpMod() function.                   #
+#         of the current ageLenOpMod() function.                               #
+#           similar format as the current ageLenOpMod() function.              #
 #     (b) Modify solveInitPop() function so that new xxxOMod() is called in    #
-#         place of ageLenOpMod() when needed.                                       #
+#         place of ageLenOpMod() when needed.                                  #
 #     (c) Modify .updatePop() function so new xxxOMod() is called in step 6    #
-#         below instead of ageLenOpMod() when needed.                               #
+#         below instead of ageLenOpMod() when needed.                          #
 #                                                                              #
 # (2) Add a new assessment method:                                             #
 #                                                                              #
@@ -407,13 +406,14 @@ fillOpmodFromRep <- function( obj )
   obj$opMod$allocProp <- allocProp
 
   # Selectivity
-  obj$opMod$L50Cg1 <- repFile$alpha_gt_m[,1]
-  obj$opMod$L95Cg1 <- repFile$beta_gt_m[,1]
+  obj$opMod$L50Cg1 <- repFile$alpha_g1
+  obj$opMod$L95Cg1 <- repFile$beta_g1
 
   # Now add the step parameter for asymptotic
   obj$opMod$selType <- repFile$selType
   selType           <- repFile$selType
-  obj$opMod$L95Cg1[which(selType == 1)] <- obj$opMod$L95Cg1[which(selType == 1)] + obj$opMod$L50Cg1[which(selType == 1)]
+  obj$opMod$L95Cg1[which(selType == 1)] <- repFile$alpha_g1[which(selType == 1)]
+  obj$opMod$L50Cg1[which(selType == 1)] <- repFile$alpha_g1[which(selType == 1)] - repFile$beta_g1[which(selType == 1)]
 
   # Obs model variance
   obj$opMod$tauAgeg     <- (repFile$tauAge_m + repFile$tauAge_f)/2
@@ -639,16 +639,13 @@ ageLenOpMod <- function( objRef, t )
   rec.b     <- obj$refPtList$rec.b     # recruitment dd parameter
   R0        <- obj$refPtList$R0        # unfished recruitment
 
-  # if( t==1 )
-  # {
-      tmp <- lisread(ctlList$opMod$repFileName)
-  #   numAgeYr1_m <- tmp$Nta_m[ctlList$opMod$firstRepYear,]
-  #   numAgeYr1_f <- tmp$Nta_f[ctlList$opMod$firstRepYear,]
-      avgR        <- tmp$avgR
-  # }
+  repFile <- ctlList$opMod$repFile
+
+  if( t == 1 )
+    avgR  <- repFile$avgR
+  
 
   # We should get the Fs from the rep file
-
   recOption   <- ctlList$opMod$recruitmentOption
 
   if( (t > 1) & recOption=="avgR" )
@@ -698,6 +695,9 @@ ageLenOpMod <- function( objRef, t )
     capCtg  <- obj$om$capCtg
   }
 
+  if( t > 1 )
+    histAveDiscards <- obj$om$histAveDiscards
+
     
   fg    <- ctlList$opMod$fg       # Relative Fs by gear 
   dg    <- ctlList$opMod$dg       # discard mortality rates by gear\
@@ -717,10 +717,11 @@ ageLenOpMod <- function( objRef, t )
   # Initialise population if t=1, else update variables from last time step.
   if ( t==1 )
   {
+
     # Recruitment, number-at-age, biomass-at-age
-    Rt[t]     <- obj$ref$R0
+    Rt[t]     <- obj$refPtList$R0
     #Nalt[,,t] <- outer( numAgeYr1, rep( obj$refPtList$piOne, nGrps ) )
-    Nalt[,1:2,t] <- obj$ref$numAgeYr1
+    Nalt[,1:2,t] <- obj$refPtList$numAgeYr1
     # Nalt[,2,t] <- numAgeYr1_f
     Balt[,,t] <- Nalt[,,t]*Wal
     # Spawning biomass and number.
@@ -732,9 +733,18 @@ ageLenOpMod <- function( objRef, t )
     Ntot[t] <- sum( Nalt[,,t] )
 
     # Populate Fs with rep file
-    Ftg[1:(tMP-1),1] <- tmp$Ftg1
-    Ftg[1:(tMP-1),2] <- tmp$Ftg2
-    Ftg[1:(tMP-1),3] <- tmp$Ftg3
+    Ftg[1:(tMP-1),1] <- repFile$Ftg1
+    Ftg[1:(tMP-1),2] <- repFile$Ftg2
+    Ftg[1:(tMP-1),3] <- repFile$Ftg3
+
+    # Take average total discards
+    histDiscards      <- cbind( repFile$obs_relCtg1, repFile$obs_relCtg2, repFile$obs_relCtg3 )
+    histDiscards[histDiscards < 0] <- NA
+    histTotalDiscards <- rowSums(histDiscards, na.rm = T )
+
+    # Use 2006 onwards
+    histAveDiscards   <- mean(histTotalDiscards[.DISCYEARS - .INITYEAR + 1])
+
   } # end "if(t==1)"
   else  # t>1
   {
@@ -783,6 +793,7 @@ ageLenOpMod <- function( objRef, t )
     Ctg[t,] <- Ctg[t,]/1000.
 
   
+
   # Calc fishing mortality by age-/growth-group
   Falg <- array( data=NA, dim=c(A,nGrps,nGear) )
         
@@ -873,19 +884,15 @@ ageLenOpMod <- function( objRef, t )
   }
 
   # Now apply the sublegal cap if catch is positive
-  if( sum( Ctg[t,1:3] ) > 0 & any( Ftg[t,] > 0) )
+  if( sum( Ctg[t,1:3] ) > 0 & any( Ftg[t,] > 0) & !is.null(ctlList$mp$hcr$juveCapProp) )
   { 
-    sublegalCap <- ctlList$mp$hcr$juveCap
+    juveCapProp <- ctlList$mp$hcr$juveCapProp
     sublegalC   <- 0.
-    if( !is.null(ctlList$mp$hcr$juveCap) & t >= tMP )
+    if( t >= tMP )
     {
-      if( all(sublegalCap <= 2 ) ) 
-        sublegalCap <- Ctg[t,1:3] * sublegalCap
-      else if( any(sublegalCap > 2) ) 
-      {
-        sublegalCap <- sum( sublegalCap[ sublegalCap > 1 ] )
-        sublegalCap <- sublegalCap * obj$opMod$allocProp[ 1:3 ] / 1000
-      }
+      sublegalCap <- juveCapProp * histAveDiscards * ctlList$mp$hcr$juveCapAlloc
+
+      browser()
 
       # Redefine Zalt
       Zalt[,,t] <- matrix(M, ncol = nGrps, nrow = A, byrow = TRUE)
@@ -1083,6 +1090,7 @@ ageLenOpMod <- function( objRef, t )
   obj$om$legalC[t]         <- legalC       # legal catch
   obj$om$legalD[t]         <- legalD       # legal discards
   obj$om$sublegalD[t]      <- sublegalD    # sublegal discards
+  obj$om$histAveDiscards   <- histAveDiscards
   
   # obs/process errors
   obj$om$errors$omegat     <- omegat       # recruitment process error
@@ -1957,7 +1965,7 @@ assessModDD <- function( ddObj )
   t   <- ddObj$t
 
   # Load the TMB model
-  dyn.load(dynlib("assessDD")) 
+  suppressWarnings(dyn.load(dynlib("assessDD")) )
 
   options( warn = -1 )
 
@@ -2041,9 +2049,9 @@ assessModDD <- function( ddObj )
       
   # }
 
-  dyn.unload(dynlib("assessDD"))  # Dynamically link the C++ code
+  suppressWarnings(dyn.unload(dynlib("assessDD")))  # Dynamically link the C++ code
 
-  dyn.load(dynlib("refPtsDD"))    # Dynamically link the ref pts optimiser
+  suppressWarnings(dyn.load(dynlib("refPtsDD")))    # Dynamically link the ref pts optimiser
 
   refPtsData <- list( rec_a = rpt$reca,
                       rec_b = rpt$recb,
@@ -2075,7 +2083,7 @@ assessModDD <- function( ddObj )
   assessment$sd     <- sdrpt
   assessment$refPts <- objRP$report()
 
-  dyn.unload(dynlib("refPtsDD"))  # Unload the ref pts calc
+  suppressWarnings(dyn.unload(dynlib("refPtsDD")))  # Unload the ref pts calc
 
 
   options(warn = 0)
@@ -3642,7 +3650,7 @@ assessModDD <- function( ddObj )
     recDevsOffset <- ctlList$opMod$recDevsOffset
     
     # Finally replace recruitment deviations from file in the omegat.
-    omegat[(1+recDevsOffset):(length(recDevs)+recDevsOffset)] <- exp( recDevs )
+    omegat[1:(tMP - recDevsOffset - 1)] <- exp( recDevs[1:(tMP - recDevsOffset - 1)] )
 
     if(!obj$ctlList$gui$quiet)
       cat( "\nMSG (.initPop) Read recruitment deviations from file...\n" )

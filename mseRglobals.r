@@ -161,7 +161,8 @@ if( .ISCAMFLAG )
 #------------------------------------------------------------------------------#
 
 # General mseR globals.
-.INITYEAR <- 1965     # initial year.
+.INITYEAR  <- 1965     # initial year.
+.DISCYEARS <- 2006:2018
 .MAXREP <- 200
 .GUIMSG <- TRUE
 .PLTMSG <- TRUE

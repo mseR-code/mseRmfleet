@@ -1,9 +1,9 @@
-# mseRguiSim GUI parameters written Tue Jun 11 12:09:04 2019 
+# mseRguiSim GUI parameters written Thu Aug 22 13:26:24 2019 
 parameter value
-gui$mpLabel "ddMP"
-gui$nReps 100
+gui$mpLabel "spMP"
+gui$nReps 3
 gui$quiet TRUE
-gui$scenarioLabel "sableOpMod_releasesRepRate"
+gui$scenarioLabel "sableOpMod_MLE_270819"
 gui$simAnnotate TRUE
 gui$simLegend TRUE
 gui$simPlotType "simSpecs"
@@ -40,7 +40,7 @@ mp$assess$initM 0.145
 mp$assess$k1Method 1
 mp$assess$k2Method 1
 mp$assess$kfGain 0.5
-mp$assess$methodId 4
+mp$assess$methodId 3
 mp$assess$nSamples 100
 mp$assess$retroYears 20
 mp$assess$skipFails "FALSE"
@@ -55,7 +55,7 @@ mp$assess$spRhoEiv 0.95
 mp$assess$spSurveyRel TRUE
 mp$assess$t1Method 54
 mp$assess$t2Method 89
-mp$assess$writeOut TRUE
+mp$assess$writeOut FALSE
 mp$data$chkAges1 FALSE
 mp$data$chkAges2 FALSE
 mp$data$chkIndex1 FALSE
@@ -63,8 +63,8 @@ mp$data$chkIndex2 FALSE
 mp$data$idxAges1 "seq(55,89,1)"
 mp$data$idxAges2 "c(55,89)"
 mp$data$indexType "c(1,1,1)"
-mp$data$inputCatch lisread('mserproject/history/releases_repRate_Jun112019/opModCatch.dat')
-mp$data$inputIndex lisread('mserproject/history/releases_repRate_Jun112019/opModIndex.dat')
+mp$data$inputCatch lisread('mserproject/history/base_ALK_mUnsexed/opModCatch.dat')
+mp$data$inputIndex lisread('mserproject/history/base_ALK_mUnsexed/opModIndex.dat')
 mp$data$k1Ages "c(1,1,1)"
 mp$data$k1Index "c(1,1,1)"
 mp$data$k2Ages "c(1,1,1)"
@@ -136,7 +136,9 @@ mp$hcr$upperTrendPct 0.9
 mp$hcr$useDLL FALSE
 mp$hcr$useMLE TRUE
 mp$hcr$useSnow TRUE
-mp$hcr$juveCap NULL
+mp$hcr$juveCapProp 1.0
+mp$hcr$juveDiscAmortization 5
+mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
 opMod$allocProp c(0.417027,0.475627,0.099525,0.002995,0.004826)
 opMod$aMat50 5.002
 opMod$aMat95 12
@@ -155,9 +157,9 @@ opMod$dressedProp .68
 opMod$endM 0.08
 opMod$futureAvoid FALSE
 opMod$futureOption 2
-opMod$repFile lisread('mserproject/history/releases_repRate_Jun112019/sableopmod.rep')
-opMod$estQdevs lisread('mserproject/history/releases_repRate_Jun112019/sableopmod.rep')
-opMod$estRecDevs lisread('mserproject/history/releases_repRate_Jun112019/sableopmod.rep')
+opMod$repFile lisread('mserproject/history/base_ALK_mUnsexed/sableopmod.rep')
+opMod$estQdevs lisread('mserproject/history/base_ALK_mUnsexed/sableopmod.rep')
+opMod$estRecDevs lisread('mserproject/history/base_ALK_mUnsexed/sableopmod.rep')
 opMod$fg c(1.0000000,1.22315243,0.4361168,0.1,0.1)
 opMod$fillFromRep TRUE
 opMod$firstRepYear 1
@@ -188,9 +190,9 @@ opMod$powerg c(1,1,1,1,1)
 opMod$pulseM 0
 opMod$pulseMFrq 0
 opMod$qg c(0.292487,1,1,0.255996,0.703487)
-opMod$recDevsOffset 0
+opMod$recDevsOffset 2
 opMod$recruitmentOption "Beverton-Holt"
-opMod$repFileName "mserproject/history/releases_repRate_Jun112019/sableopmod.rep"
+opMod$repFileName "mserproject/history/base_ALK_mUnsexed/sableopmod.rep"
 opMod$rSeed 1234
 opMod$rSteepness 0.655662
 opMod$selAge FALSE
