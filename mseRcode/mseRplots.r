@@ -2880,8 +2880,6 @@
   # What stock assessment method?
   assessMethod <- obj$ctlList$mp$methodId
 
-  browser()
-
   omBt      <- obj$om$Bt
   omBt      <- omBt[ iRep, (2:ncol(omBt)) ]
 

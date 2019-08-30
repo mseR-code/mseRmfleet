@@ -1,0 +1,244 @@
+# Batch Control File, created Fri Aug 30 11:01:23 2019 by makeBatchDesign() 
+parameter value
+#
+# Scenario 1: idxTrap79
+#
+scenario$scenario1$gui$nReps 100
+scenario$scenario1$gui$scenarioLabel 'baseOM'
+#
+# Scenario 2: idxTrap79
+#
+scenario$scenario2$gui$nReps 100
+scenario$scenario2$gui$scenarioLabel 'varRec2015'
+scenario$scenario2$opMod$recDevsOffset 3
+#
+## Management Procedures
+#
+## Management Procedure 0: NoFish
+#
+mp$mp0$gui$mpLabel 'NoFish'
+#
+## MP 1 : SP_noCap
+#
+mp$mp1$gui$mpLabel 'SP_noCap'
+mp$mp1mp$assess$methodId 3
+mp$mp1mp$hcr$juveCapProp NULL
+mp$mp1mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp1mp$hcr$juveDiscAmortization 5
+#
+## MP 2 : DD_noCap
+#
+mp$mp2$gui$mpLabel 'DD_noCap'
+mp$mp2mp$assess$methodId 4
+mp$mp2mp$hcr$juveCapProp NULL
+mp$mp2mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp2mp$hcr$juveDiscAmortization 5
+#
+## MP 3 : SP_frt
+#
+mp$mp3$gui$mpLabel 'SP_frt'
+mp$mp3mp$assess$methodId 3
+mp$mp3mp$hcr$juveCapProp 0
+mp$mp3mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp3mp$hcr$juveDiscAmortization 5
+#
+## MP 4 : DD_frt
+#
+mp$mp4$gui$mpLabel 'DD_frt'
+mp$mp4mp$assess$methodId 4
+mp$mp4mp$hcr$juveCapProp 0
+mp$mp4mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp4mp$hcr$juveDiscAmortization 5
+#
+## MP 5 : SP_cap.5_rctAl_am5
+#
+mp$mp5$gui$mpLabel 'SP_cap.5_rctAl_am5'
+mp$mp5mp$assess$methodId 3
+mp$mp5mp$hcr$juveCapProp 0.5
+mp$mp5mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp5mp$hcr$juveDiscAmortization 5
+#
+## MP 6 : DD_cap.5_rctAl_am5
+#
+mp$mp6$gui$mpLabel 'DD_cap.5_rctAl_am5'
+mp$mp6mp$assess$methodId 4
+mp$mp6mp$hcr$juveCapProp 0.5
+mp$mp6mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp6mp$hcr$juveDiscAmortization 5
+#
+## MP 7 : SP_cap1.0_rctAl_am5
+#
+mp$mp7$gui$mpLabel 'SP_cap1.0_rctAl_am5'
+mp$mp7mp$assess$methodId 3
+mp$mp7mp$hcr$juveCapProp 1.0
+mp$mp7mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp7mp$hcr$juveDiscAmortization 5
+#
+## MP 8 : DD_cap1.0_rctAl_am5
+#
+mp$mp8$gui$mpLabel 'DD_cap1.0_rctAl_am5'
+mp$mp8mp$assess$methodId 4
+mp$mp8mp$hcr$juveCapProp 1.0
+mp$mp8mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp8mp$hcr$juveDiscAmortization 5
+#
+## MP 9 : SP_cap1.5_rctAl_am5
+#
+mp$mp9$gui$mpLabel 'SP_cap1.5_rctAl_am5'
+mp$mp9mp$assess$methodId 3
+mp$mp9mp$hcr$juveCapProp 1.5
+mp$mp9mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp9mp$hcr$juveDiscAmortization 5
+#
+## MP 10 : DD_cap1.5_rctAl_am5
+#
+mp$mp10$gui$mpLabel 'DD_cap1.5_rctAl_am5'
+mp$mp10mp$assess$methodId 4
+mp$mp10mp$hcr$juveCapProp 1.5
+mp$mp10mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp10mp$hcr$juveDiscAmortization 5
+#
+## MP 11 : SP_cap.5_hstAl_am5
+#
+mp$mp11$gui$mpLabel 'SP_cap.5_hstAl_am5'
+mp$mp11mp$assess$methodId 3
+mp$mp11mp$hcr$juveCapProp 0.5
+mp$mp11mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp11mp$hcr$juveDiscAmortization 5
+#
+## MP 12 : DD_cap.5_hstAl_am5
+#
+mp$mp12$gui$mpLabel 'DD_cap.5_hstAl_am5'
+mp$mp12mp$assess$methodId 4
+mp$mp12mp$hcr$juveCapProp 0.5
+mp$mp12mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp12mp$hcr$juveDiscAmortization 5
+#
+## MP 13 : SP_cap1.0_hstAl_am5
+#
+mp$mp13$gui$mpLabel 'SP_cap1.0_hstAl_am5'
+mp$mp13mp$assess$methodId 3
+mp$mp13mp$hcr$juveCapProp 1.0
+mp$mp13mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp13mp$hcr$juveDiscAmortization 5
+#
+## MP 14 : DD_cap1.0_hstAl_am5
+#
+mp$mp14$gui$mpLabel 'DD_cap1.0_hstAl_am5'
+mp$mp14mp$assess$methodId 4
+mp$mp14mp$hcr$juveCapProp 1.0
+mp$mp14mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp14mp$hcr$juveDiscAmortization 5
+#
+## MP 15 : SP_cap1.5_hstAl_am5
+#
+mp$mp15$gui$mpLabel 'SP_cap1.5_hstAl_am5'
+mp$mp15mp$assess$methodId 3
+mp$mp15mp$hcr$juveCapProp 1.5
+mp$mp15mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp15mp$hcr$juveDiscAmortization 5
+#
+## MP 16 : DD_cap1.5_hstAl_am5
+#
+mp$mp16$gui$mpLabel 'DD_cap1.5_hstAl_am5'
+mp$mp16mp$assess$methodId 4
+mp$mp16mp$hcr$juveCapProp 1.5
+mp$mp16mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp16mp$hcr$juveDiscAmortization 5
+#
+## MP 17 : SP_cap.5_rctAl_am10
+#
+mp$mp17$gui$mpLabel 'SP_cap.5_rctAl_am10'
+mp$mp17mp$assess$methodId 3
+mp$mp17mp$hcr$juveCapProp 0.5
+mp$mp17mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp17mp$hcr$juveDiscAmortization 10
+#
+## MP 18 : DD_cap.5_rctAl_am10
+#
+mp$mp18$gui$mpLabel 'DD_cap.5_rctAl_am10'
+mp$mp18mp$assess$methodId 4
+mp$mp18mp$hcr$juveCapProp 0.5
+mp$mp18mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp18mp$hcr$juveDiscAmortization 10
+#
+## MP 19 : SP_cap1.0_rctAl_am10
+#
+mp$mp19$gui$mpLabel 'SP_cap1.0_rctAl_am10'
+mp$mp19mp$assess$methodId 3
+mp$mp19mp$hcr$juveCapProp 1.0
+mp$mp19mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp19mp$hcr$juveDiscAmortization 10
+#
+## MP 20 : DD_cap1.0_rctAl_am10
+#
+mp$mp20$gui$mpLabel 'DD_cap1.0_rctAl_am10'
+mp$mp20mp$assess$methodId 4
+mp$mp20mp$hcr$juveCapProp 1.0
+mp$mp20mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp20mp$hcr$juveDiscAmortization 10
+#
+## MP 21 : SP_cap1.5_rctAl_am10
+#
+mp$mp21$gui$mpLabel 'SP_cap1.5_rctAl_am10'
+mp$mp21mp$assess$methodId 3
+mp$mp21mp$hcr$juveCapProp 1.5
+mp$mp21mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp21mp$hcr$juveDiscAmortization 10
+#
+## MP 22 : DD_cap1.5_rctAl_am10
+#
+mp$mp22$gui$mpLabel 'DD_cap1.5_rctAl_am10'
+mp$mp22mp$assess$methodId 4
+mp$mp22mp$hcr$juveCapProp 1.5
+mp$mp22mp$hcr$juveCapAlloc c(.23,.18,.59,0,0)
+mp$mp22mp$hcr$juveDiscAmortization 10
+#
+## MP 23 : SP_cap.5_hstAl_am10
+#
+mp$mp23$gui$mpLabel 'SP_cap.5_hstAl_am10'
+mp$mp23mp$assess$methodId 3
+mp$mp23mp$hcr$juveCapProp 0.5
+mp$mp23mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp23mp$hcr$juveDiscAmortization 10
+#
+## MP 24 : DD_cap.5_hstAl_am10
+#
+mp$mp24$gui$mpLabel 'DD_cap.5_hstAl_am10'
+mp$mp24mp$assess$methodId 4
+mp$mp24mp$hcr$juveCapProp 0.5
+mp$mp24mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp24mp$hcr$juveDiscAmortization 10
+#
+## MP 25 : SP_cap1.0_hstAl_am10
+#
+mp$mp25$gui$mpLabel 'SP_cap1.0_hstAl_am10'
+mp$mp25mp$assess$methodId 3
+mp$mp25mp$hcr$juveCapProp 1.0
+mp$mp25mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp25mp$hcr$juveDiscAmortization 10
+#
+## MP 26 : DD_cap1.0_hstAl_am10
+#
+mp$mp26$gui$mpLabel 'DD_cap1.0_hstAl_am10'
+mp$mp26mp$assess$methodId 4
+mp$mp26mp$hcr$juveCapProp 1.0
+mp$mp26mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp26mp$hcr$juveDiscAmortization 10
+#
+## MP 27 : SP_cap1.5_hstAl_am10
+#
+mp$mp27$gui$mpLabel 'SP_cap1.5_hstAl_am10'
+mp$mp27mp$assess$methodId 3
+mp$mp27mp$hcr$juveCapProp 1.5
+mp$mp27mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp27mp$hcr$juveDiscAmortization 10
+#
+## MP 28 : DD_cap1.5_hstAl_am10
+#
+mp$mp28$gui$mpLabel 'DD_cap1.5_hstAl_am10'
+mp$mp28mp$assess$methodId 4
+mp$mp28mp$hcr$juveCapProp 1.5
+mp$mp28mp$hcr$juveCapAlloc c(.30,.37,.33,0,0)
+mp$mp28mp$hcr$juveDiscAmortization 10
+#

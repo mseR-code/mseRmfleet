@@ -1,0 +1,2 @@
+./sableOpMod -ainp sableOpMod.par -nohess -phase 8 -mcmc 2000000 -mcsave 1000
+./sableOpMod -ainp sableOpMod.par -mceval

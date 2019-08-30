@@ -2,7 +2,7 @@
 parameter value
 gui$mpLabel "ddMP"
 gui$nReps 3
-gui$quiet TRUE
+gui$quiet FALSE
 gui$scenarioLabel "sableOpMod_MLE_270819"
 gui$simAnnotate TRUE
 gui$simLegend TRUE

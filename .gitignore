@@ -1,8 +1,14 @@
 # mseR-ISCAM .gitignore file
 # Add file names or regular expressions to ignore when updating git repo
+# ---- Temporary R and ADMB files --- #
 *.DS_Store
 *.dat
 *.std
 *.par
 *.pin
 *.Rapp.history
+
+
+# ---- Old history folders --- #
+./mserproject/history/oldFits
+

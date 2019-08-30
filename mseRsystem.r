@@ -578,6 +578,8 @@ ageLenOpMod <- function( objRef, t )
   Ma    <- obj$refPtList$Ma  
 
   futureAvoid <- ctlList$opMod$futureAvoid
+
+  repFile <- ctlList$opMod$repFile
   
   # Retention probability for age-/length-/gear-  
   Palg <- obj$refPtList$Palg
@@ -646,8 +648,6 @@ ageLenOpMod <- function( objRef, t )
   rec.a     <- obj$refPtList$rec.a     # recruitment slope
   rec.b     <- obj$refPtList$rec.b     # recruitment dd parameter
   R0        <- obj$refPtList$R0        # unfished recruitment
-
-  repFile <- ctlList$opMod$repFile
 
   if( t == 1 )
     avgR  <- repFile$avgR
@@ -909,7 +909,6 @@ ageLenOpMod <- function( objRef, t )
   # Now apply the sublegal cap if catch is positive
   if( !is.null(ctlList$mp$hcr$juveCapProp) & t >= tMP )
   { 
-    browser()
     juveCapProp <- ctlList$mp$hcr$juveCapProp
     sublegalC   <- 0.
     sublegalCap <- juveCapProp * histAveDiscards * ctlList$mp$hcr$juveCapAlloc
@@ -1932,9 +1931,11 @@ assessModDD <- function( ddObj )
                             control   = ctrl ) )
   } 
 
+
   rpt     <- objFE$report()
   sdrpt   <- sdreport(objFE)
   maxGrad <- max(abs(objFE$gr()))
+
 
 
   # else {

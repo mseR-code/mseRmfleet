@@ -316,8 +316,8 @@ calcRefPoints <- function( opModList )
   if( !is.null(palgPars$repFile))
     for( g in 1:nGear-2 )
     {
-      Palg[,1,g] <- 1 - repFile$pRet_m[1,]
-      Palg[,2,g] <- 1 - repFile$pRet_f[1,]    
+      Palg[,1,g] <- 1 - palgPars$repFile$pRet_m[1,]
+      Palg[,2,g] <- 1 - palgPars$repFile$pRet_f[1,]    
     } 
 
 
