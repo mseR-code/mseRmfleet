@@ -1,7 +1,7 @@
 # mseRguiSim GUI parameters written Thu Aug 22 13:26:24 2019 
 parameter value
 gui$mpLabel "ddMP"
-gui$nReps 3
+gui$nReps 100
 gui$quiet FALSE
 gui$scenarioLabel "batchSableMSE"
 gui$simAnnotate TRUE
