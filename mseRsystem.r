@@ -261,8 +261,9 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   # Calculate life history schedules and OM equilibrium reference points.  
   if( !ctlList$gui$quiet )
     cat( "\nMSG (.createMP) Calculating reference points...\n ")
-  tmp <- calcRefPoints( as.ref(opMod) )
-  refPts <- deref( tmp )
+  
+  refPts <- calcRefPoints( opMod)
+
   if( !ctlList$gui$quiet )
     cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )
 
@@ -283,7 +284,7 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
   simObj <- .createMP( ctlList, refPts )
 
   # Run the management procedure.
-  blob <- .mgmtProc( as.ref( simObj ) )
+  blob <- .mgmtProc(  simObj )
 
   # Save the blob particulars.
   blob$ctlPars   <- ctlPars
@@ -339,11 +340,11 @@ runMSE <- function( ctlFile = "./simCtlFile.txt",  saveBlob=TRUE )
 
   if ( ctlList$mp$assess$methodId==.DDMOD )
   {
-    file.copy( file.path( getwd(), "assessdd.tpl" ),
-               file.path( .PRJFLD, simFolder, "assessdd.tpl" ) )
+    file.copy( file.path( getwd(), "assessDD.cpp" ),
+               file.path( .PRJFLD, simFolder, "assessDD.cpp" ) )
 
-    file.copy( file.path( getwd(), "refptsdd.tpl" ),
-               file.path( .PRJFLD, simFolder, "refptsdd.tpl" ) )
+    file.copy( file.path( getwd(), "refPtsDD.cpp" ),
+               file.path( .PRJFLD, simFolder, "refPtsDD.cpp" ) )
   }
 
   if ( ctlList$mp$assess$methodId==.PMOD )
@@ -538,12 +539,10 @@ fillOpmodFromRep <- function( obj )
 # Parameters:     obj=complete simulation object up to t-1; t=current time
 # Returns:        result=complete simulation object up to t
 # Source:         S.P. Cox
-ageLenOpMod <- function( objRef, t )
+ageLenOpMod <- function( obj, t )
 {
   # findOM -- string to use in finding this part of the code using search
   t1 <- proc.time()
-  
-  obj <- deref( objRef )
   
   ctlList <- obj$ctlList
   opMod   <- ctlList$opMod
@@ -1032,7 +1031,7 @@ ageLenOpMod <- function( objRef, t )
   obj$om$errors$epsilontg  <- epsilontg    # index obs error
   obj$om$errors$epsilongat <- epsilongat   # age prop sampling error
 
-  return( as.ref(obj) )
+  return( obj )
 }     # END function ageLenOpMod
 
 #------------------------------------------------------------------------------#
@@ -2753,7 +2752,7 @@ assessModDD <- function( ddObj )
 # Returns:        the "blob" of all simulated states and data
 #                 for "nReps" of "nT" years each
 # Source:         S.P. Cox
-.mgmtProc <- function( objRef )
+.mgmtProc <- function( obj )
 {
   # writeProgress   Private function     
   # Purpose:        writes current status of simulation
@@ -2768,7 +2767,7 @@ assessModDD <- function( ddObj )
       cat( "\n(mgmtProc) Feedback loop completed\n" )
   }     # END function writeProgress  
   
-  obj <- deref( objRef )
+  cleanObj <- obj
   
   ctlList <- obj$ctlList
   
@@ -2939,6 +2938,8 @@ assessModDD <- function( ddObj )
     # Initialize .DEADFLAG and .FISHERYCLOSED
     .DEADFLAG      <<- FALSE  
     .FISHERYCLOSED <<- FALSE  
+
+    obj <- cleanObj
   
     # Pass the replicate index.
     obj$ctlList$opMod$rep <- i
@@ -2952,7 +2953,7 @@ assessModDD <- function( ddObj )
     t1 <- proc.time()[3]
 
     # Initialise simulation object for t=1,2,...tMP-1 pre-MP period.
-    obj <- deref( .initPop( as.ref(obj) ) )
+    obj <- .initPop( obj )
 
     if(!obj$ctlList$gui$quiet)
       cat( "\nMSG (.mgmtProc) Elapsed time in .initPop = ", proc.time()[3]-t1, "\n" )
@@ -3229,7 +3230,7 @@ assessModDD <- function( ddObj )
     # with no catch, skip to next time step if
     # no fishing is occuring
     obj$om$Ctg[t+1,] <- rep(0.0,5)
-    obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
+    obj <- ageLenOpMod( obj, t+1 )
 
     if( obj$ctlList$gui$mpLabel == "NoFish" ) next
 
@@ -3288,7 +3289,7 @@ assessModDD <- function( ddObj )
 
     # 3. Rerun operating model for next time step
     # with new catch
-    obj <- deref(ageLenOpMod( as.ref(obj), t+1 ))
+    obj <- ageLenOpMod( obj, t+1 )
   }
 
   return( obj )
@@ -3305,11 +3306,8 @@ assessModDD <- function( ddObj )
 #                 that spawning biomass Bt is approx. initDepTarg*B0, where initDepTarg
 #                 is input from the gui
 # Source:         S.P. Cox
-.initPop <- function( objRef )
+.initPop <- function( obj )
 {
-
-  # Dereference objRef passed by reference using package "ref".
-  obj <- deref( objRef )
 
   ctlList <- obj$ctlList
   tmpTimes <- .calcTimes( ctlList )
@@ -3661,7 +3659,7 @@ assessModDD <- function( ddObj )
   # We need to do this because the operating model needs to be run for 1:tMP to
   # generate all the data and states for that time. We CAN skip the optimization.
 
-  tmp <- deref( .solveInitPop( as.ref(obj), tMP ) )
+  tmp <- .solveInitPop( obj, tMP )
 
   # Now populate operating model object with states, data, etc.
   obj$om            <- tmp$om
@@ -3671,7 +3669,7 @@ assessModDD <- function( ddObj )
   # ARK (02-Sep-13) I don't know what time2fail does...
   obj$mp$time2fail  <- nT + 100
   
-  return( as.ref(obj) )
+  return( obj )
 }     # END function .initPop.
 
 
@@ -3891,7 +3889,7 @@ assessModDD <- function( ddObj )
 # Returns:        a list with initialised operating model states and data for
 #                 period 1,2,tMP. Biomass Bt should be near initTargDep as set in gui
 # Source:         S.P. Cox
-.solveInitPop <- function( objRef, tMP )
+.solveInitPop <- function( obj, tMP )
 {
   # might want to have an F and a C version of this function for initializing
 
@@ -3903,12 +3901,11 @@ assessModDD <- function( ddObj )
   #                 value f=squared deviation from initDepTarg plus log(cumulative catch). 
   #                 Multiplier 1000 can be adjusted to get better precision
   # Source:         S.P. Cox
-  runModel <- function( pars, objRef )
+  runModel <- function( pars, obj )
   {
     if( !.CATCHSERIESINPUT )
     {
       initCatch <- exp(pars)    
-      obj <- deref( objRef )
       # target depletion level - input from GUI
       initDepTarg <- obj$opMod$initDepTarg
       tMP         <- obj$opMod$tMP
@@ -3923,8 +3920,10 @@ assessModDD <- function( ddObj )
     # Run model for the pre-MP period
     for ( t in 1:(tMP-1) )
     {
-      obj <- deref(ageLenOpMod( as.ref(obj),t ))
+      obj <- ageLenOpMod( obj,t )
     }
+
+    
     
     f <- NA
     if( !is.null(pars) )
@@ -3940,7 +3939,7 @@ assessModDD <- function( ddObj )
     }
     result   <- obj
     result$f <- f
-    return( as.ref(result) )
+    return( result )
 
   }     # END function runModel
   
@@ -3950,16 +3949,15 @@ assessModDD <- function( ddObj )
   # Returns:        Objective function f=squared deviation from initDepTarg plus 
   #                 log(cumulative catch). 
   # Source:         S.P. Cox
-  getObjFunctionVal <- function( pars, objRef )
+  getObjFunctionVal <- function( pars, obj )
   {
-    val <- deref( runModel( pars, objRef ) )$f
+    val <- runModel( pars, obj )$f
     val
   }      # END function getObjFunctionVal function
   
   #----------------------------------------------------------------------------#
 
   # Begin solveInitPop
-  obj <- deref( objRef )
   
   # Determine if catch series has already been input
   if ( !.CATCHSERIESINPUT )
@@ -3990,12 +3988,14 @@ assessModDD <- function( ddObj )
   }
   else
   {
+    solveObj <- obj
     optPar <- list()
     optPar$par <- NULL
   }
   
+
   # Re-generate the operating model and data objects with the optimised Fs
-  solveObj    <- deref( runModel( optPar$par, objRef=as.ref(solveObj) ) )
+  solveObj    <- runModel( optPar$par, solveObj )
   obj$om      <- solveObj$om
   obj$mp$data <- solveObj$mp$data
   obj$pars    <- solveObj$pars
@@ -4009,7 +4009,7 @@ assessModDD <- function( ddObj )
   # method that implements a spline with an arbitrary number
   # of knots ~ 5 is usually the most practical, e.g., for a 30-year
   # history.
-  return( as.ref(obj) )
+  return( obj )
 }     # END function .solveInitPop 
 
 
@@ -4594,7 +4594,7 @@ assessModDD <- function( ddObj )
   obj$mp$assess$Bt[t] <- stockAssessment$mpdPars$projExpBio
   obj$mp$hcr          <- mp$hcr
   obj$mp$hcr$precautionaryFt[t] <- targetHarv$precautionaryF # target F prescribed by control rule
-  obj <- deref( ageLenOpMod( as.ref(obj),t ) )
+  obj <- ageLenOpMod(obj,t )
 
   if ( obj$om$Bt[t] < (0.05*ctlList$opMod$B0) )
   {
@@ -4947,8 +4947,9 @@ assessModDD <- function( ddObj )
   t1 <- proc.time()[3]
   if( !ctlList$gui$quiet )
     cat( "\nMSG (.writePinDat) Calculating reference points, please wait...\n" )
-  tmp <- calcRefPoints( as.ref(opMod) )
-  refPts <- deref( tmp )
+
+  refPts <- calcRefPoints( opMod )
+
   if( !ctlList$gui$quiet )
     cat( "\nMSG (.mgmtProc) Elapsed time in calcRefPoints =",proc.time()[3]-t1,"\n" )  
 

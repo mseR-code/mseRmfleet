@@ -27,7 +27,7 @@ calcRefPoints <- function( opModList )
   # ARK (10-Nov-10) Removed to diminish whining to screen...
   #t1 <- proc.time()
   
-  obj <- deref( opModList )
+  obj <- opModList
   # use lisread to extract the vector parameters below
   #tmp <- lisread( obj$lisReadFile, quiet=TRUE )
   #obj <- refPars
@@ -64,7 +64,7 @@ calcRefPoints <- function( opModList )
   }
 
   # Add SPR and YPR.
-  obj <- deref( .calcPerRecruit( f=0, objRef=as.ref(obj) ) )
+  obj <-  .calcPerRecruit( f=0, obj ) 
 
   # Add Beverton-Holt stock-recruit parameters.
   B0         <- obj$B0              # Unfished female biomass.
@@ -78,6 +78,7 @@ calcRefPoints <- function( opModList )
 
   # Initialise population at unfished equilibrium.
   a <- obj$ages[c(-1,-A)]
+  browser()
   obj$numAgeYr1    <- matrix ( NA, ncol = obj$nGrps, nrow=A )
   obj$numAgeYr1[1,] <- obj$R0*obj$piOne
   for ( g in 1:obj$nGrps )
@@ -85,7 +86,7 @@ calcRefPoints <- function( opModList )
   obj$numAgeYr1[A,] <- obj$numAgeYr1[1,]*exp( -obj$M[1:obj$nGrps]*(A-1) )/(1.-exp(-obj$M[1:obj$nGrps]))
 
   # Calculate reference curves.
-  obj <- deref( .calcRefCurves( objRef=as.ref(obj) ) )
+  obj <-  .calcRefCurves( obj ) 
 
 
   # Recruitment calculations for reference points/steepness plot.
@@ -98,7 +99,7 @@ calcRefPoints <- function( opModList )
   # Calculate reference points.
   hrSplineFun <- splinefun( obj$F, obj$legalHR )
   # Unfished F0
-  tmp               <- deref( .calcEquil( f=0, objRef=as.ref(obj) ) )
+  tmp               <-  .calcEquil( f=0, obj ) 
   
   obj$F0            <- 0
   obj$yprLF0        <- tmp$yprL
@@ -213,7 +214,7 @@ calcRefPoints <- function( opModList )
 
   
   #cat("calcRefPoints took ",proc.time()-t1," seconds\n")
-  return( as.ref(obj) )
+  return( obj )
 }
 
 # .calcSalg   ( Calculate selectivity-at-age)
@@ -522,7 +523,7 @@ calcRefPoints <- function( opModList )
 {
 
   # Compute equilibrium spawning biomass per recruit given f and parameters.
-  obj <- deref( objRef )
+  obj <-  objRef 
   A <- obj$nAges
   M <- obj$M
   recM <- obj$recM
@@ -620,15 +621,15 @@ calcRefPoints <- function( opModList )
     phi$ypr    <- yprL + yprD
     phi$yprLeg <- yprLeg # legal yrp landed+discarded dead
     phi$yprSubLeg <- yprSubLeg
-  return( as.ref(phi) )
+  return( phi )
 }
 
 # ARK (12-Aug=12) Documentation needed here.
 .getYPRvals <- function( lnfg, objRef, f=0 )
 {
-  obj    <- deref( objRef )
+  obj    <-  objRef 
   obj$fg <- exp( lnfg )
-  tmp    <- deref( .calcPerRecruit( f=f, objRef=as.ref(obj) ) )
+  tmp    <-  .calcPerRecruit( f=f, obj ) 
 
   propYPR <- tmp$yprL/sum(tmp$yprL)
   funcVal <- sum((propYPR-obj$allocProp)^2.)
@@ -646,13 +647,13 @@ calcRefPoints <- function( opModList )
 # Source:      S.P. Cox
 .calcEquil <- function( f=0, objRef )
 {
-  obj <- deref( objRef )
+  obj <-  objRef 
   obj$fg <- .FGINIT
 
 
   
   # Compute yield and biomass per recruit function values
-  tmp <- deref( .calcPerRecruit( f=f,objRef=as.ref(obj) ) )
+  tmp <-  .calcPerRecruit( f=f,obj ) 
   # Beverton-Holt sr model parameters
   rec.a <- obj$rec.a
   rec.b <- obj$rec.b
@@ -681,7 +682,7 @@ calcRefPoints <- function( opModList )
 
   if(!is.finite(equil$sublegb)) browser()
     
-  return( as.ref(equil) )
+  return( equil )
 }
 
 # .calcRefCurves
@@ -694,7 +695,7 @@ calcRefPoints <- function( opModList )
 # Source:      S.P. Cox
 .calcRefCurves <- function( objRef )
 {
-  obj <- deref( objRef )
+  obj <-  objRef 
   
   f <- seq( from=0.0, to=.MAXF*max(obj$M), length=.nFVALS )
 
@@ -722,7 +723,7 @@ calcRefPoints <- function( opModList )
 
   for( i in 1:length(f) )
   {
-    tmp          <- deref( .calcEquil( f=f[i],objRef=objRef ) )
+    tmp          <-  .calcEquil( f=f[i],objRef=objRef ) 
     recruits[i]  <- tmp$recruits
     ssbpr[i]     <- tmp$ssbpr
     ssb[i]       <- tmp$ssb
@@ -769,7 +770,7 @@ calcRefPoints <- function( opModList )
     refCurves$sublegalHR <- sublegalHR
     refCurves$fg         <- fg
 
-  return( as.ref(refCurves) )
+  return( refCurves )
 }     # .calcRefCurves function
 
 
@@ -799,7 +800,7 @@ calcRefPoints <- function( opModList )
   else
     obj$F01 <- uniroot( f=yprRatio,interval=c(0,maxF) )$root
 
-  tmp             <- deref( .calcEquil( f=obj$F01, objRef=as.ref(obj)  ) )
+  tmp             <-  .calcEquil( f=obj$F01, obj  ) 
   obj$yprLF01     <- tmp$yprL
   obj$yprDF01     <- tmp$yprD
   obj$yprLeg      <- tmp$yprLeg
@@ -846,7 +847,7 @@ calcRefPoints <- function( opModList )
   #Fmsy              <- uniroot( f=fySplineFun,interval=c(0,maxF), deriv=1 )$root
   
   obj$Fmsy          <- min( Fmsy, maxF )
-  tmp               <- deref(.calcEquil( f=obj$Fmsy, objRef=as.ref(obj) ) )
+  tmp               <- .calcEquil( f=obj$Fmsy, obj ) 
   obj$yprLFmsy      <- tmp$yprL
   obj$yprDFmsy      <- tmp$yprD
   obj$ssbprFmsy     <- tmp$ssbpr
@@ -880,7 +881,7 @@ calcRefPoints <- function( opModList )
   F40 <- uniroot( f=ssbprRatio,interval=c(0,maxF) )$root
   obj$F40 <- min( F40, maxF )
 
-  tmp             <- deref(.calcEquil( f=obj$F40, objRef=as.ref(obj) ) )
+  tmp             <- .calcEquil( f=obj$F40, obj ) 
   obj$yprLF40     <- tmp$yprL
   obj$yprDF40     <- tmp$yprD
   obj$ssbprF40    <- tmp$ssbpr
@@ -906,7 +907,7 @@ calcRefPoints <- function( opModList )
   else
     obj$Fmax <- uniroot( f=fyprSplineFun,interval=c(0,maxF),deriv=1 )$root
 
-  tmp              <- deref( .calcEquil( f=obj$Fmax, objRef=as.ref(obj) ) )
+  tmp              <-  .calcEquil( f=obj$Fmax, obj ) 
   obj$yprLFmax     <- tmp$yprL
   obj$yprDFmax     <- tmp$yprD
   obj$ssbprFmax    <- tmp$ssbpr
@@ -934,7 +935,7 @@ calcRefPoints <- function( opModList )
   else
     obj$Fcra <- uniroot( f=fssbSplineFun,interval=c(0,maxF) )$root
 
-  tmp              <- deref(.calcEquil( f=obj$Fcra, objRef=as.ref(obj) ) )
+  tmp              <- .calcEquil( f=obj$Fcra, obj ) 
   obj$yprLFcra     <- tmp$yprL
   obj$yprDFcra     <- tmp$yprD
   obj$ssbprFcra    <- tmp$ssbpr

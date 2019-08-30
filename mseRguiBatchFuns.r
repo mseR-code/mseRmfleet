@@ -304,264 +304,10 @@ options( "useFancyQuotes"=FALSE )
 # Returns:      result is the batch job design dataframe.
 # Side Effects: The *.par files that specify each simulation are written.
 # Source:       A.R. Kronlund, and probably under questionable conditions.
-.createBatchDesignOLD <- function( ctlList, basePars, prefix="job" )
+.createBatchDesign <- function( ctlPar, basePars, prefix="sim" )
 {
-  # Input a control list object, usually the output from .createList.
-
-  scenario  <- ctlList$scenario              # List of scenarios.
-  nScenario <- length( scenario )            # Number of scenarios.
-
-  mp  <- ctlList$mp                          # List of management procedures.
-  nMP <- length( mp )                        # Number of management procedures.
-
-  nBatch <- nScenario * nMP                  # Number of mseR simulations.
-
-  # Design dataframe - each row identifies the simulation and adds colors,
-  # line types, line widths and symbols to be used for plotting outside of mseR.
-  # This file is needed as input to runBatchJob to control the job, and for use
-  # in plotting and performance calculations are to be done outside of mseR.
-  
-  parFile      <- character( nBatch )        # Name of each input parameter file.
-  blobName     <- character( nBatch )        # Name of each blob.
-
-  scenarioLabel <- character( nBatch )       # Name of each scenario.
-  mpLabel       <- character( nBatch )       # Name of each management procedure.
-  
-  dataName     <- rep( "data",     nBatch )  # Name of data method.
-  methodName   <- rep( "method",   nBatch )  # Name of assessment method.
-  ruleName     <- rep( "rule",     nBatch )  # Name of HCR.
-  scCol        <- rep( "black",    nBatch )  # Color for scenario.
-  scLty        <- rep( 1,          nBatch )  # Line type for scenario.
-  scLwd        <- rep( 1,          nBatch )  # Line width for scenario.
-  scSym        <- rep( 1,          nBatch )  # Symbol for scenario.
-  mpCol        <- rep( "black",    nBatch )  # Color for procedure.
-  mpLty        <- rep( 1,          nBatch )  # Line type procedure.
-  mpLwd        <- rep( 1,          nBatch )  # Line width for procedure.
-  mpSym        <- rep( 1,          nBatch )  # Symbol for procedure.
-  join         <- rep( 0,          nBatch )  # Join... ???
-
-  iBatch <- 1
-
-  # Loop over the scenarios.
-  for ( i in 1:nScenario )
-  {
-    # Loop over the management procedures.
-    for ( j in 1:nMP )
-    {
-      parFile[iBatch]   <- paste( prefix,iBatch,".txt",sep="" )
-      
-      # Create a unique blobname.
-      # NOTE: This step is deferred until the simulation is launched to obtain
-      #       a unique date-time stamp at time of execution.  For now simply
-      #       provide a name indexed to the simulation number.
-      blobName[iBatch] <- paste( "sim",prefix,iBatch,sep="" )
-      
-      # Set default scenarioLabel and mpLabel values in case not supplied.
-      scenarioLabel[iBatch] <- paste( "scenario",i,sep="" )
-      mpLabel[iBatch]       <- paste( "mp",j,sep="" )
-
-      # Use the scenarioLabel if provided.
-      #if ( !is.null(scenario[[i]]$scenarioLabel) )
-      #  scenarioLabel[iBatch] <- scenario[[i]]$scenarioLabel
-
-      # Scenario colour.
-      if ( !is.null(scenario[[i]]$scCol ) )
-        scCol[iBatch] <- scenario[[i]]$scCol
-
-      # Scenario line type.
-      if ( !is.null(scenario[[i]]$scLty ) )
-        scLty[iBatch] <- scenario[[i]]$scLty
-
-      # Scenario line width.
-      if ( !is.null(scenario[[i]]$scLwd ) )
-        scLwd[iBatch] <- scenario[[i]]$scLwd
-
-      # Scenario symbol.
-      if ( !is.null(scenario[[i]]$scSym ) )
-        scSym[iBatch] <- scenario[[i]]$scSym
-
-      # Use the mpLabel if provided.
-      #if ( !is.null(mp[[j]]$mpLabel) )
-      #  mpLabel[iBatch] <- mp[[j]]$mpLabel
-
-      # Use the dataName if provided.
-      if ( !is.null(mp[[j]]$dataName) )
-        dataName[iBatch] <- mp[[j]]$dataName
-
-      # Use the methodName if provided.
-      if ( !is.null(mp[[j]]$methodName ) )
-        methodName[iBatch] <- mp[[j]]$methodName
-
-      # Use the ruleName if provided.
-      if ( !is.null(mp[[j]]$ruleName) )
-        ruleName[iBatch] <- mp[[j]]$ruleName
-
-      # Management procedure colour.
-      if ( !is.null(mp[[j]]$mpCol ) )
-        mpCol[iBatch] <- mp[[j]]$mpCol
-
-      # Management procedure line type.
-      if ( !is.null(mp[[j]]$mpLty ) )
-        mpLty[iBatch] <- mp[[j]]$mpLty
-
-      # Management procedure line width.
-      if ( !is.null(mp[[j]]$mpLwd ) )
-        mpLwd[iBatch] <- mp[[j]]$mpLwd
-
-      # Management procedure symbol.
-      if ( !is.null(mp[[j]]$mpSym ) )
-        mpSym[iBatch] <- mp[[j]]$mpSym
-
-      # Join the procedures (groups share common integer value).
-      if ( !is.null(mp[[j]]$join ) )
-        join[iBatch] <- mp[[j]]$join
-
-      # Replace values for any keywords that match those in the mseR input
-      # parameters file:
-      # 1. Find keywords shared between the batch job control list and the mseR
-      #    parameter file.
-      # 2. Replace the values in the mseR parameter file with those from the
-      #    batch control list.
-      
-      newPars <- basePars
-      
-      # This step compares the names in the i-th scenario to the names in the
-      # first column of newPars to find the common names using intersect.
-
-      # Change all .subChar symbols to "$".
-      names(scenario[[i]]) <- gsub( .subChar,"$",names(scenario[[i]]), fixed=TRUE )
-       
-      sharedNames <- intersect( names(scenario[[i]]),newPars[,1] )
- 
-      if ( length(sharedNames) > 0 )
-        for ( k in 1:length(sharedNames) )
-        {
-          val <- scenario[[i]][[ sharedNames[k] ]]
-          if ( is.character(val) )
-            val <- dQuote( val )
-            
-          newPars[,2][ newPars[,1]==sharedNames[k] ] <- val
-        }
-        
-      # Change all .subChar symbols to "$".
-      names( mp[[j]] ) <- gsub( .subChar,"$",names(mp[[j]]), fixed=TRUE )
-       
-      sharedNames <- intersect( names(mp[[j]]),newPars[,1] )
- 
-      if ( length(sharedNames) > 0 )
-        for ( k in 1:length(sharedNames) )
-        {
-          val <- mp[[j]][[ sharedNames[k] ]]
-          if ( is.character(val) )
-            val <- dQuote( val )
-          
-           newPars[,2][ newPars[,1]==sharedNames[k] ] <- val
-        }
-      
-          
-      # Check to see if scenarioLabel and mpLabel are updated.
-      scenarioLabel[iBatch] <- newPars[,2][ newPars[,1]=="gui$scenarioLabel" ]
-      mpLabel[iBatch] <- newPars[,2][ newPars[,1]=="gui$mpLabel" ]
-      
-      # Remove leading white space: gsub('^[[:space:]]+', '', " a test ")
-      newPars[,2] <- gsub( '^[[:space:]]+','',newPars[,2] )
-      
-      # *** ARK: Why were there 3 columns in the original implementation?
-      # newPars[,3] <- gsub( '^[[:space:]]+','',newPars[,3] )
-
-      fName <- parFile[iBatch]          # mseR input parameters file.
-      
-      fName <- file.path( .PRJFLD, .DEFBATFLD, fName )
-      batchDate <- date()               # Current date and time.      
-      
-      # Open a new parameter file and write the title and date/time stamp.
-      cat( file=fName,
-        "# ",parFile[iBatch],": mseR control file written ",batchDate,".\n", sep="" )
-
-      # NOTE: write.table wants a matrix or data.frame, not a vector.
- 
-      # Write the header field names for the parameter file.
-      
-      colNames <- names( basePars )
-      #write.table( file=fName, matrix( colNames, nrow=1 ), quote=FALSE,
-      #             col.names=FALSE, row.names=FALSE,
-      #             sep=" ", append=TRUE )
-      
-      # ARK (12-Oct-13) write.table just isn't flexible enuf for numerics/chars.
-      #write.table( file=fName, newPars, quote=FALSE,
-      #             col.names=TRUE, row.names=FALSE,
-      #             sep=" ", append=FALSE )
-      
-      # Turn warnings off.             
-      tmpwarn <- options( "warn" )
-      options( warn=-1 )
-      
-      cat( file=fName, paste( names(newPars)[1]," ",names(newPars)[2],"\n", sep="" ),
-           append=FALSE )
-      for ( j in 1:nrow(newPars) )
-      {
-        cat( file=fName, paste( newPars[j,"parameter"]," ",newPars[j,"value"],"\n", sep="" ),
-             append=TRUE )
-
-            #isChar <- is.na( as.numeric( vals[k] ) )
-            #if ( isChar )
-            #  cat( file=optFile, dQuote(vals[k]), append=TRUE )
-            #else
-            #  cat( file=optFile, vals[k], append=TRUE )
- 
-      }     # for j over nrow(newPars)
-      cat( file=fName,"\n", append=TRUE )      
-      options( tmpwarn )                   
-      
-      #options( warn=-1 )                        # Turn off whining.
-      #for ( k in 1:nrow(newPars) )
-      #{
-      #  isNumericVal <- !is.na( as.numeric( newPars[k,2] ) )  # Coerce non-numeric to NA.
-      #  if ( isNumericVal )
-      #    cat( file=fName, newPars[k,1]," ",newPars[k,2],"\n", append=TRUE, sep="" )
-      #  else
-      #    cat( file=fName, newPars[k,1]," ",dQuote(newPars[k,2]),"\n", append=TRUE, sep="" )        
-      #}
-      #options( warn=0 )                 # Turn on whining.
-      
-      cat( "\nMSG(.createBatchDesign) mseR parameter file ",fName," written...\n" )
-
-      iBatch <- iBatch + 1           # Increment the batch job counter.
-    }
-  }
-  
-  # Bind the vectors that make up the design dataframe.
-  result <- data.frame( parFile, blobName, scenarioLabel,
-              mpLabel, dataName, methodName, ruleName,
-              scCol, scLty, scLwd, scSym,
-              mpCol, mpLty, mpLwd, mpSym, join,
-              stringsAsFactors=FALSE )
-  result
-}    # END function .createBatchDesign
-
-# .createBatchDesign  (Creates design dataframe and writes input par files)
-# Purpose:      Given a batch control list, base parameter file, and simulation
-#               file prefix, this function creates the batch job design by
-#               crossing each management procedure node with each scenario node.
-#               If the number of scenarios is nScenario and the number of
-#               management procedures is nMP, then the result is a design
-#               dataframe with nScenario*nMP rows and a *.par file corresponding
-#               to each row (combination of scenario and management procedure).
-#               The output design dataframe is passed to the .runBatchJob to
-#               control completing the simulations using runMSE.
-# Parameters:   ctlList is a list created by .createKeyList from the Batch File
-#               basePars is a dataframe containing the base parameters that are
-#                 modified by the ctlList values;
-#               prefix is the Simulation File Prefix string concatenated to the
-#               design filename, output parameter files, and simulation results
-#               in .Rdata files (e.g., blobs).
-# Returns:      result is the batch job design dataframe.
-# Side Effects: The *.par files that specify each simulation are written.
-# Source:       A.R. Kronlund, and probably under questionable conditions.
-.createBatchDesign <- function( ctlList, basePars, prefix="sim" )
-{
-  # Input a control list object, usually the output from .createList.
-
+  # Input a raw control par file and make into a list
+  ctlList <- .createKeyList(ctlPar)
   scenario  <- ctlList$scenario              # List of scenarios.
   nScenario <- length( scenario )            # Number of scenarios.
 
@@ -752,68 +498,7 @@ options( "useFancyQuotes"=FALSE )
               mpCol, mpLty, mpLwd, mpSym, join,
               stringsAsFactors=FALSE )
   result
-}
-
-# .createKeyList (Creates a list from the Batch File for .createBatchDesign):
-# Purpose:      Function to convert the Batch File dataframe (loaded by the
-#               function .readParFile) into a list that structures parameters
-#               into "scenario" and "mp" nodes, each of each contains the
-#               parameters for unique scenarios and management procedures,
-#               respectively.
-# Parameters:   obj is a dataframe read by .readParFile with columns "parameter"
-#                 and "value".
-# Returns:      result, a list with the batch control structure required to form
-#               the desired cross-combinations of scenarios and procedures.
-# Source:       A.R. Kronlund
-.createKeyListOLD <- function( obj )
-{
-  # Input  a data frame with columns "parameter" and "value".
-  # Output a list with elements named as first level of parameter and the
-  # balance as the key, with values in "value".
-
-  result <- list()
-
-  options( warn=-1 )                        # Turn off whining.
-  numericVal <- as.numeric( obj[,"value"] ) # Coerce non-numeric to NA.
-  options( warn=0 )                         # Turn on whining.
-
-  for ( i in 1:nrow(obj) )
-  {
-    # Value is numeric, build the parse string.
-    if ( !is.na(numericVal[i]) )
-    {
-      parName <- obj[i,"parameter"]
-      # Replace all the "$" with "&" in parameter name.
-      parName <- gsub( "$",.subChar,parName, fixed=TRUE )
-      # Replace ONLY the first "&" with "$" in parameter name, TWICE.
-      parName <- sub( .subChar,"$",parName, fixed=TRUE )
-      parName <- sub( .subChar,"$",parName, fixed=TRUE )
-      
-      listText <- paste( "result$",parName,"=",
-                    obj[i,"value"],sep="" )
-    }
-    # Value is character, build the parse string.
-    else
-    {
-      parName <- obj[i,"parameter"]
-      # Replace all the "$" with "&" in parameter name.
-      parName <- gsub( "$",.subChar,parName, fixed=TRUE )
-      # Replace ONLY the first "&" with "$" in parameter name.
-      parName <- sub( .subChar,"$",parName, fixed=TRUE )
-      parName <- sub( .subChar,"$",parName, fixed=TRUE )
-      
-      listText <- paste( "result$",parName,"=",obj[i,"value"],sep="" )
-    }
-
-    # ARK: At one point I had this code, presumably to handle a different
-    #      input format convention, perhaps assuming "value" was all character.
-    #                   sQuote(obj[i,"value"]),sep="" )
-    
-    # Evaluate the parse string, unless it evaluates to character!
-    eval( parse( text=listText ) )
-  }
-  result
-}    # END function .createKeyList
+} # END function createBatchDesign()
 
 # .createKeyList (Creates a list from the Batch File for .createBatchDesign):
 # Purpose:      Function to convert the Batch File dataframe (loaded by the
@@ -859,6 +544,41 @@ options( "useFancyQuotes"=FALSE )
   ctlList <- relist( obj[,"value"], result )  
   
   ctlList
+}
+
+# makeBatch()
+# Takes a batch control file and produces all the necessary structure
+# to run the batch of sim-est experiments.
+# inputs:     batchCtl = character naming the batch control file
+# ouputs:     batchDesign = data.frame containing the batch design
+# usage:      to run batch jobs for multiple scenario/mp combinations
+# author:     S.D.N. Johnson
+makeBatch <- function ( batchCtlFile = "mseRbatchJob.bch", prjFld = "mserproject",
+                        batchFld = "Batch", baseCtlFile = "simCtlFile.txt",
+                        prefix = "simCtlBat")
+{
+  .subChar <<- "__"
+  batchFilePath <- file.path(prjFld,batchFld,batchCtlFile)
+  baseFilePath  <- file.path(prjFld,batchFld,baseCtlFile)
+  # First, load the batch control file
+  batchCtl <- .readParFile ( batchFilePath )
+  # Now load the base control file
+  baseCtl  <- .readParFile ( baseFilePath )
+
+  # Set globals 
+  #(THIS SHOULD BE MOVED TO ANOTHER FILE, OR DIFFERENT APPROACH FOUND)
+  .PRJFLD <<- prjFld
+  .DEFBATFLD <<- batchFld
+
+  # Create Batch Design 
+  batchDesign <- .createBatchDesign(  ctlPar = batchCtl, 
+                                      basePars = baseCtl,
+                                      prefix = prefix )
+  .FBATDES  <- file.path(getwd(),.PRJFLD,.DEFBATFLD,"batchDesign.txt")
+  .writeDesignFile (obj=batchDesign,out=.FBATDES)
+
+
+  return(batchDesign)
 }
 
 # .runBatchJob  (Runs the simulations specified in a design dataframe)

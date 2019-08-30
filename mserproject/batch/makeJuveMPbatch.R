@@ -132,7 +132,7 @@ makeBatchDesign <- function (   scenarioGrid = NULL,
       for( fIdx in 1:nMPfactors)
       {
         factorID <- colnames(mpGrid)[fIdx]
-        cat(  "mp$mp", mpIdx, mpStems[factorID]," ", mpGrid[mpIdx,factorID], "\n", 
+        cat(  "mp$mp", mpIdx,"$", mpStems[factorID]," ", mpGrid[mpIdx,factorID], "\n", 
               sep = "", append = T, file = outFile )    
       }
 
