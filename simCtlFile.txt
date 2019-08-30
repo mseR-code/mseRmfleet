@@ -9,6 +9,7 @@ gui$simLegend TRUE
 gui$simPlotType "simSpecs"
 gui$simSetXaxis FALSE
 gui$simSetYaxis FALSE
+gui$stopOnBadRep FALSE
 mp$assess$avgPoints 3
 mp$assess$caaAges FALSE
 mp$assess$caaM 0.08

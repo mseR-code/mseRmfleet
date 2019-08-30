@@ -2993,12 +2993,39 @@ assessModDD <- function( ddObj )
       if( ctlList$gui$mpLabel %in% c("NoFish", "PerfectInfo") |
           substr(obj$ctlList$gui$mpLabel,1,11) == "PerfectInfo" )
       {
-        obj <- .projPopNoAssess( obj )
+        objBackup <- obj
+        objNext         <- try(.projPopNoAssess( obj ))
+
+        blob$maxTimeStep  <- nT
+        blob$maxRep       <- i
+        
+        if(class(obj) == "try-error")
+        {
+          blob$success <- FALSE
+          message("Error in .projPopNoAssess() for replicate ", i,
+                  " at time step ", blob$maxTimeStep, " saving progress up to here." )
+          break
+        }
+        obj <- objNext
       }
       else for ( t in tMP:nT )
       {
         # Fill om and mp objects.
-        obj <- .updatePop( obj, t )
+        objNext <- try(.updatePop( obj, t ))
+
+        blob$maxRep       <- i
+        blob$maxTimeStep  <- t
+
+        if( class(objNext) == "try-error" )
+        {
+          blob$success <- FALSE
+          message("Error in population dynamics function .updatePop() for replicate ", i,
+                  " at time step ", t, "; saving progress up to here." )
+          break
+        } 
+        # Overwrite obj with objNext if .updatePop() 
+        # didn't throw an error
+        obj <- objNext
       }# end year loop. 
     }
     
@@ -3082,6 +3109,11 @@ assessModDD <- function( ddObj )
       cat( "Elapsed time = ", diffTime, "\n" )  
     }
     
+    if( class(objNext) == "try-error" & obj$ctlList$gui$stopOnBadRep )
+    {
+      message("Stopping on bad replicate, saving progress to sim folder." )
+      break
+    }
   
   }     # End simulation loop.
   
